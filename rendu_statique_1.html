@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>ECharts</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.js"></script>
+    
+</head>
+
+<body>
+    <!-- Prepare a DOM with a defined width and height for ECharts -->
+    <div id="main" style="width: 100%;height:600px;"></div>
+
+    <script type="text/javascript">
+        // Initialize the echarts instance based on the prepared dom
+        var myChart = echarts.init(document.getElementById('main'));
+
+        // Specify the configuration items and data for the chart
+        var data = [];
+        var dataCount = 10;
+        var startDate = new Date().setFullYear(2018);
+        var startTime = startDate.valueOf();
+        
+        var categories = ['Parcelle 1', 'Parcelle 2', 'Parcelle 3'];
+        var types = [
+            { name: 'Prairie temporaire', color: '#7b9ce1' },
+            { name: 'Sol nu', color: '#bd6d6c' },
+            { name: 'Trèfle', color: '#75d874' },
+            { name: 'Blé', color: '#e0bc78' },
+            { name: 'Lin', color: '#dc77dc' },
+            { name: 'Féverole', color: '#72b362' }
+        ];
+
+        // Generate mock data
+        categories.forEach(function (category, index) {
+            var baseTime = startTime;
+            for (var i = 0; i < dataCount; i++) {
+                var typeItem = types[Math.round(Math.random() * (types.length - 1))]; // type de culture
+                
+                var duration = Math.round(Math.random() * 5) + 1; // months
+
+                var startDate = new Date(baseTime);
+                var endDate = new Date(startDate);
+                endDate.setMonth(startDate.getMonth() + duration);
+                baseTime = endDate.valueOf();
+                data.push({
+                    name: typeItem.name,
+                    value: [index, startDate.valueOf(), endDate.valueOf(), duration],
+                    itemStyle: {
+                        color: typeItem.color
+                    }
+                });
+            }
+        });
+
+        function renderItem(params, api) {
+            var categoryIndex = api.value(0);
+            var start = api.coord([api.value(1), categoryIndex]);
+            var end = api.coord([api.value(2), categoryIndex]);
+            var height = api.size([0, 1])[1] * 0.6;
+
+            // start[0] // abscisse gauche de l'élément
+            // start[1] // ordonnée gauche de l'élément
+            // end[0] // abscisse droite de l'élément
+            // end[1] // ordonnée droite de l'élément
+            // height // Hauteur de l'élément
+
+            // params.coordSys.x // début du canva (après zoom)
+            // params.coordSys.y // début du canva (après zoom)
+            // params.coordSys.width, // largeur du canva (après zoom)
+            // params.coordSys.height // hauteur du canva (après zoom)
+
+            let arrowWidth = height / 3;
+            let border = 3;
+
+            var points = [
+                [start[0], start[1] - height / 2],
+                [end[0] - border, start[1] - height / 2],
+                [end[0] + arrowWidth - border, start[1]],
+                [end[0] - border, start[1] + height / 2],
+                [start[0], start[1] + height / 2],
+                [start[0] + arrowWidth, start[1]],
+            ];
+
+            return (
+                {
+                    type: 'polygon',
+                    transition: ['shape'],
+                    shape: {
+                        points: points
+                    },
+                    style: api.style()
+                }                
+            );
+        }
+
+        option = {
+            tooltip: {
+                formatter: function (params) {
+                    return params.marker + params.name + ' : ' + params.value[3] + ' mois';
+                }
+            },
+
+            title: {
+                text: 'Profile',
+                left: 'center'
+            },
+
+            dataZoom: [
+                {
+                    type: 'slider',
+                    filterMode: 'weakFilter',
+                    showDataShadow: false,
+                    top: 400,
+                    labelFormatter: ''
+                },
+                {
+                    type: 'inside',
+                    filterMode: 'weakFilter'
+                }
+            ],
+
+            grid: {
+                height: 300
+            },
+
+            xAxis: {
+                min: startTime,
+                scale: true,
+                axisLabel: {
+                    formatter: function (val) {
+                        var currentDate = new Date(val);
+                        const options = {
+                            year: 'numeric',
+                            month: 'short',
+                        };
+
+                        // undefined : use the current local for the browser
+                        return currentDate.toLocaleDateString(undefined, options);
+                    }
+                }
+            },
+            
+            yAxis: {
+                data: categories
+            },
+
+            series: [
+                {
+                    type: 'custom',
+                    renderItem: renderItem,
+                    clip: true,
+                    itemStyle: {
+                        opacity: 0.8
+                    },
+                    encode: {
+                        x: [1, 2],
+                        y: 0
+                    },
+                    data: data
+                }
+            ]
+        };
+
+        // Display the chart using the configuration items and data just specified.
+        myChart.setOption(option);
+    </script>
+</body>
+
+</html>
