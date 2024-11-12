@@ -6,18 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>ECharts</title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
+    <style>
+        #itk_text {
+            display: inline-block;
+            font-size: 80%;
+            border: 1px black solid;
+            width: 20%;
+            height: 450px;
+            overflow: scroll
+        }
+
+        #itk_chart {
+            width: 78%;
+            height: 450px;
+            display: inline-block;
+        }
+    </style>
 </head>
 
 <body>
     <!-- Prepare a DOM with a defined width and height for ECharts -->
-    <div id="itk_text" style="display: inline-block;  font-size: 80%;  border: 1px black solid;    width: 20%;height:600px; overflow: scroll"></div>
-    <div id="itk_chart" style="width: 78%;height:600px; display: inline-block;"></div>
+    <div id="itk_text"></div>
+    <div id="itk_chart"></div>
 
     <script type="text/javascript">
         // Initialize the echarts instance based on the prepared dom
@@ -32,24 +49,65 @@
         var categories = ['Autres interventions', 'Parcelle', 'Contrôle adventices'];
 
         var rotationTest = [
-            {name: "Betterave", color: "#ff96b0", duration: 8,
-             description: "<p><b>Tête de rotation</b><br><b>Pré-semis  : </b> Possibilité d'un couvert multi-espèces en aout n-1<br><b>Travail du sol  : </b> déchaumage pour niveler le terrain et un binage en Juin à 1cm<br><b>Type de semoir  : </b> trois passages de strip-till<br><b>Date de semis  : </b> 22/03<br><b>Densité de semis  : </b> 125mil graines/ha<br><b>Plantes compagnes : </b> avoine/orge fermière, 20kg/ha</p>"},
-            {name: "Blé tendre", color: "#edcc7d", duration: 11, 
-             description: "<p><b>Pré-semis :</b> désinfection du grain au vinaigre (1L/100kg)<br><b>Travail du sol : </b> aucun, semis direct pur<br><b>Type de semoir  : </b> semoir à dents<br><b>Date de semis  : </b>  11/10<br><b>Densité de semis  : </b> 125kg/ha<br><b>Plantes compagnes : </b> orge fermière, 20kg/ha (implantation semoir à disque)</p>"},
-            {name: "colza", color: "#ffff4b", duration: 12, 
-             description: "<p><i>Travail du sol: aucun, semis direct pur, fissuration après récolte, avant le blé</i><br><b>Type de semoir  : </b> semoir à dents<br><b>Date de semis  : </b>  26/08<br><b>Densité de semis  : </b> 2kg/ha<br><b>Plantes compagnes : </b> feverole fermière, 60 pieds au m2</p>"},
-            {name: "Repousses", color: "#fff2cc", duration: 1, 
-             description: ""},
-            {name: "Blé tendre", color: "#edcc7d", duration: 11,
-             description: ""},
-            {name: "Couvert ", color: "#93c47d", duration: 6, 
-             description: "<p><i>Couvert d'interculture longue pour casser le cycle des graminées</i><br><b>Composition : </b> trefle facscelie vesce, feverple,pois, lupin tournessol, avoine<br><b>Destruction : </b> rouleau faca + gel<br><b>Densité : </b> 250 pieds/m2</p>"},
-            {name: "Lin textile", color: "#efefef", duration: 7, 
-             description: "<p><b>Semis :</b> Mars<br><b>Type de semoir : </b> semoir à disques <br>Très sensible à la compaction donc éloigné le plus possible de la récolte de betterave<br>Apport de BRF après lin, environ 10t/ha </p>"},
-            {name: "Blé tendre", color: "#edcc7d", duration: 11, 
-             description: ""},
-            {name: "Couvert ", color: "#93c47d", duration: 4, 
-             description: "<p><i>Couvert d'interculture court</i><br><b>Date de semis : </b> 28/09 ou plus tôt<br><b>Composition : </b> avoine/pois/feverole/vesce/fascelie/radis/lupin/tournessol<br><b>Densité : </b> 85 kg/ha<br><b>Destruction : </b> 26/01<br><b>Reliquats azotés : </b> apporteront entre 20 et 40 u d'azote mobilisable</p>"},    
+            {
+                name: "Betterave", color: "#ff96b0", duration: 8,
+                description: "<p><b>Tête de rotation</b><br><b>Pré-semis  : </b> Possibilité d'un couvert multi-espèces en aout n-1<br><b>Travail du sol  : </b> déchaumage pour niveler le terrain et un binage en Juin à 1cm<br><b>Type de semoir  : </b> trois passages de strip-till<br><b>Date de semis  : </b> 22/03<br><b>Densité de semis  : </b> 125mil graines/ha<br><b>Plantes compagnes : </b> avoine/orge fermière, 20kg/ha</p>",
+                interventions: [
+                    {day: 5, name: "Semis", type: "Autres interventions", description: "Semis des betteraves à J + 5"}
+                ]
+            },
+            {
+                name: "Blé tendre", color: "#edcc7d", duration: 11,
+                description: "<p><b>Pré-semis :</b> désinfection du grain au vinaigre (1L/100kg)<br><b>Travail du sol : </b> aucun, semis direct pur<br><b>Type de semoir  : </b> semoir à dents<br><b>Date de semis  : </b>  11/10<br><b>Densité de semis  : </b> 125kg/ha<br><b>Plantes compagnes : </b> orge fermière, 20kg/ha (implantation semoir à disque)</p>"
+            },
+            {
+                name: "Colza", color: "#ffff4b", duration: 12,
+                description: "<p><i>Travail du sol: aucun, semis direct pur, fissuration après récolte, avant le blé</i><br><b>Type de semoir  : </b> semoir à dents<br><b>Date de semis  : </b>  26/08<br><b>Densité de semis  : </b> 2kg/ha<br><b>Plantes compagnes : </b> feverole fermière, 60 pieds au m2</p>",
+                interventions: [
+                    {day: -20, name: "Labour", type: "Autres interventions", description: ""},
+                    {day: -15, name: "Travail superficiel", type: "Autres interventions", description: ""},
+                    {day: -10, name: "Fertilisation", type: "Autres interventions", description: "Fertilisation - tsp_45 (180 kg)"},
+                    {day: -10, name: "Fertilisation", type: "Autres interventions", description: "Fertilisation - potassium_chloride (125 kg)"},
+                    {day: -5, name: "Pulverisation", type: "Protection des plantes", description: "Protection des plantes - Proplus (0,4 l)"},
+                    {day: 0, name: "Semis", type: "Autres interventions", description: "Semence - Capello (2 kg)"},
+                    {day: 0, name: "Semis", type: "Protection des plantes", description: "Protection des plantes - Anti-limaces (4 kg)"},
+                    {day: 30, name: "Pulverisation", type: "Protection des plantes", description: "Protection des plantes - Sweet Home (0,3 l)"},
+                    {day: 120, name: "Fertilisation", type: "Autres interventions", description: "Fertilisation - ammonitrate_33 (178 kg)"},
+                    {day: 150, name: "Fertilisation", type: "Autres interventions", description: "Fertilisation - ammonium_sulphate (90 kg)"},
+                    {day: 165, name: "Pulverisation", type: "Protection des plantes", description: "Protection des plantes - Boravi Wg (1 kg)"},
+                    {day: 180, name: "Fertilisation", type: "Autres interventions", description: "Fertilisation - ammonitrate_33 (178 kg)"},
+                    {day: 210, name: "Pulverisation", type: "Protection des plantes", description: "Protection des plantes - Elifor (0,5 l)"},
+                    {day: 225, name: "Pulverisation", type: "Protection des plantes", description: "Protection des plantes - Karakas (0,05 l)"},
+                    {day: 240, name: "Pulverisation", type: "Protection des plantes", description: "Protection des plantes - Sunorg Pro (0,4 l)"},
+                    {day: 255, name: "Pulverisation", type: "Protection des plantes", description: "Protection des plantes - Boravi Wg (1 kg)"},
+                    {day: 300, name: "Récolte", type: "Autres interventions", description: "Récolte - Rendement (30 q)"},
+                    {day: 300, name: "Transport", type: "Autres interventions", description: ""},
+                ]
+            },
+            {
+                name: "Repousses", color: "#fff2cc", duration: 1,
+                description: ""
+            },
+            {
+                name: "Blé tendre", color: "#edcc7d", duration: 11,
+                description: ""
+            },
+            {
+                name: "Couvert", color: "#93c47d", duration: 6,
+                description: "<p><i>Couvert d'interculture longue pour casser le cycle des graminées</i><br><b>Composition : </b> trefle facscelie vesce, feverple,pois, lupin tournessol, avoine<br><b>Destruction : </b> rouleau faca + gel<br><b>Densité : </b> 250 pieds/m2</p>"
+            },
+            {
+                name: "Lin textile", color: "#efefef", duration: 7,
+                description: "<p><b>Semis :</b> Mars<br><b>Type de semoir : </b> semoir à disques <br>Très sensible à la compaction donc éloigné le plus possible de la récolte de betterave<br>Apport de BRF après lin, environ 10t/ha </p>"
+            },
+            {
+                name: "Blé tendre", color: "#edcc7d", duration: 11,
+                description: ""
+            },
+            {
+                name: "Couvert", color: "#93c47d", duration: 4,
+                description: "<p><i>Couvert d'interculture court</i><br><b>Date de semis : </b> 28/09 ou plus tôt<br><b>Composition : </b> avoine/pois/feverole/vesce/fascelie/radis/lupin/tournessol<br><b>Densité : </b> 85 kg/ha<br><b>Destruction : </b> 26/01<br><b>Reliquats azotés : </b> apporteront entre 20 et 40 u d'azote mobilisable</p>"
+            },
         ];
 
         var baseTime = startTime;
@@ -62,79 +120,153 @@
             data.push({
                 name: item.name,
                 value: [1, // Parcelle (index de la série)
-                        startDate.valueOf(), // Date de début
-                        endDate.valueOf(), // Date de fin
-                        item.duration, // Durée (mois)
-                        item.name // Nom
-                    ],
+                    startDate.valueOf(), // Date de début
+                    endDate.valueOf(), // Date de fin
+                    item.name, // Nom
+                    'rotation_item', // Type
+                    item.duration // Durée (mois)                    
+                ],
                 itemStyle: {
                     color: item.color
                 }
             });
 
-            html += '<h4 id="rotation_'+ index +'">' + item.name + '</h4>' + item.description;
+            html += '<h4 id="rotation_' + index + '">' + item.name + '</h4>' + item.description;
+
+            if (item.interventions) {
+                html += '<h5>Interventions :</h5><ul>';
+                item.interventions.forEach(intervention => {
+                    let intDate = new Date(startDate.valueOf() + intervention.day * 86400000);
+
+                    html += '<li>'+intervention.name +  ' (' + intervention.day + ' jours - ' + intDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric'}) + ') : ' + intervention.description+ '</li>';
+                    data.push({
+                        name: intervention.name,
+                        value: [intervention.type == 'Protection des plantes' ? 2 : 0, // Parcelle (index de la série)
+                            startDate.valueOf() + intervention.day * 86400000, // Date de début (ms)
+                            startDate.valueOf() + (intervention.day + 1) * 86400000, // Date de début (ms)
+                            intervention.name, // Nom
+                            'intervention_bottom', // Type
+                            1
+                        ],
+                        itemStyle: {
+                            color: item.color
+                        }
+                    });
+                });
+
+                html += '</ul>';
+
+            }
+
         });
-        
+
         $('#itk_text').html(html);
 
         function renderItem(params, api) {
             var categoryIndex = api.value(0);
             var start = api.coord([api.value(1), categoryIndex]);
             var end = api.coord([api.value(2), categoryIndex]);
+            var name = api.value(3);
+            var type = api.value(4);
+
             var height = api.size([0, 1])[1] * 0.6;
 
-            // start[0] // abscisse gauche de l'élément
-            // start[1] // ordonnée gauche de l'élément
-            // end[0] // abscisse droite de l'élément
-            // end[1] // ordonnée droite de l'élément
-            // height // Hauteur de l'élément
+            if (type == 'rotation_item') {
 
-            // params.coordSys.x // début du canva (après zoom)
-            // params.coordSys.y // début du canva (après zoom)
-            // params.coordSys.width, // largeur du canva (après zoom)
-            // params.coordSys.height // hauteur du canva (après zoom)
+                // start[0] // abscisse gauche de l'élément
+                // start[1] // ordonnée gauche de l'élément
+                // end[0] // abscisse droite de l'élément
+                // end[1] // ordonnée droite de l'élément
+                // height // Hauteur de l'élément
 
-            let arrowWidth = height / 3;
-            let border = 3;
+                // params.coordSys.x // début du canva (après zoom)
+                // params.coordSys.y // début du canva (après zoom)
+                // params.coordSys.width, // largeur du canva (après zoom)
+                // params.coordSys.height // hauteur du canva (après zoom)
 
-            var points = [
-                [start[0], start[1] - height / 2],
-                [end[0] - border, start[1] - height / 2],
-                [end[0] + arrowWidth - border, start[1]],
-                [end[0] - border, start[1] + height / 2],
-                [start[0], start[1] + height / 2],
-                [start[0] + arrowWidth, start[1]],
-            ];
+                let arrowWidth = height / 3;
+                let border = 3;
 
-            return (
-                {
-                    type: 'polygon',
-                    transition: ['shape'],
-                    shape: {
-                        points: points
-                    },
-                    style: api.style(),
-                    textConfig: {
-                        position: [arrowWidth + 10, height / 2 - 5]
-                    },
-                    textContent: {
-                        style: {
-                            text: api.value(4),
-                            fontFamily: 'Verdana',
-                            fill: '#000',
-                            width: 80,
-                            overflow: 'truncate',
-                            ellipsis: '..',
-                            truncateMinChar: 1
+                var points = [
+                    [start[0], start[1] - height / 2],
+                    [end[0] - border, start[1] - height / 2],
+                    [end[0] + arrowWidth - border, start[1]],
+                    [end[0] - border, start[1] + height / 2],
+                    [start[0], start[1] + height / 2],
+                    [start[0] + arrowWidth, start[1]],
+                ];
+
+                return (
+                    {
+                        type: 'polygon',
+                        transition: ['shape'],
+                        shape: {
+                            points: points
+                        },
+                        style: api.style(),
+                        textConfig: {
+                            position: [arrowWidth + 10, height / 2 - 5]
+                        },
+                        textContent: {
+                            style: {
+                                text: name,
+                                fontFamily: 'Verdana',
+                                fill: '#000',
+                                width: 80,
+                                overflow: 'truncate',
+                                ellipsis: '..',
+                                truncateMinChar: 1
+                            }
                         }
                     }
-                });
+                );
+            }
+
+            if (type == 'intervention_bottom') {
+
+                let border = 3;
+                const style = api.style();
+                return (
+                    {
+                        type: 'rect',
+                        transition: ['shape'],
+                        shape: {
+                            x: start[0],
+                            y: start[1],
+                            width: 100,
+                            height: height - 20
+                        },
+                        style: api.style({
+                            fill: 'transparent',
+                            stroke: style.fill,
+                            textFill: '#000',
+                        }),
+                        textConfig: {
+                            position: [0, 5]
+                        },
+                        textContent: {
+                            style: {
+                                text: name,
+                                fontFamily: 'Verdana',
+                                fill: '#000',
+                                overflow: 'truncate',
+                                ellipsis: '..',
+                                truncateMinChar: 1
+                            }
+                        }
+                    }
+                );
+
+            }
+
+            
+
         }
 
         option = {
             tooltip: {
                 formatter: function (params) {
-                    return params.marker + params.name + ' : ' + params.value[3] + ' mois';
+                    return params.marker + params.name + ' : ' + params.value[5] + ' mois';
                 }
             },
 
@@ -206,13 +338,13 @@
 
 
         myChart.on('click', function (params) {
-            
+
             const element = document.getElementById('rotation_' + params.dataIndex);
 
             element.scrollIntoView();
-            
 
-            
+
+
         });
 
 
