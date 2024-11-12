@@ -6,23 +6,40 @@
     <title>ECharts</title>
 
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.js"></script>
-    
+
 </head>
 
 <body>
     <!-- Prepare a DOM with a defined width and height for ECharts -->
-    <div id="main" style="width: 100%;height:600px;"></div>
+    <div id="itk_text" style="display: inline-block;    border: 1px black solid;    width: 20%;height:600px; overflow: scroll">
+        <h4 id="Blé">Blé</h4>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc a dictum lectus, placerat pulvinar nibh. Aliquam mattis lectus dolor, nec elementum ipsum tempus vitae. Morbi mi urna, hendrerit eu velit sit amet, ultricies dignissim leo. Ut non bibendum nunc. Vivamus volutpat velit sem. In vitae sollicitudin sem. Maecenas commodo justo sit amet risus tincidunt volutpat. Nulla et suscipit ligula. Sed eget lectus in mi pellentesque hendrerit. Vivamus cursus nunc a sem aliquet rhoncus.</p>
+
+        <h4 id="Lin">Lin</h4>
+        <p>Duis eleifend quis nunc eu vehicula. Aliquam at tortor nunc. Nulla posuere vitae lorem a tempor. Fusce aliquam tincidunt turpis, sit amet dictum mauris tempus id. Nam eu ligula orci. Phasellus molestie arcu metus, id dictum risus facilisis eleifend. Proin aliquet auctor ex nec lacinia. Cras ex lorem, vulputate eget rhoncus nec, tristique non ligula. Nunc sapien neque, pharetra sit amet ex vehicula, aliquet egestas ante. Phasellus dictum dolor tempus pretium viverra. Aliquam congue odio dui, et congue nisi elementum nec. Quisque lacinia, nulla vitae lacinia tincidunt, neque sem tincidunt erat, ac finibus metus nisl vel odio. Ut dapibus fermentum magna, porttitor egestas nunc vulputate ac. Cras volutpat urna suscipit viverra maximus. Phasellus sed fringilla lorem. Nulla facilisi.</p>
+
+        <h4 id="Féverole">Féverole</h4>
+        <p>Curabitur eu metus ac ex lobortis tempus. Donec mollis cursus nulla sodales faucibus. Nulla at iaculis nisi. Nulla tellus massa, scelerisque a dui ut, facilisis pretium urna. Integer nec leo a sem finibus molestie. Sed tristique augue tristique justo tincidunt ornare. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Curabitur et egestas elit.</p>
+
+        <h4 id="Sol nu">Sol nu</h4>
+        <p>Vivamus sem eros, luctus at risus sed, lacinia vulputate tellus. Integer ac magna fringilla, lobortis sapien id, tristique nulla. Duis vitae tortor pellentesque, lobortis velit non, sodales dui. Curabitur bibendum interdum lectus, eu sodales dolor laoreet vitae. Aliquam erat volutpat. Nullam quis leo tristique, lobortis nisi vehicula, malesuada arcu. Pellentesque purus lectus, ornare cursus egestas vitae, sollicitudin vitae ligula. Duis nec sem auctor urna ullamcorper scelerisque. Sed vel auctor augue. Sed placerat diam quis dictum aliquet. Integer id mauris enim. Fusce a nulla euismod, ultrices ante id, porttitor elit. Etiam vel dolor nec nulla tempus auctor sit amet ut turpis. Curabitur dui lacus, ultrices sit amet accumsan non, tempus ut elit.</p>
+
+        <h4 id="Trèfle">Trèfle</h4>
+        <p>Interdum et malesuada fames ac ante ipsum primis in faucibus. Curabitur sed turpis nisi. Fusce fermentum velit eget eros pretium aliquam. Maecenas placerat aliquam scelerisque. Quisque a dolor tristique, tempor quam id, ornare sapien. Quisque placerat auctor sem vel vulputate. Sed interdum massa ac arcu tempor egestas. Fusce egestas, tortor sed posuere porta, dui tortor euismod neque, scelerisque tempus risus justo quis odio. Maecenas a consequat mi. Quisque malesuada sem vel sodales posuere. Suspendisse turpis arcu, placerat sit amet euismod sit amet, vestibulum et arcu. Morbi eget augue rhoncus, aliquet purus in, lobortis erat. Nulla suscipit aliquet metus.</p>
+
+    </div>
+    <div id="itk_chart" style="width: 78%;height:600px; display: inline-block;"></div>
 
     <script type="text/javascript">
         // Initialize the echarts instance based on the prepared dom
-        var myChart = echarts.init(document.getElementById('main'));
+        var myChart = echarts.init(document.getElementById('itk_chart'));
 
         // Specify the configuration items and data for the chart
         var data = [];
         var dataCount = 10;
         var startDate = new Date().setFullYear(2018);
         var startTime = startDate.valueOf();
-        
+
         var categories = ['Parcelle 1', 'Parcelle 2', 'Parcelle 3'];
         var types = [
             { name: 'Prairie temporaire', color: '#7b9ce1' },
@@ -38,7 +55,7 @@
             var baseTime = startTime;
             for (var i = 0; i < dataCount; i++) {
                 var typeItem = types[Math.round(Math.random() * (types.length - 1))]; // type de culture
-                
+
                 var duration = Math.round(Math.random() * 5) + 1; // months
 
                 var startDate = new Date(baseTime);
@@ -47,7 +64,7 @@
                 baseTime = endDate.valueOf();
                 data.push({
                     name: typeItem.name,
-                    value: [index, startDate.valueOf(), endDate.valueOf(), duration],
+                    value: [index, startDate.valueOf(), endDate.valueOf(), duration, typeItem.name],
                     itemStyle: {
                         color: typeItem.color
                     }
@@ -91,9 +108,22 @@
                     shape: {
                         points: points
                     },
-                    style: api.style()
-                }                
-            );
+                    style: api.style(),
+                    textConfig: {
+                        position: [arrowWidth + 10, height / 2 - 5]
+                    },
+                    textContent: {
+                        style: {
+                            text: api.value(4),
+                            fontFamily: 'Verdana',
+                            fill: '#000',
+                            width: 80,
+                            overflow: 'truncate',
+                            ellipsis: '..',
+                            truncateMinChar: 1
+                        }
+                    }
+                });
         }
 
         option = {
@@ -142,7 +172,7 @@
                     }
                 }
             },
-            
+
             yAxis: {
                 data: categories
             },
@@ -166,6 +196,20 @@
 
         // Display the chart using the configuration items and data just specified.
         myChart.setOption(option);
+
+        console.log(option);
+
+
+        myChart.on('click', function (params) {
+            const element = document.getElementById(params.name);
+
+            element.scrollIntoView();
+            
+
+            console.log(params.name);
+        });
+
+
     </script>
 </body>
 
