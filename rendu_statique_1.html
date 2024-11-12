@@ -3,31 +3,20 @@
 
 <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>ECharts</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 </head>
 
 <body>
     <!-- Prepare a DOM with a defined width and height for ECharts -->
-    <div id="itk_text" style="display: inline-block;    border: 1px black solid;    width: 20%;height:600px; overflow: scroll">
-        <h4 id="Blé">Blé</h4>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc a dictum lectus, placerat pulvinar nibh. Aliquam mattis lectus dolor, nec elementum ipsum tempus vitae. Morbi mi urna, hendrerit eu velit sit amet, ultricies dignissim leo. Ut non bibendum nunc. Vivamus volutpat velit sem. In vitae sollicitudin sem. Maecenas commodo justo sit amet risus tincidunt volutpat. Nulla et suscipit ligula. Sed eget lectus in mi pellentesque hendrerit. Vivamus cursus nunc a sem aliquet rhoncus.</p>
-
-        <h4 id="Lin">Lin</h4>
-        <p>Duis eleifend quis nunc eu vehicula. Aliquam at tortor nunc. Nulla posuere vitae lorem a tempor. Fusce aliquam tincidunt turpis, sit amet dictum mauris tempus id. Nam eu ligula orci. Phasellus molestie arcu metus, id dictum risus facilisis eleifend. Proin aliquet auctor ex nec lacinia. Cras ex lorem, vulputate eget rhoncus nec, tristique non ligula. Nunc sapien neque, pharetra sit amet ex vehicula, aliquet egestas ante. Phasellus dictum dolor tempus pretium viverra. Aliquam congue odio dui, et congue nisi elementum nec. Quisque lacinia, nulla vitae lacinia tincidunt, neque sem tincidunt erat, ac finibus metus nisl vel odio. Ut dapibus fermentum magna, porttitor egestas nunc vulputate ac. Cras volutpat urna suscipit viverra maximus. Phasellus sed fringilla lorem. Nulla facilisi.</p>
-
-        <h4 id="Féverole">Féverole</h4>
-        <p>Curabitur eu metus ac ex lobortis tempus. Donec mollis cursus nulla sodales faucibus. Nulla at iaculis nisi. Nulla tellus massa, scelerisque a dui ut, facilisis pretium urna. Integer nec leo a sem finibus molestie. Sed tristique augue tristique justo tincidunt ornare. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Curabitur et egestas elit.</p>
-
-        <h4 id="Sol nu">Sol nu</h4>
-        <p>Vivamus sem eros, luctus at risus sed, lacinia vulputate tellus. Integer ac magna fringilla, lobortis sapien id, tristique nulla. Duis vitae tortor pellentesque, lobortis velit non, sodales dui. Curabitur bibendum interdum lectus, eu sodales dolor laoreet vitae. Aliquam erat volutpat. Nullam quis leo tristique, lobortis nisi vehicula, malesuada arcu. Pellentesque purus lectus, ornare cursus egestas vitae, sollicitudin vitae ligula. Duis nec sem auctor urna ullamcorper scelerisque. Sed vel auctor augue. Sed placerat diam quis dictum aliquet. Integer id mauris enim. Fusce a nulla euismod, ultrices ante id, porttitor elit. Etiam vel dolor nec nulla tempus auctor sit amet ut turpis. Curabitur dui lacus, ultrices sit amet accumsan non, tempus ut elit.</p>
-
-        <h4 id="Trèfle">Trèfle</h4>
-        <p>Interdum et malesuada fames ac ante ipsum primis in faucibus. Curabitur sed turpis nisi. Fusce fermentum velit eget eros pretium aliquam. Maecenas placerat aliquam scelerisque. Quisque a dolor tristique, tempor quam id, ornare sapien. Quisque placerat auctor sem vel vulputate. Sed interdum massa ac arcu tempor egestas. Fusce egestas, tortor sed posuere porta, dui tortor euismod neque, scelerisque tempus risus justo quis odio. Maecenas a consequat mi. Quisque malesuada sem vel sodales posuere. Suspendisse turpis arcu, placerat sit amet euismod sit amet, vestibulum et arcu. Morbi eget augue rhoncus, aliquet purus in, lobortis erat. Nulla suscipit aliquet metus.</p>
-
-    </div>
+    <div id="itk_text" style="display: inline-block;  font-size: 80%;  border: 1px black solid;    width: 20%;height:600px; overflow: scroll"></div>
     <div id="itk_chart" style="width: 78%;height:600px; display: inline-block;"></div>
 
     <script type="text/javascript">
@@ -40,37 +29,53 @@
         var startDate = new Date().setFullYear(2018);
         var startTime = startDate.valueOf();
 
-        var categories = ['Parcelle 1', 'Parcelle 2', 'Parcelle 3'];
-        var types = [
-            { name: 'Prairie temporaire', color: '#7b9ce1' },
-            { name: 'Sol nu', color: '#bd6d6c' },
-            { name: 'Trèfle', color: '#75d874' },
-            { name: 'Blé', color: '#e0bc78' },
-            { name: 'Lin', color: '#dc77dc' },
-            { name: 'Féverole', color: '#72b362' }
+        var categories = ['Autres interventions', 'Parcelle', 'Contrôle adventices'];
+
+        var rotationTest = [
+            {name: "Betterave", color: "#ff96b0", duration: 8,
+             description: "<p><b>Tête de rotation</b><br><b>Pré-semis  : </b> Possibilité d'un couvert multi-espèces en aout n-1<br><b>Travail du sol  : </b> déchaumage pour niveler le terrain et un binage en Juin à 1cm<br><b>Type de semoir  : </b> trois passages de strip-till<br><b>Date de semis  : </b> 22/03<br><b>Densité de semis  : </b> 125mil graines/ha<br><b>Plantes compagnes : </b> avoine/orge fermière, 20kg/ha</p>"},
+            {name: "Blé tendre", color: "#edcc7d", duration: 11, 
+             description: "<p><b>Pré-semis :</b> désinfection du grain au vinaigre (1L/100kg)<br><b>Travail du sol : </b> aucun, semis direct pur<br><b>Type de semoir  : </b> semoir à dents<br><b>Date de semis  : </b>  11/10<br><b>Densité de semis  : </b> 125kg/ha<br><b>Plantes compagnes : </b> orge fermière, 20kg/ha (implantation semoir à disque)</p>"},
+            {name: "colza", color: "#ffff4b", duration: 12, 
+             description: "<p><i>Travail du sol: aucun, semis direct pur, fissuration après récolte, avant le blé</i><br><b>Type de semoir  : </b> semoir à dents<br><b>Date de semis  : </b>  26/08<br><b>Densité de semis  : </b> 2kg/ha<br><b>Plantes compagnes : </b> feverole fermière, 60 pieds au m2</p>"},
+            {name: "Repousses", color: "#fff2cc", duration: 1, 
+             description: ""},
+            {name: "Blé tendre", color: "#edcc7d", duration: 11,
+             description: ""},
+            {name: "Couvert ", color: "#93c47d", duration: 6, 
+             description: "<p><i>Couvert d'interculture longue pour casser le cycle des graminées</i><br><b>Composition : </b> trefle facscelie vesce, feverple,pois, lupin tournessol, avoine<br><b>Destruction : </b> rouleau faca + gel<br><b>Densité : </b> 250 pieds/m2</p>"},
+            {name: "Lin textile", color: "#efefef", duration: 7, 
+             description: "<p><b>Semis :</b> Mars<br><b>Type de semoir : </b> semoir à disques <br>Très sensible à la compaction donc éloigné le plus possible de la récolte de betterave<br>Apport de BRF après lin, environ 10t/ha </p>"},
+            {name: "Blé tendre", color: "#edcc7d", duration: 11, 
+             description: ""},
+            {name: "Couvert ", color: "#93c47d", duration: 4, 
+             description: "<p><i>Couvert d'interculture court</i><br><b>Date de semis : </b> 28/09 ou plus tôt<br><b>Composition : </b> avoine/pois/feverole/vesce/fascelie/radis/lupin/tournessol<br><b>Densité : </b> 85 kg/ha<br><b>Destruction : </b> 26/01<br><b>Reliquats azotés : </b> apporteront entre 20 et 40 u d'azote mobilisable</p>"},    
         ];
 
-        // Generate mock data
-        categories.forEach(function (category, index) {
-            var baseTime = startTime;
-            for (var i = 0; i < dataCount; i++) {
-                var typeItem = types[Math.round(Math.random() * (types.length - 1))]; // type de culture
+        var baseTime = startTime;
+        var html = '';
+        rotationTest.forEach((item, index) => {
+            var startDate = new Date(baseTime);
+            var endDate = new Date(startDate);
+            endDate.setMonth(startDate.getMonth() + item.duration);
+            baseTime = endDate.valueOf();
+            data.push({
+                name: item.name,
+                value: [1, // Parcelle (index de la série)
+                        startDate.valueOf(), // Date de début
+                        endDate.valueOf(), // Date de fin
+                        item.duration, // Durée (mois)
+                        item.name // Nom
+                    ],
+                itemStyle: {
+                    color: item.color
+                }
+            });
 
-                var duration = Math.round(Math.random() * 5) + 1; // months
-
-                var startDate = new Date(baseTime);
-                var endDate = new Date(startDate);
-                endDate.setMonth(startDate.getMonth() + duration);
-                baseTime = endDate.valueOf();
-                data.push({
-                    name: typeItem.name,
-                    value: [index, startDate.valueOf(), endDate.valueOf(), duration, typeItem.name],
-                    itemStyle: {
-                        color: typeItem.color
-                    }
-                });
-            }
+            html += '<h4 id="rotation_'+ index +'">' + item.name + '</h4>' + item.description;
         });
+        
+        $('#itk_text').html(html);
 
         function renderItem(params, api) {
             var categoryIndex = api.value(0);
@@ -201,12 +206,13 @@
 
 
         myChart.on('click', function (params) {
-            const element = document.getElementById(params.name);
+            
+            const element = document.getElementById('rotation_' + params.dataIndex);
 
             element.scrollIntoView();
             
 
-            console.log(params.name);
+            
         });
 
 
