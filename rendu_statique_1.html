@@ -17,10 +17,18 @@
         #itk_text {
             display: inline-block;
             font-size: 80%;
-            border: 1px black solid;
             width: 20%;
             height: 450px;
-            overflow: scroll
+            overflow-y: scroll;
+            scroll-behavior: smooth;
+            padding: 3px;
+        }
+
+        div.rotation_item {
+            background-color: #f8f8fa;
+            border-left: #D98EA3 7px solid;
+            padding: 2px 13px;
+            margin: 12px 0;
         }
 
         #itk_chart {
@@ -33,7 +41,7 @@
 
 <body>
     <!-- Prepare a DOM with a defined width and height for ECharts -->
-    <div id="itk_text"></div>
+    <div id="itk_text"><div id="itk_text_content"></div></div>
     <div id="itk_chart"></div>
 
     <script type="text/javascript">
@@ -51,18 +59,39 @@
         var rotationTest = [
             {
                 name: "Betterave", color: "#ff96b0", duration: 8,
-                description: "<p><b>Tête de rotation</b><br><b>Pré-semis  : </b> Possibilité d'un couvert multi-espèces en aout n-1<br><b>Travail du sol  : </b> déchaumage pour niveler le terrain et un binage en Juin à 1cm<br><b>Type de semoir  : </b> trois passages de strip-till<br><b>Date de semis  : </b> 22/03<br><b>Densité de semis  : </b> 125mil graines/ha<br><b>Plantes compagnes : </b> avoine/orge fermière, 20kg/ha</p>",
+                description: "Tête de rotation",
+                attributes: [
+                	{'name': "Pré-semis", 'value': "Possibilité d'un couvert multi-espèces en aout n-1"},
+                	{'name': "Travail du sol", 'value': "déchaumage pour niveler le terrain et un binage en Juin à 1cm"},
+                	{'name': "Type de semoir", 'value': "trois passages de strip-till"},
+                	{'name': "Date de semis", 'value': "22/03"},
+                	{'name': "Densité de semis", 'value': "125mil graines/ha"},
+                	{'name': "Plantes compagnes", 'value': "avoine/orge fermière, 20kg/ha"}
+                ],
                 interventions: [
                     {day: 5, name: "Semis", type: "Autres interventions", description: "Semis des betteraves à J + 5"}
                 ]
             },
             {
                 name: "Blé tendre", color: "#edcc7d", duration: 11,
-                description: "<p><b>Pré-semis :</b> désinfection du grain au vinaigre (1L/100kg)<br><b>Travail du sol : </b> aucun, semis direct pur<br><b>Type de semoir  : </b> semoir à dents<br><b>Date de semis  : </b>  11/10<br><b>Densité de semis  : </b> 125kg/ha<br><b>Plantes compagnes : </b> orge fermière, 20kg/ha (implantation semoir à disque)</p>"
+                attributes: [
+                	{'name': "Pré-semis", 'value': "désinfection du grain au vinaigre (1L/100kg)"},
+                	{'name': "Travail du sol", 'value': "aucun, semis direct pur"},
+                	{'name': "Type de semoir", 'value': "semoir à dents"},
+                	{'name': "Date de semis", 'value': "11/10"},
+                	{'name': "Densité de semis", 'value': "125kg/ha"},
+                	{'name': "Plantes compagnes", 'value': "orge fermière, 20kg/ha (implantation semoir à disque)"},
+                ]
             },
             {
                 name: "Colza", color: "#ffff4b", duration: 12,
-                description: "<p><i>Travail du sol: aucun, semis direct pur, fissuration après récolte, avant le blé</i><br><b>Type de semoir  : </b> semoir à dents<br><b>Date de semis  : </b>  26/08<br><b>Densité de semis  : </b> 2kg/ha<br><b>Plantes compagnes : </b> feverole fermière, 60 pieds au m2</p>",
+                description: "Travail du sol: aucun, semis direct pur, fissuration après récolte, avant le blé",
+                attributes: [
+                	{'name': "Type de semoir", 'value': "semoir à dents"},
+                	{'name': "Date de semis", 'value': "26/08"},
+                	{'name': "Densité de semis", 'value': "2kg/ha"},
+                	{'name': "Plantes compagnes", 'value': "feverole fermière, 60 pieds au m2"},
+                ],                
                 interventions: [
                     {day: -20, name: "Labour", type: "Autres interventions", description: ""},
                     {day: -15, name: "Travail superficiel", type: "Autres interventions", description: ""},
@@ -94,11 +123,21 @@
             },
             {
                 name: "Couvert", color: "#93c47d", duration: 6,
-                description: "<p><i>Couvert d'interculture longue pour casser le cycle des graminées</i><br><b>Composition : </b> trefle facscelie vesce, feverple,pois, lupin tournessol, avoine<br><b>Destruction : </b> rouleau faca + gel<br><b>Densité : </b> 250 pieds/m2</p>"
+                description: "Couvert d'interculture longue pour casser le cycle des graminées",
+                attributes: [
+                	{'name': "Composition", 'value': "trefle facscelie vesce, feverple,pois, lupin tournessol, avoine"},
+                	{'name': "Destruction", 'value': "rouleau faca + gel"},
+                	{'name': "Densité", 'value': "250 pieds/m²"},
+                ],
             },
             {
                 name: "Lin textile", color: "#efefef", duration: 7,
-                description: "<p><b>Semis :</b> Mars<br><b>Type de semoir : </b> semoir à disques <br>Très sensible à la compaction donc éloigné le plus possible de la récolte de betterave<br>Apport de BRF après lin, environ 10t/ha </p>"
+                attributes: [
+                	{'name': "Semis", 'value': "Mars"},
+                	{'name': "Type de semoir", 'value': "semoir à disques"},
+                	{'name': "Note", 'value': "Très sensible à la compaction donc éloigné le plus possible de la récolte de betterave"},
+                	{'name': "Autre", 'value': "Apport de BRF après lin, environ 10t/ha"},
+                ],
             },
             {
                 name: "Blé tendre", color: "#edcc7d", duration: 11,
@@ -106,12 +145,21 @@
             },
             {
                 name: "Couvert", color: "#93c47d", duration: 4,
-                description: "<p><i>Couvert d'interculture court</i><br><b>Date de semis : </b> 28/09 ou plus tôt<br><b>Composition : </b> avoine/pois/feverole/vesce/fascelie/radis/lupin/tournessol<br><b>Densité : </b> 85 kg/ha<br><b>Destruction : </b> 26/01<br><b>Reliquats azotés : </b> apporteront entre 20 et 40 u d'azote mobilisable</p>"
+                description: "Couvert d'interculture court",
+                attributes: [
+                	{'name': "Date de semis", 'value': "28/09 ou plus tôt"},
+                	{'name': "Composition", 'value': "avoine/pois/feverole/vesce/fascelie/radis/lupin/tournessol"},
+                	{'name': "Densité", 'value': "85 kg/ha"},
+                	{'name': "Destruction", 'value': "26/01"},
+                	{'name': "Reliquats azotés", 'value': "apporteront entre 20 et 40 u d'azote mobilisable"},
+                ],
             },
         ];
 
         var baseTime = startTime;
         var html = '';
+        let itemIndex = 0;
+
         rotationTest.forEach((item, index) => {
             var startDate = new Date(baseTime);
             var endDate = new Date(startDate);
@@ -124,14 +172,20 @@
                     endDate.valueOf(), // Date de fin
                     item.name, // Nom
                     'rotation_item', // Type
-                    item.duration // Durée (mois)                    
+                    item.duration, // Durée (mois)                    
+                    'rotation_' + itemIndex
                 ],
                 itemStyle: {
                     color: item.color
                 }
             });
 
-            html += '<h4 id="rotation_' + index + '">' + item.name + '</h4>' + item.description;
+            html += '<div id="rotation_' + itemIndex + '" class="rotation_item" style="border-color: '+item.color+'">' 
+                + '<h4>' + item.name + '</h4>' 
+                + (item.description ?? '')
+                + (item.attributes ? item.attributes.map((attribute) => { return '<p><dt>' + attribute.name + '</dt><dd>' +  attribute.value + '</dd></p>' }).join('') : '');
+            
+            itemIndex++;
 
             if (item.interventions) {
                 html += '<h5>Interventions :</h5><ul>';
@@ -152,15 +206,18 @@
                             color: item.color
                         }
                     });
+
+                    itemIndex++;
+
                 });
 
                 html += '</ul>';
-
             }
 
+            html += '</div>';
         });
 
-        $('#itk_text').html(html);
+        $('#itk_text_content').html(html);
 
         function renderItem(params, api) {
             var categoryIndex = api.value(0);
@@ -196,6 +253,9 @@
                     [start[0] + arrowWidth, start[1]],
                 ];
 
+                // See this for clip regions : https://stackoverflow.com/questions/71735038/setting-border-and-label-in-custom-apache-echarts
+                // https://stackoverflow.com/questions/73653691/how-to-draw-a-custom-triangle-in-renderitem-in-apache-echarts
+                
                 return (
                     {
                         type: 'polygon',
@@ -204,6 +264,14 @@
                             points: points
                         },
                         style: api.style(),
+                        emphasis: {
+
+                            style: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        },
                         textConfig: {
                             position: [arrowWidth + 10, height / 2 - 5]
                         },
@@ -336,18 +404,47 @@
 
         console.log(option);
 
-
         myChart.on('click', function (params) {
-
-            const element = document.getElementById('rotation_' + params.dataIndex);
+            const element = document.getElementById(params.value[6]);
 
             element.scrollIntoView();
-
-
-
         });
 
+        let currentFocusIndex = null;
 
+        $('#itk_text').on( "scroll", function() {
+
+            // Get the item which center is the closest to the center of the div. 
+            // If we are close to the top or bottom of the list, consider the top or the bottom
+
+            let scrollTop = $('#itk_text').scrollTop();
+            let totalHeight = $('#itk_text_content').height() - $('#itk_text').height();
+            let center = $('#itk_text_content').height() * scrollTop / totalHeight;
+                                
+            let items = [];
+            $('#itk_text .rotation_item').each((i, element) => {
+                var element = $(element)[0];
+                let rect = element.getBoundingClientRect();
+
+                let middle = element.offsetTop + rect.height / 2;
+                
+                items.push({'id': element.id, 'middle': middle, 'distance': Math.abs(middle - center), 'text': element.firstChild.textContent});
+            });
+
+            items.sort((a, b) => {
+                return a.distance - b.distance;
+            });
+
+            let focusedItem = items[0].id;
+            let newFocusIndex = focusedItem.replace('rotation_', '');
+            
+            if (currentFocusIndex)
+                myChart.dispatchAction({ type: 'downplay', dataIndex: currentFocusIndex })
+            
+            currentFocusIndex = newFocusIndex;
+
+            myChart.dispatchAction({ type: 'highlight', dataIndex: newFocusIndex });            
+        } );
     </script>
 </body>
 
