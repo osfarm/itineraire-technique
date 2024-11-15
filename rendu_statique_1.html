@@ -24,11 +24,17 @@
             padding: 3px;
         }
 
+        div.highlighted {
+            box-shadow: 0px 4px 4px 0px var(--UI-Shadow, rgba(17, 36, 69, 0.16)), 0px 1px 16px 0px var(--UI-Shadow, rgba(17, 36, 69, 0.16));
+        }
+
         div.rotation_item {
             background-color: #f8f8fa;
-            border-left: #D98EA3 7px solid;
+            border-left: #FFFFFF 14px solid;
+            border-radius: 7px;
             padding: 2px 13px;
             margin: 12px 0;
+            overflow-x: hidden;
         }
 
         #itk_chart {
@@ -256,14 +262,12 @@
 
                 var defaultStyle = api.style();
                 api.styleEmphasis({});
-                
+
                 const itemLabelWidth = echarts.format.getTextRect(name).width + textMargin * 2;
                 const itemWidth = end[0] - start[0];
 
                 if (itemLabelWidth > itemWidth)
-                    name = '';
-
-                console.log(itemLabelWidth, itemWidth);
+                    name = ''; // Hide the label as we won't have the room to show it
 
                 // See this for clip regions : https://stackoverflow.com/questions/71735038/setting-border-and-label-in-custom-apache-echarts
                 // https://stackoverflow.com/questions/73653691/how-to-draw-a-custom-triangle-in-renderitem-in-apache-echarts
@@ -282,7 +286,7 @@
                                 shadowOffsetX: 1,
                                 shadowOffsetY: 2,
                                 shadowColor: 'rgba(0, 0, 0, 0.2)'
-                            }
+                            },
                         },
                         textConfig: {
                             position: [arrowWidth + textMargin, height / 2 - 5]
@@ -408,16 +412,26 @@
         myChart.setOption(option);
 
         console.log(option);
+        let currentFocusIndex = null;
+        let noFocusUpdate = false;
 
         myChart.on('click', function (params) {
-            const element = document.getElementById(params.value[6]);
+            const element = $("#" + params.value[6] + " h4");
+            noFocusUpdate = true;
 
-            element.scrollIntoView();
+            setTimeout(() => {
+                noFocusUpdate = false;
+            }, 1500);
+            
+            element[0].scrollIntoView({block: "center"});
+            highlightItem(params.dataIndex);
         });
 
-        let currentFocusIndex = null;
 
         $('#itk_text').on( "scroll", function() {
+
+            if (noFocusUpdate)
+                return;
 
             // Get the item which center is the closest to the center of the div. 
             // If we are close to the top or bottom of the list, consider the top or the bottom
@@ -442,14 +456,21 @@
 
             let focusedItem = items[0].id;
             let newFocusIndex = focusedItem.replace('rotation_', '');
-            
-            if (currentFocusIndex)
-                myChart.dispatchAction({ type: 'downplay', dataIndex: currentFocusIndex })
-            
-            currentFocusIndex = newFocusIndex;
-
-            myChart.dispatchAction({ type: 'highlight', dataIndex: newFocusIndex });            
+                
+            highlightItem(newFocusIndex);
         } );
+
+        function highlightItem(index) {
+            if (currentFocusIndex && currentFocusIndex != index) {
+                myChart.dispatchAction({ type: 'downplay', dataIndex: currentFocusIndex });
+            }
+
+            currentFocusIndex = index;
+            myChart.dispatchAction({ type: 'highlight', dataIndex: index }); 
+
+            $(".rotation_item").removeClass('highlighted');
+            $("#rotation_" + index).addClass('highlighted');
+        }
     </script>
 </body>
 
