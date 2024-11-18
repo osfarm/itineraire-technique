@@ -25,7 +25,8 @@
         }
 
         div.highlighted {
-            box-shadow: 0px 4px 4px 0px var(--UI-Shadow, rgba(17, 36, 69, 0.16)), 0px 1px 16px 0px var(--UI-Shadow, rgba(17, 36, 69, 0.16));
+            box-shadow: 0px 4px 4px 0px var(--UI-Shadow, rgba(17, 36, 69, 0.16)),
+                        0px 1px 16px 0px var(--UI-Shadow, rgba(17, 36, 69, 0.16));
         }
 
         div.rotation_item {
@@ -57,6 +58,7 @@
         // Specify the configuration items and data for the chart
         var data = [];
         var dataCount = 10;
+        var barHeight = 100;
         var startDate = new Date().setFullYear(2018);
         var startTime = startDate.valueOf();
 
@@ -199,6 +201,7 @@
                     let intDate = new Date(startDate.valueOf() + intervention.day * 86400000);
 
                     html += '<li>'+intervention.name +  ' (' + intervention.day + ' jours - ' + intDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric'}) + ') : ' + intervention.description+ '</li>';
+                    
                     data.push({
                         name: intervention.name,
                         value: [intervention.type == 'Protection des plantes' ? 2 : 0, // Parcelle (index de la série)
@@ -233,7 +236,7 @@
             var type = api.value(4);
             const textMargin = 10;
 
-            var height = api.size([0, 1])[1] * 0.6;
+            const style = api.style();
 
             if (type == 'rotation_item') {
 
@@ -248,8 +251,9 @@
                 // params.coordSys.width, // largeur du canva (après zoom)
                 // params.coordSys.height // hauteur du canva (après zoom)
 
-                let arrowWidth = height / 3;
-                let border = 3;
+                const height = barHeight - 40; // 20 px margin top and bottom
+                const arrowWidth = height / 3;
+                const border = 3;
 
                 var points = [
                     [start[0], start[1] - height / 2],
@@ -260,7 +264,6 @@
                     [start[0] + arrowWidth, start[1]],
                 ];
 
-                var defaultStyle = api.style();
                 api.styleEmphasis({});
 
                 const itemLabelWidth = echarts.format.getTextRect(name).width + textMargin * 2;
@@ -279,7 +282,7 @@
                         shape: {
                             points: points
                         },
-                        style: defaultStyle,
+                        style: style,
                         emphasis: {                            
                             style: {
                                 shadowBlur: 4,
@@ -305,20 +308,21 @@
 
             if (type == 'intervention_bottom') {
 
-                let border = 3;
-                const style = api.style();
+                const height = 20;
+                const border = 3;
+
                 return (
                     {
                         type: 'rect',
                         transition: ['shape'],
                         shape: {
                             x: start[0],
-                            y: start[1],
+                            y: start[1] + (params.dataIndex % 3) * (height + 10) - (barHeight / 2),
                             width: 100,
-                            height: height - 20
+                            height: height
                         },
                         style: api.style({
-                            fill: 'transparent',
+                            fill: style.fill,
                             stroke: style.fill,
                             textFill: '#000',
                         }),
@@ -357,7 +361,7 @@
                     type: 'slider',
                     filterMode: 'weakFilter',
                     showDataShadow: false,
-                    top: 400,
+                    top: barHeight * 3 + 100,
                     labelFormatter: ''
                 },
                 {
@@ -367,7 +371,7 @@
             ],
 
             grid: {
-                height: 300
+                height: barHeight * 3
             },
 
             xAxis: {
@@ -426,7 +430,6 @@
             element[0].scrollIntoView({block: "center"});
             highlightItem(params.dataIndex);
         });
-
 
         $('#itk_text').on( "scroll", function() {
 
