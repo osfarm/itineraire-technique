@@ -38,6 +38,24 @@
             overflow-x: hidden;
         }
 
+        div.intervention {
+            background-color: #FFFFFF;
+            border-radius: 5px;
+            margin-bottom: 11px;
+            padding: 13px;
+        }
+        span.intervention_title {
+            font-weight: bold;
+        }
+        span.intervention_date {
+            color : #707070;
+            background-color: #F0F3F5;
+            float: right;
+        }
+        div.intervention_description {
+            margin-top: 5px;
+        }
+
         #itk_chart {
             width: 78%;
             height: 450px;
@@ -200,11 +218,16 @@
             itemIndex++;
 
             if (item.interventions) {
-                html += '<h5>Interventions :</h5><ul>';
+                html += '<h5>Interventions</h5>';
                 item.interventions.forEach(intervention => {
-                    let intDate = new Date(startDate.valueOf() + intervention.day * 86400000);
-
-                    html += '<li>'+intervention.name +  ' (' + intervention.day + ' jours - ' + intDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric'}) + ') : ' + intervention.description+ '</li>';
+                    let intDate = new Date(startDate.valueOf() + intervention.day * 86400000).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric'});
+                    let days = intervention.day ;
+                    if (days >= 0)
+                        intDate += ' (J+' + days + ')';
+                    else 
+                        intDate += ' (J' + days + ')';
+                    
+                    html += '<div class="intervention"><span class="intervention_title">'+intervention.name + '</span><span class="intervention_date badge rounded-pill">' + intDate + '</span><div class="intervention_description">' + intervention.description+ '</div></div>';
                     
                     data.push({
                         name: intervention.name,
@@ -225,7 +248,7 @@
 
                 });
 
-                html += '</ul>';
+                
             }
 
             html += '</div>';
@@ -439,8 +462,12 @@
         option = {
             tooltip: {
                 formatter: function (params) {
-                    if (params.value[4] == 'rotation_item')
-                        return params.marker + params.name + ' : ' + params.value[5] + ' mois';
+                    if (params.value[4] == 'rotation_item') {
+                        let start = new Date(params.value[1]).toLocaleDateString('fr-FR', { month: 'short', year: '2-digit'});
+                        let end = new Date(params.value[2]).toLocaleDateString('fr-FR', { month: 'short', year: '2-digit'});
+
+                        return params.marker + params.name + ' : ' + params.value[5] + ' mois (' + start + ' ➜ ' + end + ')';
+                    }
                     else {
                         let interventionDate = new Date(params.value[1]);
                         const days = params.value[6];
