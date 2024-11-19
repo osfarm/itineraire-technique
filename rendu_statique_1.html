@@ -11,13 +11,14 @@
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.7/underscore-umd-min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
     <style>
         #itk_text {
-            display: inline-block;
             font-size: 80%;
-            width: 20%;
+            width: 100%;
             height: 450px;
             overflow-y: scroll;
             scroll-behavior: smooth;
@@ -27,13 +28,15 @@
         div.highlighted {
             box-shadow: 0px 4px 4px 0px var(--UI-Shadow, rgba(17, 36, 69, 0.16)),
                         0px 1px 16px 0px var(--UI-Shadow, rgba(17, 36, 69, 0.16));
+            background-color: #F0F3F5;
+
         }
 
         div.rotation_item {
-            background-color: #f8f8fa;
+            background-color: #F8FAFC;
             border-left: #FFFFFF 14px solid;
             border-radius: 7px;
-            padding: 2px 13px;
+            padding: 13px;
             margin: 12px 0;
             overflow-x: hidden;
         }
@@ -57,17 +60,20 @@
         }
 
         #itk_chart {
-            width: 78%;
+            width: 100%;
             height: 450px;
             display: inline-block;
         }
     </style>
 </head>
 
-<body>
-    <!-- Prepare a DOM with a defined width and height for ECharts -->
-    <div id="itk_text"><div id="itk_text_content"></div></div>
-    <div id="itk_chart"></div>
+<body>    
+    <div class="container">
+        <div class="row">
+          <div class="col col-12 col-lg-4"><div id="itk_text"><div id="itk_text_content"></div></div></div>
+          <div class="col col-12 col-lg-8"><div id="itk_chart" class="charts"></div></div>
+        </div>
+    </div>
 
     <script type="text/javascript">
         // Initialize the echarts instance based on the prepared dom
@@ -132,7 +138,7 @@
                     {day: 0, name: "Semis", type: "Protection des plantes", description: "Protection des plantes - Anti-limaces (4 kg)"},
                     {day: 30, name: "Pulverisation", type: "Protection des plantes", description: "Protection des plantes - Sweet Home (0,3 l)"},
                     {day: 120, name: "Fertilisation", type: "Autres interventions", description: "Fertilisation - ammonitrate_33 (178 kg)"},
-                    {day: 150, name: "Fertilisation", type: "Autres interventions", description: "Fertilisation - ammonium_sulphate (90 kg)"},
+                    {day: 150, name: "Fertilisation", type: "Autres interventions", description: "Fertilisation - ammonium_sulphate (90 kg)", important: true},
                     {day: 165, name: "Pulverisation", type: "Protection des plantes", description: "Protection des plantes - Boravi Wg (1 kg)"},
                     {day: 180, name: "Fertilisation", type: "Autres interventions", description: "Fertilisation - ammonitrate_33 (178 kg)"},
                     {day: 210, name: "Pulverisation", type: "Protection des plantes", description: "Protection des plantes - Elifor (0,5 l)"},
@@ -227,14 +233,22 @@
                     else 
                         intDate += ' (J' + days + ')';
                     
-                    html += '<div class="intervention"><span class="intervention_title">'+intervention.name + '</span><span class="intervention_date badge rounded-pill">' + intDate + '</span><div class="intervention_description">' + intervention.description+ '</div></div>';
+                    let title = intervention.name;
+
+                    if (intervention.important === true)
+                        title = '<i class="fa fa-exclamation-circle" aria-hidden="true" style="color: #ff9a1c"></i> ' + title;
+
+                    html += '<div class="intervention"><span class="intervention_title">'+ title+ '</span>' 
+                          + '<span class="intervention_date badge rounded-pill">' + intDate + '</span>' 
+                          + '<div class="intervention_description">' + intervention.description+ '</div></div>';
                     
                     data.push({
                         name: intervention.name,
-                        value: [intervention.type == 'Protection des plantes' ? 2 : 0, // Parcelle (index de la série)
+                        value: [
+                            intervention.type == 'Protection des plantes' ? 2 : 0, // Parcelle (index de la série)
                             startDate.valueOf() + intervention.day * 86400000, // Date de début (ms)
                             startDate.valueOf() + (intervention.day + 1) * 86400000, // Date de début (ms)
-                            intervention.name, // Nom
+                            intervention.important === true ? intervention.name + ' 🛈' : intervention.name, // Nom
                             intervention.type == 'Protection des plantes' ? 'intervention_top' : 'intervention_bottom', // Type
                             1,
                             intervention.day
@@ -248,7 +262,6 @@
 
                 });
 
-                
             }
 
             html += '</div>';
@@ -272,7 +285,6 @@
 
             if (params.context.rendered == undefined) {
                 // Start of a new rendering round
-                console.log("New round");
                 maxXPositions = new Map();
 
                 for (let catIndex = 0; catIndex < 3; catIndex++) {
@@ -605,6 +617,15 @@
             $(".rotation_item").removeClass('highlighted');
             $("#rotation_" + index).addClass('highlighted');
         }
+
+        // resize all charts when the windows is resized
+        $(window).on('resize', _.debounce(function() {
+            $(".charts").each(function(){
+                var id = $(this).attr('_echarts_instance_');
+                window.echarts.getInstanceById(id).resize();
+            });
+        }, 500));
+
     </script>
 </body>
 
