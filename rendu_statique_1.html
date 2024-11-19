@@ -92,7 +92,7 @@
                 ]
             },
             {
-                name: "Colza", color: "#ffff4b", duration: 12,
+                name: "Colza", color: "#ebe733", duration: 12,
                 description: "Travail du sol: aucun, semis direct pur, fissuration après récolte, avant le blé",
                 attributes: [
                 	{'name': "Type de semoir", 'value': "semoir à dents"},
@@ -228,6 +228,8 @@
 
         $('#itk_text_content').html(html);
 
+        let maxXPositions = new Map();
+
         function renderItem(params, api) {
             var categoryIndex = api.value(0);
             var start = api.coord([api.value(1), categoryIndex]);
@@ -238,18 +240,32 @@
 
             const style = api.style();
 
+            if (params.context.rendered == undefined) {
+                // Start of a new rendering round
+                console.log("New round");
+                maxXPositions = new Map();
+
+                for (let catIndex = 0; catIndex < 3; catIndex++) {
+                    for (let track = 0; track < 3; track++) {
+                        maxXPositions.set('track_left_' + catIndex + '_' + track, params.coordSys.width);
+                    }
+                }
+            }
+
+            params.context.rendered = true;
+                            
             if (type == 'rotation_item') {
 
-                // start[0] // abscisse gauche de l'élément
+                // start[0] // abscisse gauche de l'élément (après zoom)
                 // start[1] // ordonnée gauche de l'élément
-                // end[0] // abscisse droite de l'élément
+                // end[0] // abscisse droite de l'élément (après zoom)
                 // end[1] // ordonnée droite de l'élément
                 // height // Hauteur de l'élément
 
-                // params.coordSys.x // début du canva (après zoom)
-                // params.coordSys.y // début du canva (après zoom)
-                // params.coordSys.width, // largeur du canva (après zoom)
-                // params.coordSys.height // hauteur du canva (après zoom)
+                // params.coordSys.x // début du canva
+                // params.coordSys.y // début du canva
+                // params.coordSys.width, // largeur du canva
+                // params.coordSys.height // hauteur du canva
 
                 const height = barHeight - 40; // 20 px margin top and bottom
                 const arrowWidth = height / 3;
@@ -310,6 +326,49 @@
 
                 const height = 20;
                 const border = 3;
+                const margin = 10;
+
+                // Maintain a list of max x for each row. If the max x is further right than the label we try to push,
+                // use another row. If for all rows the space is taken, just drop this item
+
+                let trackToUse = null;
+                const itemLabelWidth = echarts.format.getTextRect(name).width + textMargin * 2;
+
+                for (let track = 0; track < 3; track++) {
+                    if (!maxXPositions.has('track_right_' + categoryIndex + '_' + track)) {
+                        // Situation where the track is empty
+                        trackToUse = track;
+                        break;                        
+                    }
+
+                    let trackLeft = maxXPositions.get('track_left_' + categoryIndex + '_' + track);
+                    if (trackLeft > (start[0] + itemLabelWidth)) {
+                        // Situation where the drawing has started right of the current element
+                        trackToUse = track;
+                        break;
+                    }
+
+                    let trackRight = maxXPositions.get('track_right_' + categoryIndex + '_' + track);
+                    if (trackRight < start[0]) {
+                        // Situation where the last painted element is sufficiently far on the left
+                        trackToUse = track;
+                        break;
+                    }
+                }
+
+                if (trackToUse == null)
+                    return null;
+               
+                let currentRight = maxXPositions.get('track_right_' + categoryIndex + '_' + trackToUse);
+                if (currentRight == undefined || currentRight < start[0] + itemLabelWidth)
+                    maxXPositions.set('track_right_' + categoryIndex + '_' + trackToUse, start[0] + itemLabelWidth);
+
+                let currentLeft = maxXPositions.get('track_left_' + categoryIndex + '_' + trackToUse);
+                if (currentLeft > start[0])
+                    maxXPositions.set('track_left_' + categoryIndex + '_' + trackToUse, start[0]);
+
+                // A nicer solution could be to draw large items in a reduced format until there is enough space for 
+                // drawing them fully. Unfortunately that would require a two pass drawing which does not exist with Echarts ?
 
                 return (
                     {
@@ -317,8 +376,8 @@
                         transition: ['shape'],
                         shape: {
                             x: start[0],
-                            y: start[1] + (params.dataIndex % 3) * (height + 10) - (barHeight / 2),
-                            width: 100,
+                            y: margin + start[1] + trackToUse * (height + margin) - (barHeight / 2),
+                            width: itemLabelWidth,
                             height: height
                         },
                         style: api.style({
@@ -327,7 +386,7 @@
                             textFill: '#000',
                         }),
                         textConfig: {
-                            position: [0, 5]
+                            position: ["5px", "5px"]
                         },
                         textContent: {
                             style: {
