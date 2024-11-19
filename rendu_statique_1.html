@@ -29,7 +29,6 @@
             box-shadow: 0px 4px 4px 0px var(--UI-Shadow, rgba(17, 36, 69, 0.16)),
                         0px 1px 16px 0px var(--UI-Shadow, rgba(17, 36, 69, 0.16));
             background-color: #F0F3F5;
-
         }
 
         div.rotation_item {
@@ -46,7 +45,9 @@
             border-radius: 5px;
             margin-bottom: 11px;
             padding: 13px;
+            cursor: pointer;
         }
+
         span.intervention_title {
             font-weight: bold;
         }
@@ -68,7 +69,7 @@
 </head>
 
 <body>    
-    <div class="container">
+    <div class="container_fluid">
         <div class="row">
           <div class="col col-12 col-lg-4"><div id="itk_text"><div id="itk_text_content"></div></div></div>
           <div class="col col-12 col-lg-8"><div id="itk_chart" class="charts"></div></div>
@@ -203,13 +204,13 @@
             baseTime = endDate.valueOf();
             data.push({
                 name: item.name,
-                value: [1, // Parcelle (index de la série)
+                value: [
+                    1, // Parcelle (index de la série)
                     startDate.valueOf(), // Date de début
                     endDate.valueOf(), // Date de fin
                     item.name, // Nom
                     'rotation_item', // Type
-                    item.duration, // Durée (mois)                    
-                    'rotation_' + itemIndex
+                    item.duration // Durée (mois)
                 ],
                 itemStyle: {
                     color: item.color
@@ -225,7 +226,7 @@
 
             if (item.interventions) {
                 html += '<h5>Interventions</h5>';
-                item.interventions.forEach(intervention => {
+                item.interventions.forEach((intervention) => {
                     let intDate = new Date(startDate.valueOf() + intervention.day * 86400000).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric'});
                     let days = intervention.day ;
                     if (days >= 0)
@@ -238,7 +239,7 @@
                     if (intervention.important === true)
                         title = '<i class="fa fa-exclamation-circle" aria-hidden="true" style="color: #ff9a1c"></i> ' + title;
 
-                    html += '<div class="intervention"><span class="intervention_title">'+ title+ '</span>' 
+                    html += '<div id="rotation_' + itemIndex + '" class="intervention"><span class="intervention_title">'+ title+ '</span>' 
                           + '<span class="intervention_date badge rounded-pill">' + intDate + '</span>' 
                           + '<div class="intervention_description">' + intervention.description+ '</div></div>';
                     
@@ -295,7 +296,10 @@
             }
 
             params.context.rendered = true;
-                            
+            
+            // Remove the default emphasis style
+            api.styleEmphasis({});
+
             if (type == 'rotation_item') {
 
                 // start[0] // abscisse gauche de l'élément (après zoom)
@@ -322,8 +326,6 @@
                     [x, y + height / 2],
                     [x + arrowWidth, y],
                 ];
-
-                api.styleEmphasis({});
 
                 const itemLabelWidth = echarts.format.getTextRect(name).width + textMargin * 2;
                 const itemWidth = end[0] - x;
@@ -453,6 +455,14 @@
                             stroke: style.fill,
                             textFill: '#000',
                         }),
+                        emphasis: {                            
+                            style: {
+                                shadowBlur: 4,
+                                shadowOffsetX: 1,
+                                shadowOffsetY: 2,
+                                shadowColor: 'rgba(0, 0, 0, 0.2)'
+                            },
+                        },                        
                         textConfig: {
                             position: textPosition
                         },
@@ -563,7 +573,10 @@
         let noFocusUpdate = false;
 
         myChart.on('click', function (params) {
-            const element = $("#" + params.value[6] + " h4");
+            let element = $("#rotation_" + params.dataIndex + " h4");
+            if (element.length == 0)
+                element = $("#rotation_" + params.dataIndex);
+
             noFocusUpdate = true;
 
             setTimeout(() => {
@@ -606,6 +619,14 @@
             highlightItem(newFocusIndex);
         } );
 
+        $(".intervention").on('click', function() {
+
+            let focusedItem = this.id;
+            let newFocusIndex = focusedItem.replace('rotation_', '');
+                
+            highlightItem(newFocusIndex);
+        } );
+
         function highlightItem(index) {
             if (currentFocusIndex && currentFocusIndex != index) {
                 myChart.dispatchAction({ type: 'downplay', dataIndex: currentFocusIndex });
@@ -615,6 +636,7 @@
             myChart.dispatchAction({ type: 'highlight', dataIndex: index }); 
 
             $(".rotation_item").removeClass('highlighted');
+            $(".intervention").removeClass('highlighted');
             $("#rotation_" + index).addClass('highlighted');
         }
 
