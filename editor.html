@@ -95,8 +95,10 @@
                             <input type="number" id="interventionDay" class="form-control" placeholder="Day" value="5">
                         </div>
                         <div class="col">
-                            <input type="text" id="interventionType" class="form-control" placeholder="Type"
-                                value="Manuelle">
+                            <select id="interventionType" class="form-select" aria-label="Type">
+                                <option value="Autres interventions" selected>Autres interventions</option>
+                                <option value="Protection des plantes">Protection des plantes</option>
+                            </select>
                         </div>
                         <div class="col">
                             <textarea id="interventionDescription" class="form-control"
@@ -155,9 +157,18 @@
             let attribute = new Attribute(key, value);
             this.attributes.push(attribute);
         }
+
+        this.removeAttribute = function removeAttribute(attributeId) {
+            this.attributes = this.attributes.filter(function (attribute) { return attribute.id != attributeId });
+        }
+
+        this.removeIntervention = function removeIntervention(interventionId) {
+            this.interventions = this.interventions.filter(function (intervention) { return intervention.id != interventionId });
+        }
     }
 
     function Intervention(day, name, type, description) {
+        this.id = crypto.randomUUID();
         this.day = day;
         this.name = name;
         this.type = type;
@@ -165,6 +176,7 @@
     }
 
     function Attribute(key, value) {
+        this.id = crypto.randomUUID();
         this.name = key;
         this.value = value;
     }
@@ -182,7 +194,7 @@
         //select last created crop to be editable
         selectedCrop = crop;
 
-        refreshCropsTable();
+        refreshAllTables();
     }
 
     function addAttributeClickEvent() {
@@ -190,7 +202,7 @@
         let value = document.getElementById("attributeValue").value;
 
         selectedCrop.addAttribute(key, value);
-        refreshAttributesTable();
+        refreshAllTables();
     }
 
     function addInterventionClickEvent() {
@@ -200,63 +212,111 @@
         let description = document.getElementById("interventionDescription").value;
 
         selectedCrop.addIntervention(day, name, type, description);
-        refreshInterventionsTable();
+        refreshAllTables();
     }
 
     function refreshAttributesTable() {
-        let table = document.getElementById("attributesTable");
-        let selectedCropAttributes = selectedCrop.attributes;
-
         $("#attributesTable tr").remove();
-        selectedCropAttributes.forEach(function (item, i) {
-            console.log(item);
-            var newRow = table.insertRow(-1);
-            cellKey = newRow.insertCell(0);
-            cellKey.appendChild(document.createTextNode(selectedCropAttributes[i].name));
-            cellValue = newRow.insertCell(1);
-            cellValue.appendChild(document.createTextNode(selectedCropAttributes[i].value));
-        });
 
-        renderChart();
+        if (selectedCrop != null) {
+            let attributesTable = document.getElementById("attributesTable");
+            let selectedCropAttributes = selectedCrop.attributes;
+
+            selectedCropAttributes.forEach(function (attribute) {
+                let newRow = attributesTable.insertRow(-1);
+
+                let cellKey = newRow.insertCell(0);
+                cellKey.appendChild(document.createTextNode(attribute.name));
+
+                let cellValue = newRow.insertCell(1);
+                cellValue.appendChild(document.createTextNode(attribute.value));
+
+                let cellAction = newRow.insertCell(2);
+                cellAction.appendChild(createDeleteButton(attribute.id, deleteCropAttribute));
+            });
+        }
     }
 
     function refreshInterventionsTable() {
-        let table = document.getElementById("interventionsTable");
-        let selectedCropInterventions = selectedCrop.interventions;
-
         $("#interventionsTable tr").remove();
-        selectedCropInterventions.forEach(function (item, i) {
-            console.log(item);
-            var newRow = table.insertRow(-1);
-            cellKey = newRow.insertCell(0);
-            cellKey.appendChild(document.createTextNode(selectedCropInterventions[i].name));
-        });
 
-        renderChart();
+        if (selectedCrop != null) {
+            let interventionsTable = document.getElementById("interventionsTable");
+            let selectedCropInterventions = selectedCrop.interventions;
+
+            selectedCropInterventions.forEach(function (intervention) {
+                let newRow = interventionsTable.insertRow(-1);
+
+                let cellKey = newRow.insertCell(0);
+                cellKey.appendChild(document.createTextNode(intervention.name));
+
+                let cellAction = newRow.insertCell(1);
+                cellAction.appendChild(createDeleteButton(intervention.id, deleteCropIntervention));
+            });
+        }
     }
 
     function refreshCropsTable() {
-        let table = document.getElementById("cropsTable");
-
         $("#cropsTable tr").remove();
-        crops.forEach(function (item, i) {
-            console.log(item);
-            var newRow = table.insertRow(-1);
-            cellKey = newRow.insertCell(0);
 
+        let cropsTable = document.getElementById("cropsTable");
+
+        crops.forEach(function (crop) {
+            let newRow = cropsTable.insertRow(-1);
+
+            let cellKey = newRow.insertCell(0);
             //set an id in the row to retrieve the object later
-            newRow.setAttribute("data-object", crops[i].id);
-            newRow.addEventListener("click", function () {
-                const dataObject = this.getAttribute("data-object");
-                selectedCrop = crops[dataObject];
-
-                refreshAttributesTable();
-                refreshInterventionsTable();
+            cellKey.setAttribute("data-object", crop.id);
+            cellKey.addEventListener("click", function () {
+                selectNewCrop(this.getAttribute("data-object"));
             });
+            cellKey.appendChild(document.createTextNode(crop.name));
 
-            cellKey.appendChild(document.createTextNode(crops[i].name));
+            let cellAction = newRow.insertCell(1);
+            cellAction.appendChild(createDeleteButton(crop.id, deleteCrop));
         });
+    }
 
+    function createDeleteButton(id, deleteAction) {
+        let button = document.createElement("button");
+        button.innerHTML = "X";
+        button.className = "w-100 btn btn-outline-primary"
+        button.onclick = function () {
+            deleteAction(id);
+        }
+        return button;
+    }
+
+    function deleteCropAttribute(id) {
+        selectedCrop.removeAttribute(id);
+        refreshAllTables();
+    }
+
+    function deleteCropIntervention(id) {
+        selectedCrop.removeIntervention(id);
+        refreshAllTables();
+    }
+
+    function deleteCrop(id) {
+        crops = crops.filter(function (crop) { return crop.id != id })
+
+        //avoid bug if last crop is deleted
+        if (crops.length == 0) {
+            selectNewCrop(null);
+        } else {
+            selectNewCrop(crops.slice(-1)[0].id);
+        }
+    }
+
+    function selectNewCrop(cropId) {
+        selectedCrop = crops.find(x => x.id == cropId);
+        refreshAllTables();
+    }
+
+    function refreshAllTables() {
+        refreshCropsTable();
+        refreshAttributesTable();
+        refreshInterventionsTable();
         renderChart();
     }
 
