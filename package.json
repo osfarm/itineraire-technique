@@ -1,0 +1,15 @@
+{
+  "name": "itineraire-technique",
+  "version": "0.0.1",
+  "description": "A visualisation tool to show agricultural technical itineraries based on Echarts",
+  "main": "editor.html",
+  "scripts": {
+    "build:scss": "sass --style=compressed scss/styles-editor.scss css/styles-editor.css && sass --style=compressed scss/styles-rendering.scss css/styles-rendering.css",
+    "watch:scss": "sass --watch scss/styles-editor.scss:css/styles-editor.css scss/styles-rendering.scss:css/styles-rendering.css",
+    "build": "npm run build:scss",
+    "start": "npm run watch:scss"
+  },
+  "devDependencies": {
+    "sass": "^1.85.1"
+  }
+}
