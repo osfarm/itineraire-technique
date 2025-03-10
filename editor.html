@@ -322,7 +322,25 @@
     }
 
     function renderChart() {
-        render(crops);
+        let renderer = new RotationRenderer();
+
+        // Add start date and end date for each rotation steps: 
+        var startDate = new Date();
+        startDate.setFullYear(2022);
+        startDate.setMonth(2);
+        startDate.setDate(1);
+
+        for (var i = 0; i < crops.length; i++) {
+            var step = crops[i];
+            step.startDate = new Date(startDate);
+            step.endDate = new Date(startDate);
+            step.endDate.setMonth(startDate.getMonth() + step.duration);
+
+            startDate = new Date(step.endDate);
+        }
+
+
+        renderer.render('itk_chart', 'itk_text', crops);
     }
 
 </script>
