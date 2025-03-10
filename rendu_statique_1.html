@@ -418,8 +418,13 @@
                 
                 const arrowWidth = 3;
                 const arrowHeight = 5;
+                
+                let arrowTop = y + 60;
+                let arrowBottom = y - 60;
+
                 y = margin + y + trackToUse * (height + margin) - (barHeight / 2);
 
+                
                 var points = [];
                 var textPosition = [];
 
@@ -430,13 +435,13 @@
                             [x + itemLabelWidth, y],
                             [x + itemLabelWidth, y + height],
                             [x + arrowWidth, y + height],
-                            [x, y + height + arrowHeight]
+                            [x, arrowTop]
                         ];
                 }
                 else {
-                    textPosition = [textMargin, textMargin + arrowHeight];
+                    textPosition = [textMargin, textMargin + y - arrowBottom];
                     points = [
-                        [x, y - arrowHeight],
+                        [x, arrowBottom],
                         [x + arrowWidth, y],
                         [x + itemLabelWidth, y],
                         [x + itemLabelWidth, y + height],
