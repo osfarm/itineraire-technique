@@ -28,46 +28,19 @@ class RotationRenderer {
         var html = this.buildHTML();
         $('#' + self.transcriptDivID + ' > div').html(html);
       
-        $('#' + self.transcriptDivID + " .collapse-button").on("click", function () {
-            $(this).parent().toggleClass('show-all');
+        $('#' + self.transcriptDivID + " .rotation_item").on("click", function () {
+            $(this).toggleClass('show-all');
         });
 
-        // Add a scroll event on the transcript to highlight the corresponding item in the chart
-        $('#' + self.transcriptDivID).on("scroll", function () {
-    
-            if (self.noFocusUpdate)
-                return;
-    
-            // Get the item which center is the closest to the center of the div. 
-            // If we are close to the top or bottom of the list, consider the top or the bottom
-    
-            let scrollTop = $(this).scrollTop();
-
-            let transcriptTextDiv = $(this).children().first();
-
-            let totalHeight = transcriptTextDiv.height() - $('#' + self.transcriptDivID).height();
-            let center = transcriptTextDiv.height() * scrollTop / totalHeight;
-    
-            let items = [];
-            $('#' + self.transcriptDivID + ' .rotation_item').each((i, element) => {
-                var element = $(element)[0];
-                let rect = element.getBoundingClientRect();
-    
-                let middle = element.offsetTop + rect.height / 2;
-    
-                items.push({ 'id': element.id, 'middle': middle, 'distance': Math.abs(middle - center), 'text': element.firstChild.textContent });
-            });
-    
-            items.sort((a, b) => {
-                return a.distance - b.distance;
-            });
-
-            self.highlightItem(items[0].id);
+        $('#' + self.transcriptDivID + " .rotation_item").on("mouseover", function () {
+            self.highlightItem(this.id);
         });
     
         // Add a click event on the transcript to scroll to the corresponding item in the chart
-        $(".intervention").on('click', function () {
+        $('#' + self.transcriptDivID + " .intervention").on('mouseover', function (e) {
             self.highlightItem(this.id);
+            e.stopPropagation();
+
         });
     
         // resize all charts when the windows is resized
@@ -117,8 +90,8 @@ class RotationRenderer {
                 self.noFocusUpdate = false;
             }, 1500);
     
-            element[0].scrollIntoView({ block: "center" });
-            
+            element[0].scrollIntoView({ block: "start" });
+
             $("#" + params.data.divId).toggleClass("show-all");
 
             self.highlightItem(params.data.divId);
