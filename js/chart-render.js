@@ -1,30 +1,39 @@
 
 class RotationRenderer {
-    constructor() { 
+    constructor(divID, transcriptDivID, rotationData) { 
         this.barHeight = 100;
         
         this.currentFocusIndex = null;
         this.noFocusUpdate = false;
 
         this.chart = null;
+
+        this.chartIndex = new Map();
+
+        this.data = rotationData;
+        
+        this.divID = divID;
+        this.transcriptDivID = transcriptDivID;
     }
- 
-    render(divID, transcriptDivID, rotationData, mode = 'horizontal') {
+
+    render(mode = 'horizontal') {
 
         let self = this;
 
         // Initialize the echarts instance based on the prepared dom
-        self.chart = echarts.init(document.getElementById(divID));
-    
-        if (mode == 'horizontal')
-            this.renderHorizontal(rotationData);
-        else
-            this.renderAsRotation(rotationData);
+        self.chart = echarts.init(document.getElementById(self.divID));
 
-        var html = this.buildHTML(rotationData);
-        $('#' + transcriptDivID + ' > div').html(html);
+        self.renderInternal(mode);
 
-        $('#' + transcriptDivID).on("scroll", function () {
+        console.log(this.data);
+
+        var html = this.buildHTML();
+        $('#' + self.transcriptDivID + ' > div').html(html);
+
+        console.log(this.data);
+
+        // Add a scroll event on the transcript to highlight the corresponding item in the chart
+        $('#' + self.transcriptDivID).on("scroll", function () {
     
             if (self.noFocusUpdate)
                 return;
@@ -36,11 +45,11 @@ class RotationRenderer {
 
             let transcriptTextDiv = $(this).children().first();
 
-            let totalHeight = transcriptTextDiv.height() - $('#itk_text').height();
+            let totalHeight = transcriptTextDiv.height() - $('#' + self.transcriptDivID).height();
             let center = transcriptTextDiv.height() * scrollTop / totalHeight;
     
             let items = [];
-            $('#itk_text .rotation_item').each((i, element) => {
+            $('#' + self.transcriptDivID + ' .rotation_item').each((i, element) => {
                 var element = $(element)[0];
                 let rect = element.getBoundingClientRect();
     
@@ -52,19 +61,13 @@ class RotationRenderer {
             items.sort((a, b) => {
                 return a.distance - b.distance;
             });
-    
-            let focusedItem = items[0].id;
-            let newFocusIndex = focusedItem.replace('rotation_', '');
-    
-            self.highlightItem(newFocusIndex);
+
+            self.highlightItem(items[0].id);
         });
     
+        // Add a click event on the transcript to scroll to the corresponding item in the chart
         $(".intervention").on('click', function () {
-    
-            let focusedItem = this.id;
-            let newFocusIndex = focusedItem.replace('rotation_', '');
-    
-            self.highlightItem(newFocusIndex);
+            self.highlightItem(this.id);
         });
     
         // resize all charts when the windows is resized
@@ -73,13 +76,64 @@ class RotationRenderer {
                 var id = $(this).attr('_echarts_instance_');
                 window.echarts.getInstanceById(id).resize();
             });
-        }, 500));        
+        }, 500));
     }
 
-    highlightItem(index) {
+    renderInternal(mode = 'horizontal') {
+        let self = this;
+        let option;
+
+        this.currentFocusIndex = null;
+        this.noFocusUpdate = false;
+console.log(this.data);
+
+        if (mode == 'horizontal')
+            option = this.getStepsOption();
+        else
+            option = this.getDonutOption();
+
+console.log(this.data);
+
+        self.chart.clear();
+        self.chart.setOption(option, false);
+
+        console.log(option);
+        
+        let options = this.chart.getOption();
+        options.series[0].data.forEach((item, index) => {
+            if (item.divId != undefined)
+                self.chartIndex.set(item.divId, index);
+        });
+
+        // Add a click event on the chart to scroll to the corresponding item in the transcript
+        self.chart.on('click', function (params) {
+            if (!params.data.divId)
+                return;
+
+            let element = $("#" + params.data.divId + " h4");
+            if (element.length == 0)
+                element = $("#" + params.data.divId);
+    
+            self.noFocusUpdate = true;
+    
+            setTimeout(() => {
+                self.noFocusUpdate = false;
+            }, 1500);
+    
+            element[0].scrollIntoView({ block: "center" });
+
+            self.highlightItem(params.data.divId);
+        });
+    }
+
+    highlightItem(divID) {
         let self = this;
 
-        if (self.currentFocusIndex && self.currentFocusIndex != index) {
+        let index = self.chartIndex.get(divID);
+        if (index === undefined)
+            return;
+
+        if (self.currentFocusIndex !== null && self.currentFocusIndex != index) {
             self.chart.dispatchAction({ type: 'downplay', dataIndex: self.currentFocusIndex });
         }
 
@@ -88,10 +142,10 @@ class RotationRenderer {
 
         $(".rotation_item").removeClass('highlighted');
         $(".intervention").removeClass('highlighted');
-        $("#rotation_" + index).addClass('highlighted');
+        $('#' + divID).addClass('highlighted');
     }
 
-    renderHorizontal(rotationData) {
+    getStepsOption() {
         let self = this;
 
         // Specify the configuration items and data for the chart
@@ -99,8 +153,9 @@ class RotationRenderer {
     
         var categories = ['Autres interventions', 'Parcelle', 'Contrôle adventices'];
         let minDate = null;
+        let maxDate = null;
 
-        rotationData.forEach((item, index) => {
+        self.data.forEach((item, index) => {
             let duration = (item.endDate.getFullYear() - item.startDate.getFullYear()) * 12;
             duration -= item.startDate.getMonth();
             duration += item.endDate.getMonth();
@@ -108,15 +163,23 @@ class RotationRenderer {
             if (!minDate)
                 minDate = item.startDate.valueOf();
 
+            if (!maxDate || maxDate < item.endDate.valueOf())
+                maxDate = item.endDate.valueOf() + 86400000 * 30; // Add some space for the end of the arrow
+
             data.push({
                 name: item.name,
+                divId: 'Step_' + index,
+                type: 'rotation_item',
+                startDate: new Date(item.startDate.valueOf()), // Date de début
+                endDate: new Date(item.endDate.valueOf()), // Date de fin
+                duration: duration,
+                description: (item.description ?? ''),
                 value: [
                     1, // Parcelle (index de la série)
                     item.startDate.valueOf(), // Date de début
                     item.endDate.valueOf(), // Date de fin
                     item.name, // Nom
-                    'rotation_item', // Type
-                    duration // Durée (mois)
+                    'rotation_item' // Type
                 ],
                 itemStyle: {
                     color: item.color
@@ -124,19 +187,21 @@ class RotationRenderer {
             });    
 
             if (item.interventions) {
-                item.interventions.forEach((intervention) => {
+                item.interventions.forEach((intervention, interventionIndex) => {
    
                     data.push({
                         name: intervention.name,
+                        type: intervention.type,
                         value: [
                             intervention.type == 'Protection des plantes' ? 2 : 0, // Parcelle (index de la série)
                             item.startDate.valueOf() + intervention.day * 86400000, // Date de début (ms)
                             item.startDate.valueOf() + (intervention.day + 1) * 86400000, // Date de début (ms)
                             intervention.important === true ? intervention.name + ' 🛈' : intervention.name, // Nom
-                            intervention.type == 'Protection des plantes' ? 'intervention_top' : 'intervention_bottom', // Type
-                            1,
-                            intervention.day
+                            intervention.type == 'Protection des plantes' ? 'intervention_top' : 'intervention_bottom' // Type
                         ],
+                        divId: 'Intervention_' + index + '_' + interventionIndex,
+                        interventionDate: new Date(item.startDate.valueOf()),
+                        interventionDays: intervention.day,
                         itemStyle: {
                             color: item.color
                         }
@@ -356,35 +421,8 @@ class RotationRenderer {
 
             }
         }
-        let option = {
-            tooltip: {
-                formatter: function (params) {
-                    if (params.value[4] == 'rotation_item') {
-                        let start = new Date(params.value[1]).toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' });
-                        let end = new Date(params.value[2]).toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' });
-    
-                        return params.marker + params.name + ' : ' + params.value[5] + ' mois (' + start + ' ➜ ' + end + ')';
-                    }
-                    else {
-                        let interventionDate = new Date(params.value[1]);
-                        const days = params.value[6];
-                        let dateString = interventionDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-    
-                        if (days >= 0)
-                            dateString += ' (J+' + days + ')';
-                        else
-                            dateString += ' (J' + days + ')';
-    
-                        return params.marker + params.name + ' - ' + dateString;
-                    }
-                }
-            },
-    
-            title: {
-                text: 'Itinéraire technique',
-                left: 'center'
-            },
-    
+
+        let option = self.getDefaultOption({
             dataZoom: [
                 {
                     type: 'slider',
@@ -400,11 +438,13 @@ class RotationRenderer {
             ],
     
             grid: {
-                height: self.barHeight * 3
+                height: self.barHeight * 3,
+                right: 6
             },
     
             xAxis: {
                 min: minDate,
+                max: maxDate,
                 type: 'time',
                 axisTick: { show: true },
                 axisLine: { show: true },
@@ -437,45 +477,26 @@ class RotationRenderer {
                     data: data
                 }
             ]
-        };
+        });
     
-        // Display the chart using the configuration items and data just specified.
-        self.chart.setOption(option);
-    
-        console.log(option);
-    
-        self.chart.on('click', function (params) {
-            let element = $("#rotation_" + params.dataIndex + " h4");
-            if (element.length == 0)
-                element = $("#rotation_" + params.dataIndex);
-    
-            self.noFocusUpdate = true;
-    
-            setTimeout(() => {
-                self.noFocusUpdate = false;
-            }, 1500);
-    
-            element[0].scrollIntoView({ block: "center" });
-            self.highlightItem(params.dataIndex);
-        });    
+        return option;
     }
 
-    buildHTML(rotationData) {
-        var html = '';
-        let itemIndex = 0;
+    buildHTML() {
+        let html = '';
     
-        rotationData.forEach((item, index) => {
+        let self = this;
+
+        self.data.forEach((item, index) => {
                 
-            html += '<div id="rotation_' + itemIndex + '" class="rotation_item" style="border-color: ' + item.color + '">'
+            html += '<div id="Step_' + index + '" class="rotation_item" style="border-color: ' + item.color + '">'
                 + '<h4>' + item.name + '</h4>'
                 + (item.description ?? '')
                 + (item.attributes ? item.attributes.map((attribute) => { return '<p><dt>' + attribute.name + '</dt><dd>' + attribute.value + '</dd></p>' }).join('') : '');
-    
-            itemIndex++;
-    
+        
             if (item.interventions) {
                 html += '<h5>Interventions</h5>';
-                item.interventions.forEach((intervention) => {
+                item.interventions.forEach((intervention, interventionIndex) => {
                     let intDate = new Date(item.startDate.valueOf() + intervention.day * 86400000).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
                     let days = intervention.day;
                     if (days >= 0)
@@ -488,14 +509,10 @@ class RotationRenderer {
                     if (intervention.important === true)
                         title = '<i class="fa fa-exclamation-circle" aria-hidden="true" style="color: #ff9a1c"></i> ' + title;
     
-                    html += '<div id="rotation_' + itemIndex + '" class="intervention"><span class="intervention_title">' + title + '</span>'
+                    html += '<div id="Intervention_' + index + '_' + interventionIndex + '" class="intervention"><span class="intervention_title">' + title + '</span>'
                         + '<span class="intervention_date badge rounded-pill">' + intDate + '</span>'
-                        + '<div class="intervention_description">' + intervention.description + '</div></div>';
-    
-                    itemIndex++;
-    
-                });
-    
+                        + '<div class="intervention_description">' + intervention.description + '</div></div>';   
+                });    
             }
     
             html += '</div>';
@@ -503,4 +520,215 @@ class RotationRenderer {
     
         return html;
     }
+
+    getDonutOption() {
+        let self = this;
+
+        let option = self.getDefaultOption({              
+            "series": []
+        });
+
+        // Build the crop ring
+        let crops = {
+            name: 'Rotation',
+            type: 'pie',
+            top: '40',
+            radius: ['70%', '100%'],
+            labelLine: {
+                length: 30
+            },
+            label: {
+                position: 'inner',
+                fontWeight: 'bold'
+            },
+            data: []
+        };
+    
+        let totalMonths = 0;  
+        let minDate = null;  
+
+        self.data.forEach((item, index) => {
+            let duration = (item.endDate.getFullYear() - item.startDate.getFullYear()) * 12;
+            duration -= item.startDate.getMonth();
+            duration += item.endDate.getMonth();
+            
+            totalMonths += duration;
+
+            if (!minDate)
+                minDate = new Date(item.startDate.valueOf());
+            
+            let pieItem = {
+                'name': item.name,
+                'value': duration,
+                'divId': 'Step_' + index,
+                'type': 'rotation_item',
+                'startDate': new Date(item.startDate.valueOf()), // Date de début
+                'endDate': new Date(item.endDate.valueOf()), // Date de fin
+                'duration': duration,
+                'description': (item.description ?? '')// + (item.attributes ? item.attributes.map((attribute) => { return '<p><dt>' + attribute.name + '</dt><dd>' + attribute.value + '</dd></p>' }).join('') : '')
+            };
+
+            if (pieItem.color != '#ffffff')
+                pieItem.itemStyle = { 'color': item.color };
+
+            crops.data.push(pieItem);
+        });
+    
+        option.series.push(crops);
+    
+        // Create the calendar ring
+        let months = {
+            name: 'Months',
+            type: 'pie',
+            top: '40',
+            radius: ['60%', '70%'],
+            label: {
+                position: 'inner',
+                rotate: 'tangential'
+            },
+            tooltip: {
+                show: true,
+                formatter: '{b}'
+            },
+            itemStyle: {
+                borderColor: '#555',
+                color: '#FFFFFF',
+                borderWidth: 1
+            },
+            emphasis: { disabled: true },
+            data: []
+        };
+    
+        const monthsColorScale = [
+            '#c7d2e3', // winter
+            '#c7d2e3',
+            '#bdd8c0', // spring
+            '#bdd8c0',
+            '#bdd8c0',
+            '#ecebb3', // summer
+            '#ecebb3',
+            '#ecebb3',
+            '#f8e0c5', // automn
+            '#f8e0c5',
+            '#f8e0c5',
+            '#c7d2e3'
+        ];
+    
+        let monthsPerYear = new Map();
+        for (let month = 1; month <= totalMonths; month++) {
+            let monthName = minDate.toLocaleDateString(undefined, { month: 'short' });
+    
+            let item = { 'name': monthName, 'value': 1 };
+            const year = minDate.getFullYear();
+
+            item.itemStyle = { color: monthsColorScale[minDate.getMonth()] };
+    
+            months.data.push(item);
+    
+            let currentMonthsPerYear = monthsPerYear.get(year);
+            if (currentMonthsPerYear == undefined)
+                currentMonthsPerYear = 0;
+            monthsPerYear.set(year, ++currentMonthsPerYear);
+    
+            // increment the current month
+            minDate.setMonth(minDate.getMonth() + 1);
+        }
+
+        option.series.push(months);
+    
+        // Create the calendar years ring
+        let years = {
+            name: 'Years',
+            type: 'pie',
+            top: '40',
+            radius: ['45%', '60%'],
+            label: {
+                position: 'inner',
+                rotate: 'tangential',
+                fontWeight: 'bold'
+            },
+            emphasis: { disabled: true },
+            tooltip: { show: false },
+            itemStyle: {
+                color: '#FFFFFF',
+                borderWidth: 1
+            },
+            data: []
+        };
+    
+        monthsPerYear.forEach((nbMonths, year) => {
+            years.data.push({ 'name': year, 'value': nbMonths });
+        });
+
+        option.series.push(years);
+    
+        return option;
+    }
+
+    getDefaultOption(option) {
+
+        let self = this;
+
+        option.title = {
+            text: 'Itinéraire technique',
+            left: 'center'
+        };
+
+        option.tooltip = {
+                formatter: function (params) {
+                    if (params.data.type == 'rotation_item') {
+                        let start = params.data.startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
+                        let end = params.data.endDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
+    
+                        return params.marker + params.name + ' : ' + params.data.duration + ' mois (' + start + ' ➜ ' + end + ')<br>' + params.data.description;
+                    }
+                    else {
+                        let interventionDate = params.data.interventionDate;
+                        const days = params.data.interventionDays;
+                        let dateString = interventionDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+    
+                        if (days >= 0)
+                            dateString += ' (J+' + days + ')';
+                        else
+                            dateString += ' (J' + days + ')';
+    
+                        return params.marker + params.name + ' - ' + dateString;
+                    }
+                }
+            };
+    
+        option.toolbox = {
+                "feature": {
+                    "myTool1": {
+                        "show": true,
+                        "title": 'Rotation',
+                        "icon": 'path://M18.15,12.99c-.06-.07-.14-.13-.23-.17l-.38-.15c.33-.93.51-1.92.51-2.96,0-3-1.49-5.65-3.77-7.26l-3.03,2.72c1.72.79,2.91,2.53,2.91,4.54,0,.54-.09,1.07-.25,1.56l-.44-.17c-.3-.12-.64.03-.76.33-.04.1-.05.21-.03.31l.79,4.82c.06.32.36.53.68.47.1-.02.19-.06.27-.13l3.66-3.1c.25-.21.28-.58.07-.82ZM6.94,5.24c.46-.23.97-.39,1.5-.47l.13.59c.07.32.38.52.69.45.1-.02.2-.07.28-.14l3.59-3.31c.23-.22.24-.59.02-.83-.07-.07-.16-.13-.26-.16L8.3.02c-.31-.09-.63.09-.73.39-.03.09-.03.19-.01.29l.06.27c-1.12.2-2.16.6-3.1,1.17l2.41,3.09ZM5.88,5.96l-2.39-3.06c-.98.82-1.79,1.84-2.34,3.01l3.62,1.44c.29-.53.66-1,1.11-1.39ZM4.17,9.72c0-.41.05-.81.14-1.19l-3.63-1.44c-.18.57-.3,1.16-.35,1.77l3.84,1.1c0-.08,0-.16,0-.24ZM9.17,14.72c-1.59,0-3-.74-3.92-1.9l.42-.38c.24-.22.26-.59.04-.83-.07-.08-.16-.14-.26-.17l-4.66-1.47c-.31-.09-.64.08-.73.39-.03.1-.03.2,0,.3l1.12,4.66c.07.31.39.51.7.43.09-.02.18-.07.25-.13l.23-.21c1.63,1.94,4.07,3.18,6.8,3.18,1.3,0,2.54-.28,3.66-.79l-.8-3.99c-.81.56-1.79.9-2.86.9Z',
+                        onclick: function (){
+                            self.renderInternal('donut');
+                        }
+                    },
+                    "myTool2": {
+                        "show": true,
+                        "title": 'Frise',
+                        "icon": 'path://M4.63,0H0v10.01h4.97c.07,0,.13-.05.19-.14l2.61-4.14c.17-.28.23-.89.12-1.35-.03-.15-.08-.27-.13-.35L5.16.12c-.05-.08-.11-.12-.17-.12h-.37ZM11.9,4.38c-.03-.15-.08-.27-.13-.35L9.17.12c-.05-.08-.11-.12-.17-.12h-.37s-2.26,0-2.26,0v.03s.06.05.08.09l2.6,3.9c.06.08.1.21.13.35.1.47.05,1.07-.12,1.35l-2.61,4.14s-.05.07-.08.09v.04h2.6c.07,0,.13-.05.19-.14l2.61-4.14c.17-.28.23-.89.12-1.35ZM18.28,4.38c-.03-.15-.08-.27-.13-.35L15.55.12c-.05-.08-.11-.12-.17-.12h-.37s-4.63,0-4.63,0v.03s.06.05.08.09l2.6,3.9c.06.08.1.21.13.35.1.47.05,1.07-.12,1.35l-2.61,4.14s-.05.07-.08.09v.04h4.97c.07,0,.13-.05.19-.14l2.61-4.14c.17-.28.23-.89.12-1.35Z',
+                        onclick: function (){
+                            self.renderInternal('horizontal');
+                        }
+                    },
+                    "saveAsImage": {
+                        'excludeComponents': ["dataZoom", "toolbox"]
+                    }
+                }
+            };
+
+        return option;
+    }
 }
+// "tooltip": {
+//     "formatter": (item) => {
+//         return item.marker + "<b>" + item.name + "</b><br>" + item.data.description;
+//     },
+//     "confine": true,
+//     "extraCssText": "text-wrap: wrap;",
+//     "className": "rotation-tooltip"
+// },
