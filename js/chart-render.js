@@ -25,12 +25,12 @@ class RotationRenderer {
 
         self.renderInternal(mode);
 
-        console.log(this.data);
-
         var html = this.buildHTML();
         $('#' + self.transcriptDivID + ' > div').html(html);
-
-        console.log(this.data);
+      
+        $('#' + self.transcriptDivID + " .collapse-button").on("click", function () {
+            $(this).parent().toggleClass('show-all');
+        });
 
         // Add a scroll event on the transcript to highlight the corresponding item in the chart
         $('#' + self.transcriptDivID).on("scroll", function () {
@@ -85,14 +85,11 @@ class RotationRenderer {
 
         this.currentFocusIndex = null;
         this.noFocusUpdate = false;
-console.log(this.data);
 
         if (mode == 'horizontal')
             option = this.getStepsOption();
         else
             option = this.getDonutOption();
-
-console.log(this.data);
 
         self.chart.clear();
         self.chart.setOption(option, false);
@@ -121,6 +118,8 @@ console.log(this.data);
             }, 1500);
     
             element[0].scrollIntoView({ block: "center" });
+            
+            $("#" + params.data.divId).toggleClass("show-all");
 
             self.highlightItem(params.data.divId);
         });
@@ -489,9 +488,15 @@ console.log(this.data);
 
         self.data.forEach((item, index) => {
                 
+            let collapseButton = '';
+            if (item.interventions || item.attributes)
+                collapseButton = '<div class="collapse-button"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>';
+
             html += '<div id="Step_' + index + '" class="rotation_item" style="border-color: ' + item.color + '">'
+                + collapseButton
                 + '<h4>' + item.name + '</h4>'
-                + (item.description ?? '')
+                + '<p class="description">' + (item.description ?? '') + '</p>'
+                + '<div class="details">'
                 + (item.attributes ? item.attributes.map((attribute) => { return '<p><dt>' + attribute.name + '</dt><dd>' + attribute.value + '</dd></p>' }).join('') : '');
         
             if (item.interventions) {
@@ -515,7 +520,7 @@ console.log(this.data);
                 });    
             }
     
-            html += '</div>';
+            html += '</div></div>';
         });
     
         return html;
