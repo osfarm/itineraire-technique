@@ -322,7 +322,6 @@
     }
 
     function renderChart() {
-        let renderer = new RotationRenderer();
 
         // Add start date and end date for each rotation steps: 
         var startDate = new Date();
@@ -339,8 +338,8 @@
             startDate = new Date(step.endDate);
         }
 
-
-        renderer.render('itk_chart', 'itk_text', crops);
+        let renderer = new RotationRenderer('itk_chart', 'itk_text', crops);
+        renderer.render();
     }
 
 </script>
