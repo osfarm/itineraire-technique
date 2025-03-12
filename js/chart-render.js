@@ -498,7 +498,7 @@ class RotationRenderer {
         self.data.steps.forEach((item, index) => {
                 
             let collapseButton = '';
-            if (item.interventions || item.attributes)
+            if (item.interventions?.length > 0 || item.attributes?.length > 0)
                 collapseButton = '<div class="collapse-button"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>';
 
             let start = item.startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
@@ -512,9 +512,9 @@ class RotationRenderer {
                 + collapseButton
                 + '<p class="step_description">' + (item.description ?? '') + '</p>'
                 + '<div class="details">'
-                + (item.attributes ? item.attributes.map((attribute) => { return '<p><dt>' + attribute.name + '</dt><dd>' + attribute.value + '</dd></p>' }).join('') : '');
+                + (item.attributes?.length > 0 ? item.attributes.map((attribute) => { return '<p><dt>' + attribute.name + '</dt><dd>' + attribute.value + '</dd></p>' }).join('') : '');
         
-            if (item.interventions) {
+            if (item.interventions?.length > 0) {
                 html += '<h5>Interventions</h5>';
                 item.interventions.forEach((intervention, interventionIndex) => {
                     let intDate = new Date(item.startDate.valueOf() + intervention.day * 86400000).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });

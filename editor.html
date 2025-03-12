@@ -21,110 +21,147 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-4">
-                <h4>Plants</h4>
-                <div class="row">
-                    <form id="cropForm">
-                        <div class="form-row">
-                            <div class="row">
+            <div class="col-12 text-center">
+                <h1>Itinéraire technique</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col col-12 col-lg-3"> <!-- Editor zone-->
+                <div class="row" id="welcomeView">
+                    <div class="col-12">
+                        <p>Bienvenue dans l'éditeur</p>
+                    </div>
+                </div>
+
+                <div class="row d-none" id="cropListView">
+                    <div class="col-12">
+                        <table id="cropsTable" class="table table-striped table-hover">
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row" id="addNewCropButtonView">
+                    <div class="col-12">
+                        <button type="button" onclick="addNewCropClickEvent()"
+                            class="w-100 btn btn-outline-primary">Ajouter une étape de rotation</button>
+                    </div>
+                </div>
+
+                <div class="d-none" id="cropDetailView">
+                    <div class="row">
+                        <h4>Étape</h4>
+                        <form id="cropForm">
+                            <div class="row mb-2">
                                 <div class="col">
-                                    <input type="text" id="cropName" class="form-control" placeholder="Crop Name"
-                                        value="Betterave">
+                                    <label for="cropName" class="form-label">Culture principale</label>
+                                    <input type="text" id="cropName" class="form-control"
+                                        placeholder="Nom de la culture">
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col">
-                                    <input type="color" id="cropColor" class="form-control form-control-color w-100"
-                                        value="#0db3bf">
-                                </div>
-                                <div class="col">
-                                    <input type="number" id="cropDuration" class="form-control" placeholder="Duration"
-                                        value="5">
-                                </div>
-                            </div>
-                            <div class="row">
+                            <div class="row mb-2">
                                 <div class="col">
                                     <input type="text" id="cropDescription" class="form-control"
-                                        placeholder="Description" value="Super plant">
+                                        placeholder="Description">
                                 </div>
                             </div>
+                            <div class="row mb-2">
+                                <div class="col-5 pe-0">
+                                    <label for="cropStartDate" class="form-label">Début</label>
+                                    <input type="date" id="cropStartDate" class="form-control">
+                                </div>
+                                <div class="col-5 pe-0">
+                                    <label for="cropEndDate" class="form-label">Fin</label>
+                                    <input type="date" id="cropEndDate" class="form-control">
+                                </div>
+                                <div class="col-2">
+                                    <label for="cropColor" class="form-label">Couleur</label>
+                                    <input type="color" id="cropColor" class="form-control form-control-color w-100">
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-12">
+                                    <button type="button" onclick="updateSelectedCropFromEditorClickEvent()"
+                                        class="w-100 btn btn-outline-primary">Valider</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="row d-none">
+                        <div class="col-12">
+                            <h4>Attributs du plant</h4>
+                            <form>
+                                <div class="row">
+                                    <div class="col">
+                                        <input type="text" id="attributeName" class="form-control" placeholder="Key"
+                                            value="Souche">
+                                    </div>
+                                    <div class="col">
+                                        <input type="text" id="attributeValue" class="form-control" placeholder="Value"
+                                            value="Resistante">
+                                    </div>
+                                    <div class="col">
+                                        <button type="button" onclick="addAttributeClickEvent()"
+                                            class="w-100 btn btn-outline-primary">Add</button>
+                                    </div>
+                                </div>
+                            </form>
                             <div class="row">
-                                <div class="col">
-                                    <button type="button" onclick="addCropClickEvent()" class="w-100 btn btn-outline-primary">Add</button>
-                                </div>
+                                <table id="attributesTable" class="table table-striped">
+                                </table>
                             </div>
                         </div>
-                    </form>
-                </div>
-                <div class="row">
-                    <table id="cropsTable" class="table table-striped table-hover">
-                    </table>
-                </div>
-            </div>
-            <div class="col-4">
-                <h4>Attributs du plant</h4>
-                <form>
+                    </div>
+                    <div class="row d-none">
+                        <div class="col-12">
+                            <h4>Interventions sur le plant</h4>
+                            <form id="interventionForm">
+                                <div class="form-row">
+                                    <div class="col">
+                                        <input type="text" id="interventionName" class="form-control" placeholder="Name"
+                                            value="Ma super intervention">
+                                    </div>
+                                    <div class="col">
+                                        <input type="number" id="interventionDay" class="form-control" placeholder="Day"
+                                            value="5">
+                                    </div>
+                                    <div class="col">
+                                        <select id="interventionType" class="form-select" aria-label="Type">
+                                            <option value="Autres interventions" selected>Autres interventions</option>
+                                            <option value="Protection des plantes">Protection des plantes</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <textarea id="interventionDescription" class="form-control"
+                                            placeholder="Description">J'ai travaillé la terre</textarea>
+                                    </div>
+                                    <div class="col">
+                                        <button type="button" onclick="addInterventionClickEvent()"
+                                            class="w-100 btn btn-outline-primary">Add</button>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="row">
+                                <table id="interventionsTable" class="table table-striped">
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                     <div class="row">
-                        <div class="col">
-                            <input type="text" id="attributeName" class="form-control" placeholder="Key" value="Souche">
-                        </div>
-                        <div class="col">
-                            <input type="text" id="attributeValue" class="form-control" placeholder="Value"
-                                value="Resistante">
-                        </div>
-                        <div class="col">
-                            <button type="button" onclick="addAttributeClickEvent()"
-                                class="w-100 btn btn-outline-primary">Add</button>
+                        <div class="col-12">
+                            <button type="button" onclick="displayCropListView()"
+                                class="w-100 btn btn-outline-primary">Retour à la liste des étapes</button>
                         </div>
                     </div>
-                </form>
-                <div class="row">
-                    <table id="attributesTable" class="table table-striped">
-                    </table>
-                </div>
-            </div>
-            <div class="col-4">
-                <h4>Interventions sur le plant</h4>
-                <form id="interventionForm">
-                    <div class="form-row">
-                        <input type="text" id="interventionName" class="form-control" placeholder="Name"
-                            value="Ma super intervention">
-                        <div class="col">
-                        </div>
-                        <div class="col">
-                            <input type="number" id="interventionDay" class="form-control" placeholder="Day" value="5">
-                        </div>
-                        <div class="col">
-                            <select id="interventionType" class="form-select" aria-label="Type">
-                                <option value="Autres interventions" selected>Autres interventions</option>
-                                <option value="Protection des plantes">Protection des plantes</option>
-                            </select>
-                        </div>
-                        <div class="col">
-                            <textarea id="interventionDescription" class="form-control"
-                                placeholder="Description">J'ai travaillé la terre</textarea>
-                        </div>
-                        <div class="col">
-                            <button type="button" onclick="addInterventionClickEvent()"
-                                class="w-100 btn btn-outline-primary">Add</button>
-                        </div>
-                    </div>
-                </form>
-                <div class="row">
-                    <table id="interventionsTable" class="table table-striped">
-                    </table>
                 </div>
             </div>
 
-        </div>
-
-        <div class="row">
-            <div class="col col-12 col-lg-4">
+            <div class="col col-12 col-lg-3">
                 <div id="itk_text">
                     <div id="itk_text_content"></div>
                 </div>
             </div>
-            <div class="col col-12 col-lg-8">
+
+            <div class="col col-12 col-lg-6">
                 <div id="itk_chart" class="charts"></div>
             </div>
         </div>
@@ -135,66 +172,99 @@
 
 <script>
 
-    let crops = [];
+    let crops = {
+            "title": "Itinéraire technique de ma ferme",
+            "options": {
+                "view" : "horizontal",
+                "show_transcript": true,
+                "title_top_interventions": "Contrôle adventices",
+                "title_bottom_interventions": "Autres interventions",
+                "title_steps": "Étapes de la rotation dans la parcelle",
+            },
+            "steps": []};
+
     let selectedCrop;
-    let cropId = 0;
 
-    function Crop(id, name, color, duration, description) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-        this.duration = duration;
-        this.description = description;
-        this.interventions = [];
-        this.attributes = [];
+    class Crop {
+        constructor(name, color, startDate, endDate, description) {
+            this.id = crypto.randomUUID();
+            this.name = name || "";
+            this.color = color || "#0db3bf";
+            this.startDate = startDate || new Date();
+            this.endDate = endDate || new Date();
+            this.description = description || "";
+            this.interventions = [];
+            this.attributes = [];
+        }
 
-        this.addIntervention = function addIntervention(day, name, type, description) {
+        addIntervention = function addIntervention(day, name, type, description) {
             let intervention = new Intervention(day, name, type, description);
             this.interventions.push(intervention);
         }
 
-        this.addAttribute = function addAttribute(key, value) {
+        addAttribute = function addAttribute(key, value) {
             let attribute = new Attribute(key, value);
             this.attributes.push(attribute);
         }
 
-        this.removeAttribute = function removeAttribute(attributeId) {
+        removeAttribute = function removeAttribute(attributeId) {
             this.attributes = this.attributes.filter(function (attribute) { return attribute.id != attributeId });
         }
 
-        this.removeIntervention = function removeIntervention(interventionId) {
+        removeIntervention = function removeIntervention(interventionId) {
             this.interventions = this.interventions.filter(function (intervention) { return intervention.id != interventionId });
         }
     }
 
-    function Intervention(day, name, type, description) {
-        this.id = crypto.randomUUID();
-        this.day = day;
-        this.name = name;
-        this.type = type;
-        this.description = description;
+    class Intervention {
+        constructor(day, name, type, description) {
+            this.id = crypto.randomUUID();
+            this.day = day;
+            this.name = name;
+            this.type = type;
+            this.description = description;
+        }
     }
 
-    function Attribute(key, value) {
-        this.id = crypto.randomUUID();
-        this.name = key;
-        this.value = value;
+    class Attribute {
+        constructor(key, value) {
+            this.id = crypto.randomUUID();
+            this.name = key;
+            this.value = value;
+        }
     }
 
-    function addCropClickEvent() {
-        let name = document.getElementById("cropName").value;
-        let color = document.getElementById("cropColor").value;
-        let duration = document.getElementById("cropDuration").value;
-        let description = document.getElementById("cropDescription").value;
+    function updateSelectedCropFromEditorClickEvent() {
+        selectedCrop.name = document.getElementById("cropName").value;
+        selectedCrop.color = document.getElementById("cropColor").value;
+        selectedCrop.startDate = new Date(document.getElementById("cropStartDate").value);
+        selectedCrop.endDate = new Date(document.getElementById("cropEndDate").value);
+        selectedCrop.description = document.getElementById("cropDescription").value;
 
-        let crop = new Crop(cropId, name, color, duration, description);
-        cropId++;
-        crops.push(crop);
+        refreshAllTables();
+    }
+
+    function addNewCropClickEvent() {
+        createAndSelectEmptyCrop();
+        loadSelectedCropToEditor();
+        displayCropDetailView();
+        refreshAllTables();
+    }
+
+    function createAndSelectEmptyCrop() {
+        let crop = new Crop();
+        crops.steps.push(crop);
 
         //select last created crop to be editable
         selectedCrop = crop;
+    }
 
-        refreshAllTables();
+    function loadSelectedCropToEditor() {
+        document.getElementById("cropName").value = selectedCrop.name;
+        document.getElementById("cropColor").value = selectedCrop.color;
+        document.getElementById("cropStartDate").valueAsDate = selectedCrop.startDate;
+        document.getElementById("cropEndDate").valueAsDate = selectedCrop.endDate;
+        document.getElementById("cropDescription").value = selectedCrop.description;
     }
 
     function addAttributeClickEvent() {
@@ -261,14 +331,14 @@
 
         let cropsTable = document.getElementById("cropsTable");
 
-        crops.forEach(function (crop) {
+        crops.steps.forEach(function (crop) {
             let newRow = cropsTable.insertRow(-1);
 
             let cellKey = newRow.insertCell(0);
             //set an id in the row to retrieve the object later
             cellKey.setAttribute("data-object", crop.id);
             cellKey.addEventListener("click", function () {
-                selectNewCrop(this.getAttribute("data-object"));
+                selectCrop(this.getAttribute("data-object"));
             });
             cellKey.appendChild(document.createTextNode(crop.name));
 
@@ -298,18 +368,20 @@
     }
 
     function deleteCrop(id) {
-        crops = crops.filter(function (crop) { return crop.id != id })
+        crops.steps = crops.steps.filter(function (crop) { return crop.id != id })
 
         //avoid bug if last crop is deleted
-        if (crops.length == 0) {
-            selectNewCrop(null);
+        if (crops.steps.length == 0) {
+            selectCrop(null);
         } else {
-            selectNewCrop(crops.slice(-1)[0].id);
+            selectCrop(crops.steps.slice(-1)[0].id);
         }
     }
 
-    function selectNewCrop(cropId) {
-        selectedCrop = crops.find(x => x.id == cropId);
+    function selectCrop(cropId) {
+        selectedCrop = crops.steps.find(x => x.id == cropId);
+        loadSelectedCropToEditor();
+        displayCropDetailView();
         refreshAllTables();
     }
 
@@ -320,23 +392,21 @@
         renderChart();
     }
 
+    function displayCropDetailView() {
+        document.querySelector("#welcomeView").classList.add("d-none");
+        document.querySelector("#cropListView").classList.add("d-none");
+        document.querySelector("#addNewCropButtonView").classList.add("d-none");
+        document.querySelector("#cropDetailView").classList.remove("d-none");
+    }
+
+    function displayCropListView() {
+        document.querySelector("#welcomeView").classList.add("d-none");
+        document.querySelector("#cropDetailView").classList.add("d-none");
+        document.querySelector("#cropListView").classList.remove("d-none");
+        document.querySelector("#addNewCropButtonView").classList.remove("d-none");
+    }
+
     function renderChart() {
-
-        // Add start date and end date for each rotation steps: 
-        var startDate = new Date();
-        startDate.setFullYear(2022);
-        startDate.setMonth(2);
-        startDate.setDate(1);
-
-        for (var i = 0; i < crops.length; i++) {
-            var step = crops[i];
-            step.startDate = new Date(startDate);
-            step.endDate = new Date(startDate);
-            step.endDate.setMonth(startDate.getMonth() + step.duration);
-
-            startDate = new Date(step.endDate);
-        }
-
         let renderer = new RotationRenderer('itk_chart', 'itk_text', crops);
         renderer.render();
     }
