@@ -10,8 +10,14 @@ class RotationRenderer {
 
         this.chartIndex = new Map();
 
+        if (rotationData.options == undefined)
+            rotationData.options = {};
+
+        if (rotationData.options?.view == undefined || rotationData?.options?.view == '')
+            rotationData.options.view = 'horizontal';
+
         // Map rotationData items to make sure that the startDate and endDate are proper Date objects
-        rotationData.map((item) => {
+        rotationData.steps.map((item) => {
             item.startDate = new Date(item.startDate);
             item.endDate = new Date(item.endDate);
 
@@ -27,33 +33,36 @@ class RotationRenderer {
         this.transcriptDivID = transcriptDivID;
     }
 
-    render(mode = 'horizontal') {
+    render() {
 
         let self = this;
 
         // Initialize the echarts instance based on the prepared dom
         self.chart = echarts.init(document.getElementById(self.divID));
 
-        self.renderInternal(mode);
+        self.renderChart();
 
-        var html = this.buildHTML();
-        $('#' + self.transcriptDivID + ' > div').html(html);
-      
-        $('#' + self.transcriptDivID + " .rotation_item").on("click", function () {
-            $(this).toggleClass('show-all');
-        });
+        if (self.data.options.show_transcript) {
+            var html = this.buildHTML();
+            $('#' + self.transcriptDivID).html(html);
 
-        $('#' + self.transcriptDivID + " .rotation_item").on("mouseover", function () {
-            self.highlightItem(this.id);
-        });
+            $('#' + self.transcriptDivID + " .rotation_item").on("click", function () {
+                $(this).toggleClass('show-all');
+            });
     
-        // Add a click event on the transcript to scroll to the corresponding item in the chart
-        $('#' + self.transcriptDivID + " .intervention").on('mouseover', function (e) {
-            self.highlightItem(this.id);
-            e.stopPropagation();
+            $('#' + self.transcriptDivID + " .rotation_item").on("mouseover", function () {
+                self.highlightItem(this.id);
+            });
+        
+            // Add a click event on the transcript to scroll to the corresponding item in the chart
+            $('#' + self.transcriptDivID + " .intervention").on('mouseover', function (e) {
+                self.highlightItem(this.id);
+                e.stopPropagation();
+            });                    
+        }
+        else
+            $('#' + self.transcriptDivID).hide();
 
-        });
-    
         // resize all charts when the windows is resized
         $(window).on('resize', _.debounce(function () {
             $(".charts").each(function () {
@@ -63,14 +72,14 @@ class RotationRenderer {
         }, 500));
     }
 
-    renderInternal(mode = 'horizontal') {
+    renderChart() {
         let self = this;
         let option;
 
         this.currentFocusIndex = null;
         this.noFocusUpdate = false;
 
-        if (mode == 'horizontal')
+        if (self.data.options.view == 'horizontal')
             option = this.getStepsOption();
         else
             option = this.getDonutOption();
@@ -134,11 +143,27 @@ class RotationRenderer {
         // Specify the configuration items and data for the chart
         var data = [];
     
-        var categories = ['Autres interventions', 'Parcelle', 'Contrôle adventices'];
+                // "options": {
+        //     "view" : "donut",
+        //     "show_transcript": false,
+        //     "title_top_interventions": "Contrôle adventices",
+        //     "title_bottom_interventions": "Autres interventions",
+        //     "title_steps": "Étapes de la rotation dans la parcelle",
+        // },
+
+        var categories = [self.data.options.title_bottom_interventions ?? '', 
+                          self.data.options.title_steps ?? '', 
+                          self.data.options.title_top_interventions ?? ''];
+
+        // simulate some wrapping of the category labels
+        categories = categories.map((item) => {
+            return Array.from(item.matchAll(/(?=\S).{0,13}\S(?!\S)|\S{7}/gm), (m) => m[0]).join("\n");
+        }); 
+
         let minDate = null;
         let maxDate = null;
 
-        self.data.forEach((item, index) => {
+        self.data.steps.forEach((item, index) => {
             if (!minDate)
                 minDate = item.startDate.valueOf();
 
@@ -172,11 +197,11 @@ class RotationRenderer {
                         name: intervention.name,
                         type: intervention.type,
                         value: [
-                            intervention.type == 'Protection des plantes' ? 2 : 0, // Parcelle (index de la série)
+                            intervention.type == 'intervention_top' ? 2 : 0, // Parcelle (index de la série)
                             item.startDate.valueOf() + intervention.day * 86400000, // Date de début (ms)
                             item.startDate.valueOf() + (intervention.day + 1) * 86400000, // Date de début (ms)
                             intervention.important === true ? intervention.name + ' 🛈' : intervention.name, // Nom
-                            intervention.type == 'Protection des plantes' ? 'intervention_top' : 'intervention_bottom' // Type
+                            intervention.type == 'intervention_top' ? 'intervention_top' : 'intervention_bottom' // Type
                         ],
                         divId: 'Intervention_' + index + '_' + interventionIndex,
                         interventionDate: new Date(item.startDate.valueOf()),
@@ -439,7 +464,10 @@ class RotationRenderer {
             },
     
             yAxis: {
-                data: categories
+                data: categories,
+                axisLabel: {
+                    width: 100,
+                }
             },
     
             series: [
@@ -467,7 +495,7 @@ class RotationRenderer {
     
         let self = this;
 
-        self.data.forEach((item, index) => {
+        self.data.steps.forEach((item, index) => {
                 
             let collapseButton = '';
             if (item.interventions || item.attributes)
@@ -510,7 +538,7 @@ class RotationRenderer {
             html += '</div></div>';
         });
     
-        return html;
+        return '<div>' + html + '</div>';
     }
 
     getDonutOption() {
@@ -540,7 +568,7 @@ class RotationRenderer {
         let minDate = null;
         let lastDayOfPreviousStep = null;
 
-        self.data.forEach((item, index) => {
+        self.data.steps.forEach((item, index) => {
 
             totalMonths += item.duration;
 
@@ -666,7 +694,7 @@ class RotationRenderer {
         let self = this;
 
         option.title = {
-            text: 'Itinéraire technique',
+            text: self.data.title,
             left: 'center'
         };
 
@@ -705,7 +733,8 @@ class RotationRenderer {
                         "title": 'Rotation',
                         "icon": 'path://M18.15,12.99c-.06-.07-.14-.13-.23-.17l-.38-.15c.33-.93.51-1.92.51-2.96,0-3-1.49-5.65-3.77-7.26l-3.03,2.72c1.72.79,2.91,2.53,2.91,4.54,0,.54-.09,1.07-.25,1.56l-.44-.17c-.3-.12-.64.03-.76.33-.04.1-.05.21-.03.31l.79,4.82c.06.32.36.53.68.47.1-.02.19-.06.27-.13l3.66-3.1c.25-.21.28-.58.07-.82ZM6.94,5.24c.46-.23.97-.39,1.5-.47l.13.59c.07.32.38.52.69.45.1-.02.2-.07.28-.14l3.59-3.31c.23-.22.24-.59.02-.83-.07-.07-.16-.13-.26-.16L8.3.02c-.31-.09-.63.09-.73.39-.03.09-.03.19-.01.29l.06.27c-1.12.2-2.16.6-3.1,1.17l2.41,3.09ZM5.88,5.96l-2.39-3.06c-.98.82-1.79,1.84-2.34,3.01l3.62,1.44c.29-.53.66-1,1.11-1.39ZM4.17,9.72c0-.41.05-.81.14-1.19l-3.63-1.44c-.18.57-.3,1.16-.35,1.77l3.84,1.1c0-.08,0-.16,0-.24ZM9.17,14.72c-1.59,0-3-.74-3.92-1.9l.42-.38c.24-.22.26-.59.04-.83-.07-.08-.16-.14-.26-.17l-4.66-1.47c-.31-.09-.64.08-.73.39-.03.1-.03.2,0,.3l1.12,4.66c.07.31.39.51.7.43.09-.02.18-.07.25-.13l.23-.21c1.63,1.94,4.07,3.18,6.8,3.18,1.3,0,2.54-.28,3.66-.79l-.8-3.99c-.81.56-1.79.9-2.86.9Z',
                         onclick: function (){
-                            self.renderInternal('donut');
+                            self.data.options.view = 'donut';
+                            self.renderChart();
                         }
                     },
                     "myTool2": {
@@ -713,7 +742,8 @@ class RotationRenderer {
                         "title": 'Frise',
                         "icon": 'path://M4.63,0H0v10.01h4.97c.07,0,.13-.05.19-.14l2.61-4.14c.17-.28.23-.89.12-1.35-.03-.15-.08-.27-.13-.35L5.16.12c-.05-.08-.11-.12-.17-.12h-.37ZM11.9,4.38c-.03-.15-.08-.27-.13-.35L9.17.12c-.05-.08-.11-.12-.17-.12h-.37s-2.26,0-2.26,0v.03s.06.05.08.09l2.6,3.9c.06.08.1.21.13.35.1.47.05,1.07-.12,1.35l-2.61,4.14s-.05.07-.08.09v.04h2.6c.07,0,.13-.05.19-.14l2.61-4.14c.17-.28.23-.89.12-1.35ZM18.28,4.38c-.03-.15-.08-.27-.13-.35L15.55.12c-.05-.08-.11-.12-.17-.12h-.37s-4.63,0-4.63,0v.03s.06.05.08.09l2.6,3.9c.06.08.1.21.13.35.1.47.05,1.07-.12,1.35l-2.61,4.14s-.05.07-.08.09v.04h4.97c.07,0,.13-.05.19-.14l2.61-4.14c.17-.28.23-.89.12-1.35Z',
                         onclick: function (){
-                            self.renderInternal('horizontal');
+                            self.data.options.view = 'horizontal';
+                            self.renderChart();
                         }
                     },
                     "saveAsImage": {
