@@ -10,6 +10,19 @@ div.rotation_item.highlighted {
   box-shadow: 0px 4px 4px 0px var(--UI-Shadow, rgba(17, 36, 69, 0.16)), 0px 1px 16px 0px var(--UI-Shadow, rgba(17, 36, 69, 0.16));
   background-color: #F0F3F5;
 }
+div.rotation_item h4 {
+  margin-bottom: 0;
+}
+div.rotation_item div.step_dates {
+  font-size: 11px;
+  float: right;
+  background-color: #cdcccc;
+  color: #ffffff;
+  margin-right: 45px;
+  padding: 2px 5px;
+  border-radius: 5px;
+  margin-top: 7px;
+}
 div.rotation_item div.collapse-button {
   float: right;
   border-radius: 50%;
@@ -21,12 +34,14 @@ div.rotation_item div.collapse-button {
   background: #dfe6f7;
   color: #7a8bad;
   transition: transform 0.3s ease-in-out;
+  margin-top: -26px;
 }
 div.rotation_item.show-all div.collapse-button {
   transform: rotate(180deg);
 }
 div.rotation_item.show-all div.details {
-  max-height: 10000px; /* Adjust this value as needed */
+  max-height: 10000px;
+  /* Adjust this value as needed */
 }
 div.rotation_item div.details {
   max-height: 0px;
