@@ -30,119 +30,318 @@
                 
         var rotationTest = [
             {
-                name: "Betterave", color: "#ff96b0", duration: 8,
-                description: "Tête de rotation",
-                attributes: [
-                	{'name': "Pré-semis", 'value': "Possibilité d'un couvert multi-espèces en aout n-1"},
-                	{'name': "Travail du sol", 'value': "déchaumage pour niveler le terrain et un binage en Juin à 1cm"},
-                	{'name': "Type de semoir", 'value': "trois passages de strip-till"},
-                	{'name': "Date de semis", 'value': "22/03"},
-                	{'name': "Densité de semis", 'value': "125mil graines/ha"},
-                	{'name': "Plantes compagnes", 'value': "avoine/orge fermière, 20kg/ha"}
+                "name": "Betterave",
+                "color": "#ff96b0",
+                "description": "Tête de rotation",
+                "attributes": [
+                    {
+                        "name": "Pré-semis",
+                        "value": "Possibilité d'un couvert multi-espèces en aout n-1"
+                    },
+                    {
+                        "name": "Travail du sol",
+                        "value": "déchaumage pour niveler le terrain et un binage en Juin à 1cm"
+                    },
+                    {
+                        "name": "Type de semoir",
+                        "value": "trois passages de strip-till"
+                    },
+                    {
+                        "name": "Date de semis",
+                        "value": "22/03"
+                    },
+                    {
+                        "name": "Densité de semis",
+                        "value": "125mil graines/ha"
+                    },
+                    {
+                        "name": "Plantes compagnes",
+                        "value": "avoine/orge fermière, 20kg/ha"
+                    }
                 ],
-                interventions: [
-                    {day: 0, name: "Semis", type: "Autres interventions", description: "Semis des betteraves à J + 5"}
-                ]
-            },
-            {
-                name: "Blé tendre", color: "#edcc7d", duration: 11,
-                attributes: [
-                	{'name': "Pré-semis", 'value': "désinfection du grain au vinaigre (1L/100kg)"},
-                	{'name': "Travail du sol", 'value': "aucun, semis direct pur"},
-                	{'name': "Type de semoir", 'value': "semoir à dents"},
-                	{'name': "Date de semis", 'value': "11/10"},
-                	{'name': "Densité de semis", 'value': "125kg/ha"},
-                	{'name': "Plantes compagnes", 'value': "orge fermière, 20kg/ha (implantation semoir à disque)"},
-                ]
-            },
-            {
-                name: "Colza", color: "#ebe733", duration: 12,
-                description: "Travail du sol: aucun, semis direct pur, fissuration après récolte, avant le blé",
-                attributes: [
-                	{'name': "Type de semoir", 'value': "semoir à dents"},
-                	{'name': "Date de semis", 'value': "26/08"},
-                	{'name': "Densité de semis", 'value': "2kg/ha"},
-                	{'name': "Plantes compagnes", 'value': "feverole fermière, 60 pieds au m2"},
-                ],                
-                interventions: [
-                    {day: -20, name: "Labour", type: "Autres interventions", description: ""},
-                    {day: -15, name: "Travail superficiel", type: "Autres interventions", description: ""},
-                    {day: -10, name: "Fertilisation", type: "Autres interventions", description: "Fertilisation - tsp_45 (180 kg)"},
-                    {day: -10, name: "Fertilisation", type: "Autres interventions", description: "Fertilisation - potassium_chloride (125 kg)"},
-                    {day: -5, name: "Pulverisation", type: "Protection des plantes", description: "Protection des plantes - Proplus (0,4 l)"},
-                    {day: 0, name: "Semis", type: "Autres interventions", description: "Semence - Capello (2 kg)"},
-                    {day: 0, name: "Semis", type: "Protection des plantes", description: "Protection des plantes - Anti-limaces (4 kg)"},
-                    {day: 30, name: "Pulverisation", type: "Protection des plantes", description: "Protection des plantes - Sweet Home (0,3 l)"},
-                    {day: 120, name: "Fertilisation", type: "Autres interventions", description: "Fertilisation - ammonitrate_33 (178 kg)"},
-                    {day: 150, name: "Fertilisation", type: "Autres interventions", description: "Fertilisation - ammonium_sulphate (90 kg)", important: true},
-                    {day: 165, name: "Pulverisation", type: "Protection des plantes", description: "Protection des plantes - Boravi Wg (1 kg)"},
-                    {day: 180, name: "Fertilisation", type: "Autres interventions", description: "Fertilisation - ammonitrate_33 (178 kg)"},
-                    {day: 210, name: "Pulverisation", type: "Protection des plantes", description: "Protection des plantes - Elifor (0,5 l)"},
-                    {day: 225, name: "Pulverisation", type: "Protection des plantes", description: "Protection des plantes - Karakas (0,05 l)"},
-                    {day: 240, name: "Pulverisation", type: "Protection des plantes", description: "Protection des plantes - Sunorg Pro (0,4 l)"},
-                    {day: 255, name: "Pulverisation", type: "Protection des plantes", description: "Protection des plantes - Boravi Wg (1 kg)"},
-                    {day: 300, name: "Récolte", type: "Autres interventions", description: "Récolte - Rendement (30 q)"},
-                    {day: 300, name: "Transport", type: "Autres interventions", description: ""},
-                ]
-            },
-            {
-                name: "Repousses", color: "#fff2cc", duration: 1,
-                description: ""
-            },
-            {
-                name: "Blé tendre", color: "#edcc7d", duration: 11,
-                description: ""
-            },
-            {
-                name: "Couvert", color: "#93c47d", duration: 6,
-                description: "Couvert d'interculture longue pour casser le cycle des graminées",
-                attributes: [
-                	{'name': "Composition", 'value': "trefle facscelie vesce, feverple,pois, lupin tournessol, avoine"},
-                	{'name': "Destruction", 'value': "rouleau faca + gel"},
-                	{'name': "Densité", 'value': "250 pieds/m²"},
+                "interventions": [
+                    {
+                        "day": 0,
+                        "name": "Semis",
+                        "type": "Autres interventions",
+                        "description": "Semis des betteraves à J + 5"
+                    }
                 ],
+                "startDate": "2022-03-15",
+                "endDate": "2022-11-01"
             },
             {
-                name: "Lin textile", color: "#efefef", duration: 7,
-                attributes: [
-                	{'name': "Semis", 'value': "Mars"},
-                	{'name': "Type de semoir", 'value': "semoir à disques"},
-                	{'name': "Note", 'value': "Très sensible à la compaction donc éloigné le plus possible de la récolte de betterave"},
-                	{'name': "Autre", 'value': "Apport de BRF après lin, environ 10t/ha"},
+                "name": "Blé tendre",
+                "color": "#edcc7d",
+                "duration": 11,
+                "attributes": [
+                    {
+                        "name": "Pré-semis",
+                        "value": "désinfection du grain au vinaigre (1L/100kg)"
+                    },
+                    {
+                        "name": "Travail du sol",
+                        "value": "aucun, semis direct pur"
+                    },
+                    {
+                        "name": "Type de semoir",
+                        "value": "semoir à dents"
+                    },
+                    {
+                        "name": "Date de semis",
+                        "value": "11/10"
+                    },
+                    {
+                        "name": "Densité de semis",
+                        "value": "125kg/ha"
+                    },
+                    {
+                        "name": "Plantes compagnes",
+                        "value": "orge fermière, 20kg/ha (implantation semoir à disque)"
+                    }
                 ],
+                "startDate": "2022-11-15",
+                "endDate": "2023-10-15"
             },
             {
-                name: "Blé tendre", color: "#edcc7d", duration: 11,
-                description: ""
-            },
-            {
-                name: "Couvert", color: "#93c47d", duration: 4,
-                description: "Couvert d'interculture court",
-                attributes: [
-                	{'name': "Date de semis", 'value': "28/09 ou plus tôt"},
-                	{'name': "Composition", 'value': "avoine/pois/feverole/vesce/fascelie/radis/lupin/tournessol"},
-                	{'name': "Densité", 'value': "85 kg/ha"},
-                	{'name': "Destruction", 'value': "26/01"},
-                	{'name': "Reliquats azotés", 'value': "apporteront entre 20 et 40 u d'azote mobilisable"},
+                "name": "Colza",
+                "color": "#ebe733",
+                "duration": 12,
+                "description": "Travail du sol: aucun, semis direct pur, fissuration après récolte, avant le blé",
+                "attributes": [
+                    {
+                        "name": "Type de semoir",
+                        "value": "semoir à dents"
+                    },
+                    {
+                        "name": "Date de semis",
+                        "value": "26/08"
+                    },
+                    {
+                        "name": "Densité de semis",
+                        "value": "2kg/ha"
+                    },
+                    {
+                        "name": "Plantes compagnes",
+                        "value": "feverole fermière, 60 pieds au m2"
+                    }
                 ],
+                "interventions": [
+                    {
+                        "day": -20,
+                        "name": "Labour",
+                        "type": "Autres interventions",
+                        "description": ""
+                    },
+                    {
+                        "day": -15,
+                        "name": "Travail superficiel",
+                        "type": "Autres interventions",
+                        "description": ""
+                    },
+                    {
+                        "day": -10,
+                        "name": "Fertilisation",
+                        "type": "Autres interventions",
+                        "description": "Fertilisation - tsp_45 (180 kg)"
+                    },
+                    {
+                        "day": -10,
+                        "name": "Fertilisation",
+                        "type": "Autres interventions",
+                        "description": "Fertilisation - potassium_chloride (125 kg)"
+                    },
+                    {
+                        "day": -5,
+                        "name": "Pulverisation",
+                        "type": "Protection des plantes",
+                        "description": "Protection des plantes - Proplus (0,4 l)"
+                    },
+                    {
+                        "day": 0,
+                        "name": "Semis",
+                        "type": "Autres interventions",
+                        "description": "Semence - Capello (2 kg)"
+                    },
+                    {
+                        "day": 0,
+                        "name": "Semis",
+                        "type": "Protection des plantes",
+                        "description": "Protection des plantes - Anti-limaces (4 kg)"
+                    },
+                    {
+                        "day": 30,
+                        "name": "Pulverisation",
+                        "type": "Protection des plantes",
+                        "description": "Protection des plantes - Sweet Home (0,3 l)"
+                    },
+                    {
+                        "day": 120,
+                        "name": "Fertilisation",
+                        "type": "Autres interventions",
+                        "description": "Fertilisation - ammonitrate_33 (178 kg)"
+                    },
+                    {
+                        "day": 150,
+                        "name": "Fertilisation",
+                        "type": "Autres interventions",
+                        "description": "Fertilisation - ammonium_sulphate (90 kg)",
+                        "important": true
+                    },
+                    {
+                        "day": 165,
+                        "name": "Pulverisation",
+                        "type": "Protection des plantes",
+                        "description": "Protection des plantes - Boravi Wg (1 kg)"
+                    },
+                    {
+                        "day": 180,
+                        "name": "Fertilisation",
+                        "type": "Autres interventions",
+                        "description": "Fertilisation - ammonitrate_33 (178 kg)"
+                    },
+                    {
+                        "day": 210,
+                        "name": "Pulverisation",
+                        "type": "Protection des plantes",
+                        "description": "Protection des plantes - Elifor (0,5 l)"
+                    },
+                    {
+                        "day": 225,
+                        "name": "Pulverisation",
+                        "type": "Protection des plantes",
+                        "description": "Protection des plantes - Karakas (0,05 l)"
+                    },
+                    {
+                        "day": 240,
+                        "name": "Pulverisation",
+                        "type": "Protection des plantes",
+                        "description": "Protection des plantes - Sunorg Pro (0,4 l)"
+                    },
+                    {
+                        "day": 255,
+                        "name": "Pulverisation",
+                        "type": "Protection des plantes",
+                        "description": "Protection des plantes - Boravi Wg (1 kg)"
+                    },
+                    {
+                        "day": 300,
+                        "name": "Récolte",
+                        "type": "Autres interventions",
+                        "description": "Récolte - Rendement (30 q)"
+                    },
+                    {
+                        "day": 300,
+                        "name": "Transport",
+                        "type": "Autres interventions",
+                        "description": ""
+                    }
+                ],
+                "startDate": "2023-10-01",
+                "endDate": "2024-10-01"
             },
+            {
+                "name": "Repousses",
+                "color": "#fff2cc",
+                "duration": 1,
+                "description": "",
+                "startDate": "2024-10-01",
+                "endDate": "2024-11-01"
+            },
+            {
+                "name": "Blé tendre",
+                "color": "#edcc7d",
+                "duration": 11,
+                "description": "",
+                "startDate": "2024-11-01",
+                "endDate": "2025-10-01"
+            },
+            {
+                "name": "Couvert",
+                "color": "#93c47d",
+                "duration": 6,
+                "description": "Couvert d'interculture longue pour casser le cycle des graminées",
+                "attributes": [
+                    {
+                        "name": "Composition",
+                        "value": "trefle facscelie vesce, feverple,pois, lupin tournessol, avoine"
+                    },
+                    {
+                        "name": "Destruction",
+                        "value": "rouleau faca + gel"
+                    },
+                    {
+                        "name": "Densité",
+                        "value": "250 pieds/m²"
+                    }
+                ],
+                "startDate": "2025-10-01",
+                "endDate": "2026-04-01"
+            },
+            {
+                "name": "Lin textile",
+                "color": "#efefef",
+                "duration": 7,
+                "attributes": [
+                    {
+                        "name": "Semis",
+                        "value": "Mars"
+                    },
+                    {
+                        "name": "Type de semoir",
+                        "value": "semoir à disques"
+                    },
+                    {
+                        "name": "Note",
+                        "value": "Très sensible à la compaction donc éloigné le plus possible de la récolte de betterave"
+                    },
+                    {
+                        "name": "Autre",
+                        "value": "Apport de BRF après lin, environ 10t/ha"
+                    }
+                ],
+                "startDate": "2026-04-01",
+                "endDate": "2026-11-01"
+            },
+            {
+                "name": "Blé tendre",
+                "color": "#edcc7d",
+                "duration": 11,
+                "description": "",
+                "startDate": "2026-11-01",
+                "endDate": "2027-10-01"
+            },
+            {
+                "name": "Couvert",
+                "color": "#93c47d",
+                "duration": 4,
+                "description": "Couvert d'interculture court",
+                "attributes": [
+                    {
+                        "name": "Date de semis",
+                        "value": "28/09 ou plus tôt"
+                    },
+                    {
+                        "name": "Composition",
+                        "value": "avoine/pois/feverole/vesce/fascelie/radis/lupin/tournessol"
+                    },
+                    {
+                        "name": "Densité",
+                        "value": "85 kg/ha"
+                    },
+                    {
+                        "name": "Destruction",
+                        "value": "26/01"
+                    },
+                    {
+                        "name": "Reliquats azotés",
+                        "value": "apporteront entre 20 et 40 u d'azote mobilisable"
+                    }
+                ],
+                "startDate": "2027-10-01",
+                "endDate": "2028-02-25"
+            }
         ];
-
-
-        // Add start date and end date for each rotation steps: 
-        var startDate = new Date();
-        startDate.setFullYear(2022);
-        startDate.setMonth(2);
-        startDate.setDate(1);
-
-        for (var i = 0; i < rotationTest.length; i++) {
-            var step = rotationTest[i];
-            step.startDate = new Date(startDate);
-            step.endDate = new Date(startDate);
-            step.endDate.setMonth(startDate.getMonth() + step.duration);
-
-            startDate = new Date(step.endDate);
-        }
 
         let renderer = new RotationRenderer('itk_chart', 'itk_text', rotationTest);
         renderer.render('horizontal');

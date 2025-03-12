@@ -1,80 +1,97 @@
-
-
 div.rotation_item {
     background-color: #F8FAFC;
-    border-left: #FFFFFF 14px solid;
-    border-radius: 7px;
-    padding: 13px;
-    margin: 12px 0;
-    overflow-x: hidden;
+    border-left     : #FFFFFF 14px solid;
+    border-radius   : 7px;
+    padding         : 13px;
+    margin          : 12px 0;
+    overflow-x      : hidden;
 
     &.highlighted {
         box-shadow: 0px 4px 4px 0px var(--UI-Shadow, rgba(17, 36, 69, 0.16)),
-                    0px 1px 16px 0px var(--UI-Shadow, rgba(17, 36, 69, 0.16));
+            0px 1px 16px 0px var(--UI-Shadow, rgba(17, 36, 69, 0.16));
         background-color: #F0F3F5;
     }
 
-    div.collapse-button {
-        float: right;
-        border-radius: 50%;
-        width: 30px;
-        height: 30px;
-        text-align: center;
-        padding-top: 5px;
-        cursor: pointer;
+    h4 {
+        margin-bottom: 0;
+    }
 
-        background: #dfe6f7;
-        color: #7a8bad;
-        transition: transform 0.3s ease-in-out;
+    div.step_dates {
+        font-size       : 11px;
+        float           : right;
+        background-color: #cdcccc;
+        color           : #ffffff;
+        margin-right    : 45px;
+        padding         : 2px 5px;
+        border-radius   : 5px;
+        margin-top: 7px;
+    }
+
+    div.collapse-button {
+        float        : right;
+        border-radius: 50%;
+        width        : 30px;
+        height       : 30px;
+        text-align   : center;
+        padding-top  : 5px;
+        cursor       : pointer;
+        background   : #dfe6f7;
+        color        : #7a8bad;
+        transition   : transform 0.3s ease-in-out;
+        margin-top   : -26px;
     }
 
     &.show-all {
         div.collapse-button {
             transform: rotate(180deg);
         }
+
         div.details {
-            max-height: 10000px; /* Adjust this value as needed */
-        }    
-    } 
+            max-height: 10000px;
+            /* Adjust this value as needed */
+        }
+    }
 
     div.details {
         max-height: 0px;
-        overflow: hidden;
+        overflow  : hidden;
         transition: max-height 0.3s ease-in-out;
 
         div.intervention {
             background-color: #FFFFFF;
-            border-radius: 5px;
-            margin-bottom: 11px;
-            padding: 13px;
-            cursor: pointer;
+            border-radius   : 5px;
+            margin-bottom   : 11px;
+            padding         : 13px;
+            cursor          : pointer;
 
             span.intervention_title {
                 font-weight: bold;
             }
+
             span.intervention_date {
-                color : #707070;
+                color           : #707070;
                 background-color: #F0F3F5;
-                float: right;
+                float           : right;
             }
+
             div.intervention_description {
                 margin-top: 5px;
-            }            
-        }        
+            }
+        }
     }
 }
 
 .charts {
-    width: 100%;
-    height: 450px;
+    width  : 100%;
+    height : 450px;
     display: inline-block;
 }
 
 .transcript {
-    font-size: 80%;
-    width: 100%;
-    max-height: 450px;
-    overflow-y: scroll;
+    font-size      : 80%;
+    width          : 100%;
+    max-height     : 450px;
+    overflow-y     : scroll;
     scroll-behavior: smooth;
-    padding: 3px;
+    padding        : 3px;
 }

@@ -10,6 +10,17 @@ class RotationRenderer {
 
         this.chartIndex = new Map();
 
+        // Map rotationData items to make sure that the startDate and endDate are proper Date objects
+        rotationData.map((item) => {
+            item.startDate = new Date(item.startDate);
+            item.endDate = new Date(item.endDate);
+
+            // Add a duration in months
+            item.duration = Math.round((item.endDate - item.startDate) / (30 * 1000 * 60 * 60 * 24));
+
+            return item;
+        });
+
         this.data = rotationData;
         
         this.divID = divID;
@@ -128,10 +139,6 @@ class RotationRenderer {
         let maxDate = null;
 
         self.data.forEach((item, index) => {
-            let duration = (item.endDate.getFullYear() - item.startDate.getFullYear()) * 12;
-            duration -= item.startDate.getMonth();
-            duration += item.endDate.getMonth();
-            
             if (!minDate)
                 minDate = item.startDate.valueOf();
 
@@ -144,7 +151,7 @@ class RotationRenderer {
                 type: 'rotation_item',
                 startDate: new Date(item.startDate.valueOf()), // Date de début
                 endDate: new Date(item.endDate.valueOf()), // Date de fin
-                duration: duration,
+                duration: item.duration,
                 description: (item.description ?? ''),
                 value: [
                     1, // Parcelle (index de la série)
@@ -196,6 +203,7 @@ class RotationRenderer {
             let y = start[1];
 
             const style = api.style();
+            style.opacity = 0.5;
 
             if (params.context.rendered == undefined) {
                 // Start of a new rendering round
@@ -465,10 +473,16 @@ class RotationRenderer {
             if (item.interventions || item.attributes)
                 collapseButton = '<div class="collapse-button"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>';
 
+            let start = item.startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
+            let end = item.endDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
+
+            let dates = '<b>' + item.duration + ' mois</b> (' + start + ' ➜ ' + end + ')';
+
             html += '<div id="Step_' + index + '" class="rotation_item" style="border-color: ' + item.color + '">'
-                + collapseButton
+                + '<div class="step_dates">' + dates + '</div>'
                 + '<h4>' + item.name + '</h4>'
-                + '<p class="description">' + (item.description ?? '') + '</p>'
+                + collapseButton
+                + '<p class="step_description">' + (item.description ?? '') + '</p>'
                 + '<div class="details">'
                 + (item.attributes ? item.attributes.map((attribute) => { return '<p><dt>' + attribute.name + '</dt><dd>' + attribute.value + '</dd></p>' }).join('') : '');
         
@@ -523,26 +537,30 @@ class RotationRenderer {
         };
     
         let totalMonths = 0;  
-        let minDate = null;  
+        let minDate = null;
+        let lastDayOfPreviousStep = null;
 
         self.data.forEach((item, index) => {
-            let duration = (item.endDate.getFullYear() - item.startDate.getFullYear()) * 12;
-            duration -= item.startDate.getMonth();
-            duration += item.endDate.getMonth();
-            
-            totalMonths += duration;
+
+            totalMonths += item.duration;
+
+            if (!lastDayOfPreviousStep)
+                lastDayOfPreviousStep = new Date(item.startDate.valueOf());
+
+            let days = Math.round((item.endDate - lastDayOfPreviousStep) / (1000 * 60 * 60 * 24));
+            lastDayOfPreviousStep = new Date(item.endDate.valueOf());
 
             if (!minDate)
                 minDate = new Date(item.startDate.valueOf());
             
             let pieItem = {
                 'name': item.name,
-                'value': duration,
+                'value': days,
                 'divId': 'Step_' + index,
                 'type': 'rotation_item',
                 'startDate': new Date(item.startDate.valueOf()), // Date de début
                 'endDate': new Date(item.endDate.valueOf()), // Date de fin
-                'duration': duration,
+                'duration': item.duration,
                 'description': (item.description ?? '')// + (item.attributes ? item.attributes.map((attribute) => { return '<p><dt>' + attribute.name + '</dt><dd>' + attribute.value + '</dd></p>' }).join('') : '')
             };
 
@@ -571,7 +589,7 @@ class RotationRenderer {
             itemStyle: {
                 borderColor: '#555',
                 color: '#FFFFFF',
-                borderWidth: 1
+                borderWidth: 0
             },
             emphasis: { disabled: true },
             data: []
@@ -676,6 +694,11 @@ class RotationRenderer {
             };
     
         option.toolbox = {
+                "itemSize": 25,
+                "iconStyle": {
+                    "borderColor": "#AAA",
+                    "borderWidth": 1
+                },
                 "feature": {
                     "myTool1": {
                         "show": true,
@@ -702,11 +725,3 @@ class RotationRenderer {
         return option;
     }
 }
-// "tooltip": {
-//     "formatter": (item) => {
-//         return item.marker + "<b>" + item.name + "</b><br>" + item.data.description;
-//     },
-//     "confine": true,
-//     "extraCssText": "text-wrap: wrap;",
-//     "className": "rotation-tooltip"
-// },
