@@ -172,7 +172,17 @@
 
 <script>
 
-    let crops = [];
+    let crops = {
+            "title": "Itinéraire technique de ma ferme",
+            "options": {
+                "view" : "horizontal",
+                "show_transcript": true,
+                "title_top_interventions": "Contrôle adventices",
+                "title_bottom_interventions": "Autres interventions",
+                "title_steps": "Étapes de la rotation dans la parcelle",
+            },
+            "steps": []};
+
     let selectedCrop;
 
     class Crop {
@@ -243,7 +253,7 @@
 
     function createAndSelectEmptyCrop() {
         let crop = new Crop();
-        crops.push(crop);
+        crops.steps.push(crop);
 
         //select last created crop to be editable
         selectedCrop = crop;
@@ -321,7 +331,7 @@
 
         let cropsTable = document.getElementById("cropsTable");
 
-        crops.forEach(function (crop) {
+        crops.steps.forEach(function (crop) {
             let newRow = cropsTable.insertRow(-1);
 
             let cellKey = newRow.insertCell(0);
@@ -358,18 +368,18 @@
     }
 
     function deleteCrop(id) {
-        crops = crops.filter(function (crop) { return crop.id != id })
+        crops.steps = crops.steps.filter(function (crop) { return crop.id != id })
 
         //avoid bug if last crop is deleted
-        if (crops.length == 0) {
+        if (crops.steps.length == 0) {
             selectCrop(null);
         } else {
-            selectCrop(crops.slice(-1)[0].id);
+            selectCrop(crops.steps.slice(-1)[0].id);
         }
     }
 
     function selectCrop(cropId) {
-        selectedCrop = crops.find(x => x.id == cropId);
+        selectedCrop = crops.steps.find(x => x.id == cropId);
         loadSelectedCropToEditor();
         displayCropDetailView();
         refreshAllTables();
