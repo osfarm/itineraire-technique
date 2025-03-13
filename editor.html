@@ -21,29 +21,44 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-12 text-center">
+            <div class="col-12 text-center main-header mb-2">
                 <h1>Itinéraire technique</h1>
             </div>
         </div>
         <div class="row">
             <div class="col col-12 col-lg-3"> <!-- Editor zone-->
-                <div class="row" id="welcomeView">
-                    <div class="col-12">
-                        <p>Bienvenue dans l'éditeur</p>
+
+                <div class="welcome-view" id="welcomeView">
+
+                    <div class="row">
+                        <div class="col-12">
+                            <p>Bienvenue dans l'éditeur</p>
+                        </div>
                     </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <button type="button" onclick="addNewCropClickEvent()"
+                                class="w-100 btn btn-outline-primary primary-button" id="addNewCropButton">Ajouter une
+                                étape de rotation</button>
+                        </div>
+                    </div>
+
                 </div>
 
-                <div class="row d-none" id="cropListView">
-                    <div class="col-12">
-                        <table id="cropsTable" class="table table-striped table-hover">
-                        </table>
+                <div class="d-none" id="cropListView">
+                    <div class="row">
+                        <div class="col-12">
+                            <table id="cropsTable" class="table table-striped table-hover">
+                            </table>
+                        </div>
                     </div>
-                </div>
-
-                <div class="row" id="addNewCropButtonView">
-                    <div class="col-12">
-                        <button type="button" onclick="addNewCropClickEvent()"
-                            class="w-100 btn btn-outline-primary">Ajouter une étape de rotation</button>
+                    <div class="row">
+                        <div class="col-12">
+                            <button type="button" onclick="addNewCropClickEvent()"
+                                class="w-100 btn btn-outline-primary primary-button" id="addNewCropButton">Ajouter une
+                                étape de rotation</button>
+                        </div>
                     </div>
                 </div>
 
@@ -81,7 +96,7 @@
                             <div class="row mb-2">
                                 <div class="col-12">
                                     <button type="button" onclick="updateSelectedCropFromEditorClickEvent()"
-                                        class="w-100 btn btn-outline-primary">Valider</button>
+                                        class="w-100 btn btn-outline-primary primary-button">Valider</button>
                                 </div>
                             </div>
                         </form>
@@ -149,7 +164,8 @@
                     <div class="row">
                         <div class="col-12">
                             <button type="button" onclick="displayCropListView()"
-                                class="w-100 btn btn-outline-primary">Retour à la liste des étapes</button>
+                                class="w-100 btn btn-outline-primary primary-button">Retour à la liste des
+                                étapes</button>
                         </div>
                     </div>
                 </div>
@@ -366,7 +382,7 @@
     function createDeleteButton(id, deleteAction) {
         let button = document.createElement("button");
         button.innerHTML = "X";
-        button.className = "w-100 btn btn-outline-primary"
+        button.className = "delete-button btn btn-outline-primary"
         button.onclick = function () {
             deleteAction(id);
         }
@@ -414,11 +430,11 @@
     }
 
     function displayCropDetailView() {
-        displayView(["#cropDetailView"], ["#welcomeView", "#cropListView", "#addNewCropButtonView"]);
+        displayView(["#cropDetailView"], ["#welcomeView", "#cropListView"]);
     }
 
     function displayCropListView() {
-        displayView(["#cropListView", "#addNewCropButtonView"], ["#welcomeView", "#cropDetailView"]);
+        displayView(["#cropListView"], ["#welcomeView", "#cropDetailView"]);
     }
 
     function renderChart() {

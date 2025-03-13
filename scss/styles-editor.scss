@@ -1,0 +1,31 @@
+$button-color: green;
+$button-hover-color: rgb(2, 102, 2);
+$button-text-color: white;
+
+.main-header {
+    background-color: green;
+    color: white;
+}
+
+.welcome-view {
+    background-color: rgb(169, 233, 169);
+    color: green;
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 1rem;
+}
+
+.delete-button {
+    width: 3rem;
+    float: right;
+}
+
+.primary-button {
+    color: $button-text-color;
+    background-color: $button-color;
+    border: $button-color;
+
+    &:hover {
+        background-color: $button-hover-color;
+    }
+}
