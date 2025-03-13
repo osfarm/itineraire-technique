@@ -173,15 +173,16 @@
 <script>
 
     let crops = {
-            "title": "Itinéraire technique de ma ferme",
-            "options": {
-                "view" : "horizontal",
-                "show_transcript": true,
-                "title_top_interventions": "Contrôle adventices",
-                "title_bottom_interventions": "Autres interventions",
-                "title_steps": "Étapes de la rotation dans la parcelle",
-            },
-            "steps": []};
+        "title": "Itinéraire technique de ma ferme",
+        "options": {
+            "view": "horizontal",
+            "show_transcript": true,
+            "title_top_interventions": "Contrôle adventices",
+            "title_bottom_interventions": "Autres interventions",
+            "title_steps": "Étapes de la rotation dans la parcelle",
+        },
+        "steps": []
+    };
 
     let selectedCrop;
 
@@ -195,6 +196,11 @@
             this.description = description || "";
             this.interventions = [];
             this.attributes = [];
+        }
+
+        setDurationInMonths = function setDurationInMonths(durationInMonths) {
+            this.endDate = new Date(this.startDate);
+            this.endDate.setMonth(this.startDate.getMonth() + durationInMonths);
         }
 
         addIntervention = function addIntervention(day, name, type, description) {
@@ -235,13 +241,21 @@
     }
 
     function updateSelectedCropFromEditorClickEvent() {
-        selectedCrop.name = document.getElementById("cropName").value;
-        selectedCrop.color = document.getElementById("cropColor").value;
-        selectedCrop.startDate = new Date(document.getElementById("cropStartDate").value);
-        selectedCrop.endDate = new Date(document.getElementById("cropEndDate").value);
-        selectedCrop.description = document.getElementById("cropDescription").value;
+        selectedCrop.name = getInputValue("cropName");
+        selectedCrop.color = getInputValue("cropColor");
+        selectedCrop.startDate = new Date(getInputValue("cropStartDate"));
+        selectedCrop.endDate = new Date(getInputValue("cropEndDate"));
+        selectedCrop.description = getInputValue("cropDescription");
 
         refreshAllTables();
+    }
+
+    function getInputValue(elementId) {
+        return document.getElementById(elementId).value;
+    }
+
+    function setInputValue(elementId, value) {
+        document.getElementById(elementId).value = value;
     }
 
     function addNewCropClickEvent() {
@@ -253,6 +267,7 @@
 
     function createAndSelectEmptyCrop() {
         let crop = new Crop();
+        crop.setDurationInMonths(2)
         crops.steps.push(crop);
 
         //select last created crop to be editable
@@ -260,26 +275,26 @@
     }
 
     function loadSelectedCropToEditor() {
-        document.getElementById("cropName").value = selectedCrop.name;
-        document.getElementById("cropColor").value = selectedCrop.color;
-        document.getElementById("cropStartDate").valueAsDate = selectedCrop.startDate;
-        document.getElementById("cropEndDate").valueAsDate = selectedCrop.endDate;
-        document.getElementById("cropDescription").value = selectedCrop.description;
+        setInputValue("cropName", selectedCrop.name);
+        setInputValue("cropColor", selectedCrop.color);
+        setInputValue("cropStartDate", selectedCrop.startDate.toISOString().split('T')[0]);
+        setInputValue("cropEndDate", selectedCrop.endDate.toISOString().split('T')[0]);
+        setInputValue("cropDescription", selectedCrop.description);
     }
 
     function addAttributeClickEvent() {
-        let key = document.getElementById("attributeName").value;
-        let value = document.getElementById("attributeValue").value;
+        let key = getInputValue("attributeName");
+        let value = getInputValue("attributeValue");
 
         selectedCrop.addAttribute(key, value);
         refreshAllTables();
     }
 
     function addInterventionClickEvent() {
-        let name = document.getElementById("interventionName").value;
-        let day = document.getElementById("interventionDay").value;
-        let type = document.getElementById("interventionType").value;
-        let description = document.getElementById("interventionDescription").value;
+        let name = getInputValue("interventionName");
+        let day = getInputValue("interventionDay");
+        let type = getInputValue("interventionType");
+        let description = getInputValue("interventionDescription");
 
         selectedCrop.addIntervention(day, name, type, description);
         refreshAllTables();
@@ -392,18 +407,17 @@
         renderChart();
     }
 
+    function displayView(viewsToShow, viewsToHide) {
+        viewsToShow.forEach(view => document.querySelector(view).classList.remove("d-none"));
+        viewsToHide.forEach(view => document.querySelector(view).classList.add("d-none"));
+    }
+
     function displayCropDetailView() {
-        document.querySelector("#welcomeView").classList.add("d-none");
-        document.querySelector("#cropListView").classList.add("d-none");
-        document.querySelector("#addNewCropButtonView").classList.add("d-none");
-        document.querySelector("#cropDetailView").classList.remove("d-none");
+        displayView(["#cropDetailView"], ["#welcomeView", "#cropListView", "#addNewCropButtonView"]);
     }
 
     function displayCropListView() {
-        document.querySelector("#welcomeView").classList.add("d-none");
-        document.querySelector("#cropDetailView").classList.add("d-none");
-        document.querySelector("#cropListView").classList.remove("d-none");
-        document.querySelector("#addNewCropButtonView").classList.remove("d-none");
+        displayView(["#cropListView", "#addNewCropButtonView"], ["#welcomeView", "#cropDetailView"]);
     }
 
     function renderChart() {
