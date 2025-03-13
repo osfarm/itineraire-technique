@@ -267,6 +267,7 @@
 
     function createAndSelectEmptyCrop() {
         let crop = new Crop();
+        crop.startDate = getLatestEndDate();
         crop.setDurationInMonths(2)
         crops.steps.push(crop);
 
@@ -423,6 +424,16 @@
     function renderChart() {
         let renderer = new RotationRenderer('itk_chart', 'itk_text', crops);
         renderer.render();
+    }
+
+    function getLatestEndDate() { //this could be in a Crops object
+        let latestEndDate = new Date();
+        crops.steps.forEach(function (crop) {
+            if (crop.endDate > latestEndDate) {
+                latestEndDate = crop.endDate;
+            }
+        });
+        return latestEndDate;
     }
 
 </script>
