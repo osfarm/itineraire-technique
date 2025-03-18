@@ -21,29 +21,44 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-12 text-center">
+            <div class="col-12 text-center main-header mb-2">
                 <h1>Itinéraire technique</h1>
             </div>
         </div>
         <div class="row">
             <div class="col col-12 col-lg-3"> <!-- Editor zone-->
-                <div class="row" id="welcomeView">
-                    <div class="col-12">
-                        <p>Bienvenue dans l'éditeur</p>
+
+                <div class="welcome-view" id="welcomeView">
+
+                    <div class="row">
+                        <div class="col-12">
+                            <p>Bienvenue dans l'éditeur</p>
+                        </div>
                     </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <button type="button" onclick="addNewCropClickEvent()"
+                                class="w-100 btn btn-outline-primary primary-button" id="addNewCropButton">Ajouter une
+                                étape de rotation</button>
+                        </div>
+                    </div>
+
                 </div>
 
-                <div class="row d-none" id="cropListView">
-                    <div class="col-12">
-                        <table id="cropsTable" class="table table-striped table-hover">
-                        </table>
+                <div class="d-none" id="cropListView">
+                    <div class="row">
+                        <div class="col-12">
+                            <table id="cropsTable" class="table table-striped table-hover">
+                            </table>
+                        </div>
                     </div>
-                </div>
-
-                <div class="row" id="addNewCropButtonView">
-                    <div class="col-12">
-                        <button type="button" onclick="addNewCropClickEvent()"
-                            class="w-100 btn btn-outline-primary">Ajouter une étape de rotation</button>
+                    <div class="row">
+                        <div class="col-12">
+                            <button type="button" onclick="addNewCropClickEvent()"
+                                class="w-100 btn btn-outline-primary primary-button" id="addNewCropButton">Ajouter une
+                                étape de rotation</button>
+                        </div>
                     </div>
                 </div>
 
@@ -81,7 +96,7 @@
                             <div class="row mb-2">
                                 <div class="col-12">
                                     <button type="button" onclick="updateSelectedCropFromEditorClickEvent()"
-                                        class="w-100 btn btn-outline-primary">Valider</button>
+                                        class="w-100 btn btn-outline-primary primary-button">Valider</button>
                                 </div>
                             </div>
                         </form>
@@ -149,7 +164,8 @@
                     <div class="row">
                         <div class="col-12">
                             <button type="button" onclick="displayCropListView()"
-                                class="w-100 btn btn-outline-primary">Retour à la liste des étapes</button>
+                                class="w-100 btn btn-outline-primary primary-button">Retour à la liste des
+                                étapes</button>
                         </div>
                     </div>
                 </div>
@@ -173,15 +189,16 @@
 <script>
 
     let crops = {
-            "title": "Itinéraire technique de ma ferme",
-            "options": {
-                "view" : "horizontal",
-                "show_transcript": true,
-                "title_top_interventions": "Contrôle adventices",
-                "title_bottom_interventions": "Autres interventions",
-                "title_steps": "Étapes de la rotation dans la parcelle",
-            },
-            "steps": []};
+        "title": "Itinéraire technique de ma ferme",
+        "options": {
+            "view": "horizontal",
+            "show_transcript": true,
+            "title_top_interventions": "Contrôle adventices",
+            "title_bottom_interventions": "Autres interventions",
+            "title_steps": "Étapes de la rotation dans la parcelle",
+        },
+        "steps": []
+    };
 
     let selectedCrop;
 
@@ -195,6 +212,11 @@
             this.description = description || "";
             this.interventions = [];
             this.attributes = [];
+        }
+
+        setDurationInMonths = function setDurationInMonths(durationInMonths) {
+            this.endDate = new Date(this.startDate);
+            this.endDate.setMonth(this.startDate.getMonth() + durationInMonths);
         }
 
         addIntervention = function addIntervention(day, name, type, description) {
@@ -235,13 +257,21 @@
     }
 
     function updateSelectedCropFromEditorClickEvent() {
-        selectedCrop.name = document.getElementById("cropName").value;
-        selectedCrop.color = document.getElementById("cropColor").value;
-        selectedCrop.startDate = new Date(document.getElementById("cropStartDate").value);
-        selectedCrop.endDate = new Date(document.getElementById("cropEndDate").value);
-        selectedCrop.description = document.getElementById("cropDescription").value;
+        selectedCrop.name = getInputValue("cropName");
+        selectedCrop.color = getInputValue("cropColor");
+        selectedCrop.startDate = new Date(getInputValue("cropStartDate"));
+        selectedCrop.endDate = new Date(getInputValue("cropEndDate"));
+        selectedCrop.description = getInputValue("cropDescription");
 
         refreshAllTables();
+    }
+
+    function getInputValue(elementId) {
+        return document.getElementById(elementId).value;
+    }
+
+    function setInputValue(elementId, value) {
+        document.getElementById(elementId).value = value;
     }
 
     function addNewCropClickEvent() {
@@ -253,6 +283,8 @@
 
     function createAndSelectEmptyCrop() {
         let crop = new Crop();
+        crop.startDate = getLatestEndDate();
+        crop.setDurationInMonths(2)
         crops.steps.push(crop);
 
         //select last created crop to be editable
@@ -260,26 +292,26 @@
     }
 
     function loadSelectedCropToEditor() {
-        document.getElementById("cropName").value = selectedCrop.name;
-        document.getElementById("cropColor").value = selectedCrop.color;
-        document.getElementById("cropStartDate").valueAsDate = selectedCrop.startDate;
-        document.getElementById("cropEndDate").valueAsDate = selectedCrop.endDate;
-        document.getElementById("cropDescription").value = selectedCrop.description;
+        setInputValue("cropName", selectedCrop.name);
+        setInputValue("cropColor", selectedCrop.color);
+        setInputValue("cropStartDate", selectedCrop.startDate.toISOString().split('T')[0]);
+        setInputValue("cropEndDate", selectedCrop.endDate.toISOString().split('T')[0]);
+        setInputValue("cropDescription", selectedCrop.description);
     }
 
     function addAttributeClickEvent() {
-        let key = document.getElementById("attributeName").value;
-        let value = document.getElementById("attributeValue").value;
+        let key = getInputValue("attributeName");
+        let value = getInputValue("attributeValue");
 
         selectedCrop.addAttribute(key, value);
         refreshAllTables();
     }
 
     function addInterventionClickEvent() {
-        let name = document.getElementById("interventionName").value;
-        let day = document.getElementById("interventionDay").value;
-        let type = document.getElementById("interventionType").value;
-        let description = document.getElementById("interventionDescription").value;
+        let name = getInputValue("interventionName");
+        let day = getInputValue("interventionDay");
+        let type = getInputValue("interventionType");
+        let description = getInputValue("interventionDescription");
 
         selectedCrop.addIntervention(day, name, type, description);
         refreshAllTables();
@@ -350,7 +382,7 @@
     function createDeleteButton(id, deleteAction) {
         let button = document.createElement("button");
         button.innerHTML = "X";
-        button.className = "w-100 btn btn-outline-primary"
+        button.className = "delete-button btn btn-outline-primary"
         button.onclick = function () {
             deleteAction(id);
         }
@@ -392,23 +424,32 @@
         renderChart();
     }
 
+    function displayView(viewsToShow, viewsToHide) {
+        viewsToShow.forEach(view => document.querySelector(view).classList.remove("d-none"));
+        viewsToHide.forEach(view => document.querySelector(view).classList.add("d-none"));
+    }
+
     function displayCropDetailView() {
-        document.querySelector("#welcomeView").classList.add("d-none");
-        document.querySelector("#cropListView").classList.add("d-none");
-        document.querySelector("#addNewCropButtonView").classList.add("d-none");
-        document.querySelector("#cropDetailView").classList.remove("d-none");
+        displayView(["#cropDetailView"], ["#welcomeView", "#cropListView"]);
     }
 
     function displayCropListView() {
-        document.querySelector("#welcomeView").classList.add("d-none");
-        document.querySelector("#cropDetailView").classList.add("d-none");
-        document.querySelector("#cropListView").classList.remove("d-none");
-        document.querySelector("#addNewCropButtonView").classList.remove("d-none");
+        displayView(["#cropListView"], ["#welcomeView", "#cropDetailView"]);
     }
 
     function renderChart() {
         let renderer = new RotationRenderer('itk_chart', 'itk_text', crops);
         renderer.render();
+    }
+
+    function getLatestEndDate() { //this could be in a Crops object
+        let latestEndDate = new Date();
+        crops.steps.forEach(function (crop) {
+            if (crop.endDate > latestEndDate) {
+                latestEndDate = crop.endDate;
+            }
+        });
+        return latestEndDate;
     }
 
 </script>

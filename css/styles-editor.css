@@ -1,1 +1,28 @@
+.main-header {
+  background-color: green;
+  color: white;
+}
+
+.welcome-view {
+  background-color: rgb(169, 233, 169);
+  color: green;
+  padding: 1rem;
+  margin-top: 1rem;
+  border-radius: 1rem;
+}
+
+.delete-button {
+  width: 3rem;
+  float: right;
+}
+
+.primary-button {
+  color: white;
+  background-color: green;
+  border: green;
+}
+.primary-button:hover {
+  background-color: rgb(2, 102, 2);
+}
+
 /*# sourceMappingURL=styles-editor.css.map */
