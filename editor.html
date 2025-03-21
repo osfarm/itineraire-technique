@@ -26,7 +26,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col col-12 col-lg-3"> <!-- Editor zone-->
+            <div class="col col-12 col-lg-3 editor-view"> <!-- Editor zone-->
 
                 <div class="welcome-view" id="welcomeView">
 
@@ -89,7 +89,7 @@
                                     <input type="date" id="cropEndDate" class="form-control">
                                 </div>
                                 <div class="col-2">
-                                    <label for="cropColor" class="form-label">Couleur</label>
+                                    <label for="cropColor" class="form-label"></label>
                                     <input type="color" id="cropColor" class="form-control form-control-color w-100">
                                 </div>
                             </div>
@@ -101,29 +101,14 @@
                             </div>
                         </form>
                     </div>
-                    <div class="row d-none">
+                    <div class="row attributes-view">
                         <div class="col-12">
-                            <h4>Attributs du plant</h4>
-                            <form>
-                                <div class="row">
-                                    <div class="col">
-                                        <input type="text" id="attributeName" class="form-control" placeholder="Key"
-                                            value="Souche">
-                                    </div>
-                                    <div class="col">
-                                        <input type="text" id="attributeValue" class="form-control" placeholder="Value"
-                                            value="Resistante">
-                                    </div>
-                                    <div class="col">
-                                        <button type="button" onclick="addAttributeClickEvent()"
-                                            class="w-100 btn btn-outline-primary">Add</button>
-                                    </div>
-                                </div>
-                            </form>
                             <div class="row">
-                                <table id="attributesTable" class="table table-striped">
-                                </table>
+                                <div id="attributesContainer" class="container"></div>
                             </div>
+                            <button id="newAttributeButton" type="button" onclick="createAttributForm()"
+                                class="btn btn-primary primary-button w-100">Ajouter</button>
+                            <div id="newAttributeContainer"></div>
                         </div>
                     </div>
                     <div class="row d-none">
@@ -164,7 +149,7 @@
                     <div class="row">
                         <div class="col-12">
                             <button type="button" onclick="displayCropListView()"
-                                class="w-100 btn btn-outline-primary primary-button">Retour à la liste des
+                                class="w-100 btn btn-outline-primary primary-button mt-2">Retour à la liste des
                                 étapes</button>
                         </div>
                     </div>
@@ -229,6 +214,16 @@
             this.attributes.push(attribute);
         }
 
+        updateAttribute = function updateAttribute(attributeId, key, value) {
+            this.attributes = this.attributes.map(function (attribute) {
+                if (attribute.id == attributeId) {
+                    attribute.name = key;
+                    attribute.value = value;
+                }
+                return attribute;
+            });
+        }
+
         removeAttribute = function removeAttribute(attributeId) {
             this.attributes = this.attributes.filter(function (attribute) { return attribute.id != attributeId });
         }
@@ -287,6 +282,11 @@
         crop.setDurationInMonths(2)
         crops.steps.push(crop);
 
+        crop.addAttribute("Pré-semis", "");
+        crop.addAttribute("Travail du sol", "");
+        crop.addAttribute("Type de semoir", "");
+        crop.addAttribute("Date des semis", "");
+
         //select last created crop to be editable
         selectedCrop = crop;
     }
@@ -299,11 +299,20 @@
         setInputValue("cropDescription", selectedCrop.description);
     }
 
-    function addAttributeClickEvent() {
+    function addOrUpdateAttributeClickEvent() {
+        let id = getInputValue("attributeId");
         let key = getInputValue("attributeName");
         let value = getInputValue("attributeValue");
 
-        selectedCrop.addAttribute(key, value);
+        if (id != "") {
+            selectedCrop.updateAttribute(id, key, value);
+        } else {
+            selectedCrop.addAttribute(key, value);
+
+            document.getElementById("newAttributeButton").classList.remove("d-none");
+            document.getElementById("newAttributeContainer").innerHTML = "";
+        }
+
         refreshAllTables();
     }
 
@@ -318,25 +327,67 @@
     }
 
     function refreshAttributesTable() {
-        $("#attributesTable tr").remove();
+        let attributesContainer = document.getElementById("attributesContainer");
+        attributesContainer.innerHTML = "";
 
-        if (selectedCrop != null) {
-            let attributesTable = document.getElementById("attributesTable");
-            let selectedCropAttributes = selectedCrop.attributes;
-
-            selectedCropAttributes.forEach(function (attribute) {
-                let newRow = attributesTable.insertRow(-1);
-
-                let cellKey = newRow.insertCell(0);
-                cellKey.appendChild(document.createTextNode(attribute.name));
-
-                let cellValue = newRow.insertCell(1);
-                cellValue.appendChild(document.createTextNode(attribute.value));
-
-                let cellAction = newRow.insertCell(2);
-                cellAction.appendChild(createDeleteButton(attribute.id, deleteCropAttribute));
+        if (selectedCrop) {
+            selectedCrop.attributes.forEach((attribute) => {
+                const rowDiv = createAttributeRow(attribute);
+                attributesContainer.appendChild(rowDiv);
             });
         }
+    }
+
+    function createAttributeRow(attribute) {
+        let rowDiv = document.createElement("div");
+        rowDiv.className = "row mb-2 attribute-row position-relative";
+
+        let nameValueDiv = createNameAndValueColumn(attribute);
+        rowDiv.appendChild(nameValueDiv);
+
+        let actionContainer = createAttributeActionContainer(attribute);
+        rowDiv.appendChild(actionContainer);
+
+        rowDiv.onmouseenter = function () {
+            actionContainer.classList.remove("d-none");
+        };
+        rowDiv.onmouseleave = function () {
+            actionContainer.classList.add("d-none");
+        };
+
+        rowDiv.onclick = function () {
+            createAttributForm(attribute.id, attribute.name, attribute.value, rowDiv);
+        };
+
+        return rowDiv;
+    }
+
+    function createNameAndValueColumn(attribute) {
+        let nameValueDiv = document.createElement("div");
+        nameValueDiv.className = "col";
+        nameValueDiv.innerHTML = `<strong>${attribute.name}</strong></br> ${attribute.value}`;
+
+        return nameValueDiv;
+    }
+
+    function createAttributeActionContainer(attribute) {
+        let actionContainer = document.createElement("div");
+        actionContainer.className = "position-absolute top-center end-0 float-end d-none";
+
+        let deleteButton = createDeleteButton(attribute.id, deleteCropAttribute);
+        actionContainer.appendChild(deleteButton);
+
+        let editIcon = createEditIcon();
+        actionContainer.appendChild(editIcon);
+
+        return actionContainer;
+    }
+
+    function createEditIcon() {
+        let editIcon = document.createElement("button");
+        editIcon.innerHTML = '<i class="fa fa-pencil"></i>';
+        editIcon.className = "edit-button btn btn-outline-primary float-end";
+        return editIcon;
     }
 
     function refreshInterventionsTable() {
@@ -381,8 +432,8 @@
 
     function createDeleteButton(id, deleteAction) {
         let button = document.createElement("button");
-        button.innerHTML = "X";
-        button.className = "delete-button btn btn-outline-primary"
+        button.innerHTML = '<i class="fa fa-trash"></i>';
+        button.className = "btn btn-outline-danger float-end"
         button.onclick = function () {
             deleteAction(id);
         }
@@ -450,6 +501,41 @@
             }
         });
         return latestEndDate;
+    }
+
+    function createAttributForm(id, name, value, row) {
+        id = id || "";
+        name = name || "";
+        value = value || "";
+
+        const formContainer = document.createElement("div");
+        formContainer.innerHTML = `
+            <form>
+                <div class="row edit-attribute-view mb-2">
+                    <input type="hidden" id="attributeId" value="${id}">
+                    <div class="col-12 mb-2">
+                        <label for="attributeName" class="form-label">Nom</label>
+                        <input type="text" id="attributeName" class="form-control" placeholder="Nom" value="${name}">
+                    </div>
+                    <div class="col-12 mb-2">
+                        <input type="text" id="attributeValue" class="form-control" placeholder="Description" value="${value}" selected>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <button type="button" onclick="addOrUpdateAttributeClickEvent()"
+                            class="w-100 btn btn-outline-primary primary-button">Valider</button>
+                    </div>
+                </div>
+            </form>
+        `;
+
+        if (row) { //we are editing an attribute
+            row.replaceWith(formContainer);
+        } else { //we are adding an attribute
+            document.getElementById("newAttributeContainer").appendChild(formContainer);
+            document.getElementById("newAttributeButton").classList.add("d-none");
+        }
+
+        $("#attributeValue").focus();
     }
 
 </script>

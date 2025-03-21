@@ -1,10 +1,23 @@
 $button-color: green;
 $button-hover-color: rgb(2, 102, 2);
 $button-text-color: white;
+$header-height: 3rem;
 
 .main-header {
     background-color: green;
     color: white;
+    height: $header-height;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.editor-view {
+    overflow-y: auto;
+
+    //scrollbar only for the editor
+    height: calc(100vh - #{$header-height + 1rem});
 }
 
 .welcome-view {
@@ -15,9 +28,25 @@ $button-text-color: white;
     border-radius: 1rem;
 }
 
-.delete-button {
-    width: 3rem;
-    float: right;
+.edit-attribute-view {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 1rem;
+}
+
+.attributes-view {
+    background-color: whitesmoke;
+    padding: 1rem;
+    border-radius: 1rem;
+    margin: auto
+}
+
+.attribute-row {
+    background-color: rgb(225, 225, 225);
+    min-height: 3rem;
+
+    display: flex;
+    align-items: center;
 }
 
 .primary-button {

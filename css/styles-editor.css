@@ -1,6 +1,15 @@
 .main-header {
   background-color: green;
   color: white;
+  height: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.editor-view {
+  overflow-y: auto;
+  height: calc(100vh - 4rem);
 }
 
 .welcome-view {
@@ -11,9 +20,24 @@
   border-radius: 1rem;
 }
 
-.delete-button {
-  width: 3rem;
-  float: right;
+.edit-attribute-view {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 1rem;
+}
+
+.attributes-view {
+  background-color: whitesmoke;
+  padding: 1rem;
+  border-radius: 1rem;
+  margin: auto;
+}
+
+.attribute-row {
+  background-color: rgb(225, 225, 225);
+  min-height: 3rem;
+  display: flex;
+  align-items: center;
 }
 
 .primary-button {
