@@ -10,6 +10,8 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.7/underscore-umd-min.js"></script>
     <script src="./js/chart-render.js"></script>
+    <script src="./js/editor-attributes.js"></script>
+    <script src="./js/editor-interventions.js"></script>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -101,7 +103,7 @@
                             </div>
                         </form>
                     </div>
-                    <div class="row attributes-view">
+                    <div class="row card-holder attributes-view mb-2">
                         <div class="col-12">
                             <div class="row">
                                 <div id="attributesContainer" class="container"></div>
@@ -111,39 +113,15 @@
                             <div id="newAttributeContainer"></div>
                         </div>
                     </div>
-                    <div class="row d-none">
+                    <div class="row card-holder">
                         <div class="col-12">
-                            <h4>Interventions sur le plant</h4>
-                            <form id="interventionForm">
-                                <div class="form-row">
-                                    <div class="col">
-                                        <input type="text" id="interventionName" class="form-control" placeholder="Name"
-                                            value="Ma super intervention">
-                                    </div>
-                                    <div class="col">
-                                        <input type="number" id="interventionDay" class="form-control" placeholder="Day"
-                                            value="5">
-                                    </div>
-                                    <div class="col">
-                                        <select id="interventionType" class="form-select" aria-label="Type">
-                                            <option value="Autres interventions" selected>Autres interventions</option>
-                                            <option value="Protection des plantes">Protection des plantes</option>
-                                        </select>
-                                    </div>
-                                    <div class="col">
-                                        <textarea id="interventionDescription" class="form-control"
-                                            placeholder="Description">J'ai travaillé la terre</textarea>
-                                    </div>
-                                    <div class="col">
-                                        <button type="button" onclick="addInterventionClickEvent()"
-                                            class="w-100 btn btn-outline-primary">Add</button>
-                                    </div>
-                                </div>
-                            </form>
+                            <h4>Interventions</h4>
                             <div class="row">
-                                <table id="interventionsTable" class="table table-striped">
-                                </table>
+                                <div id="interventionsContainer" class="container"></div>
                             </div>
+                            <button id="newInterventionButton" type="button" onclick="createInterventionForm()"
+                                class="btn btn-primary primary-button w-100">Ajouter</button>
+                            <div id="newInterventionContainer"></div>
                         </div>
                     </div>
                     <div class="row">
@@ -228,6 +206,18 @@
             this.attributes = this.attributes.filter(function (attribute) { return attribute.id != attributeId });
         }
 
+        updateIntervention = function updateIntervention(interventionId, day, name, type, description) {
+            this.interventions = this.interventions.map(function (intervention) {
+                if (intervention.id == interventionId) {
+                    intervention.day = day;
+                    intervention.name = name;
+                    intervention.type = type;
+                    intervention.description = description;
+                }
+                return intervention;
+            });
+        }
+
         removeIntervention = function removeIntervention(interventionId) {
             this.interventions = this.interventions.filter(function (intervention) { return intervention.id != interventionId });
         }
@@ -237,17 +227,17 @@
         constructor(day, name, type, description) {
             this.id = crypto.randomUUID();
             this.day = day;
-            this.name = name;
+            this.name = name || "";;
             this.type = type;
-            this.description = description;
+            this.description = description || "";;
         }
     }
 
     class Attribute {
         constructor(key, value) {
             this.id = crypto.randomUUID();
-            this.name = key;
-            this.value = value;
+            this.name = key || "";;
+            this.value = value || "";;
         }
     }
 
@@ -284,7 +274,7 @@
 
         crop.addAttribute("Pré-semis", "");
         crop.addAttribute("Travail du sol", "");
-        crop.addAttribute("Type de semoir", "");
+        crop.addAttribute("Type de semoir", " ");
         crop.addAttribute("Date des semis", "");
 
         //select last created crop to be editable
@@ -299,114 +289,11 @@
         setInputValue("cropDescription", selectedCrop.description);
     }
 
-    function addOrUpdateAttributeClickEvent() {
-        let id = getInputValue("attributeId");
-        let key = getInputValue("attributeName");
-        let value = getInputValue("attributeValue");
-
-        if (id != "") {
-            selectedCrop.updateAttribute(id, key, value);
-        } else {
-            selectedCrop.addAttribute(key, value);
-
-            document.getElementById("newAttributeButton").classList.remove("d-none");
-            document.getElementById("newAttributeContainer").innerHTML = "";
-        }
-
-        refreshAllTables();
-    }
-
-    function addInterventionClickEvent() {
-        let name = getInputValue("interventionName");
-        let day = getInputValue("interventionDay");
-        let type = getInputValue("interventionType");
-        let description = getInputValue("interventionDescription");
-
-        selectedCrop.addIntervention(day, name, type, description);
-        refreshAllTables();
-    }
-
-    function refreshAttributesTable() {
-        let attributesContainer = document.getElementById("attributesContainer");
-        attributesContainer.innerHTML = "";
-
-        if (selectedCrop) {
-            selectedCrop.attributes.forEach((attribute) => {
-                const rowDiv = createAttributeRow(attribute);
-                attributesContainer.appendChild(rowDiv);
-            });
-        }
-    }
-
-    function createAttributeRow(attribute) {
-        let rowDiv = document.createElement("div");
-        rowDiv.className = "row mb-2 attribute-row position-relative";
-
-        let nameValueDiv = createNameAndValueColumn(attribute);
-        rowDiv.appendChild(nameValueDiv);
-
-        let actionContainer = createAttributeActionContainer(attribute);
-        rowDiv.appendChild(actionContainer);
-
-        rowDiv.onmouseenter = function () {
-            actionContainer.classList.remove("d-none");
-        };
-        rowDiv.onmouseleave = function () {
-            actionContainer.classList.add("d-none");
-        };
-
-        rowDiv.onclick = function () {
-            createAttributForm(attribute.id, attribute.name, attribute.value, rowDiv);
-        };
-
-        return rowDiv;
-    }
-
-    function createNameAndValueColumn(attribute) {
-        let nameValueDiv = document.createElement("div");
-        nameValueDiv.className = "col";
-        nameValueDiv.innerHTML = `<strong>${attribute.name}</strong></br> ${attribute.value}`;
-
-        return nameValueDiv;
-    }
-
-    function createAttributeActionContainer(attribute) {
-        let actionContainer = document.createElement("div");
-        actionContainer.className = "position-absolute top-center end-0 float-end d-none";
-
-        let deleteButton = createDeleteButton(attribute.id, deleteCropAttribute);
-        actionContainer.appendChild(deleteButton);
-
-        let editIcon = createEditIcon();
-        actionContainer.appendChild(editIcon);
-
-        return actionContainer;
-    }
-
     function createEditIcon() {
         let editIcon = document.createElement("button");
         editIcon.innerHTML = '<i class="fa fa-pencil"></i>';
-        editIcon.className = "edit-button btn btn-outline-primary float-end";
+        editIcon.className = "edit-button btn btn-outline-primary float-end me-1";
         return editIcon;
-    }
-
-    function refreshInterventionsTable() {
-        $("#interventionsTable tr").remove();
-
-        if (selectedCrop != null) {
-            let interventionsTable = document.getElementById("interventionsTable");
-            let selectedCropInterventions = selectedCrop.interventions;
-
-            selectedCropInterventions.forEach(function (intervention) {
-                let newRow = interventionsTable.insertRow(-1);
-
-                let cellKey = newRow.insertCell(0);
-                cellKey.appendChild(document.createTextNode(intervention.name));
-
-                let cellAction = newRow.insertCell(1);
-                cellAction.appendChild(createDeleteButton(intervention.id, deleteCropIntervention));
-            });
-        }
     }
 
     function refreshCropsTable() {
@@ -438,16 +325,6 @@
             deleteAction(id);
         }
         return button;
-    }
-
-    function deleteCropAttribute(id) {
-        selectedCrop.removeAttribute(id);
-        refreshAllTables();
-    }
-
-    function deleteCropIntervention(id) {
-        selectedCrop.removeIntervention(id);
-        refreshAllTables();
     }
 
     function deleteCrop(id) {
@@ -503,39 +380,24 @@
         return latestEndDate;
     }
 
-    function createAttributForm(id, name, value, row) {
-        id = id || "";
-        name = name || "";
-        value = value || "";
+    function createActionContainer(rowDiv, deleteId, deleteFunction) {
+        let actionContainer = document.createElement("div");
+        actionContainer.className = "position-absolute top-center end-0 float-end d-none";
 
-        const formContainer = document.createElement("div");
-        formContainer.innerHTML = `
-            <form>
-                <div class="row edit-attribute-view mb-2">
-                    <input type="hidden" id="attributeId" value="${id}">
-                    <div class="col-12 mb-2">
-                        <label for="attributeName" class="form-label">Nom</label>
-                        <input type="text" id="attributeName" class="form-control" placeholder="Nom" value="${name}">
-                    </div>
-                    <div class="col-12 mb-2">
-                        <input type="text" id="attributeValue" class="form-control" placeholder="Description" value="${value}" selected>
-                    </div>
-                    <div class="col-12 mb-2">
-                        <button type="button" onclick="addOrUpdateAttributeClickEvent()"
-                            class="w-100 btn btn-outline-primary primary-button">Valider</button>
-                    </div>
-                </div>
-            </form>
-        `;
+        let deleteButton = createDeleteButton(deleteId, deleteFunction);
+        actionContainer.appendChild(deleteButton);
 
-        if (row) { //we are editing an attribute
-            row.replaceWith(formContainer);
-        } else { //we are adding an attribute
-            document.getElementById("newAttributeContainer").appendChild(formContainer);
-            document.getElementById("newAttributeButton").classList.add("d-none");
-        }
+        let editIcon = createEditIcon();
+        actionContainer.appendChild(editIcon);
 
-        $("#attributeValue").focus();
+        rowDiv.onmouseenter = function () {
+            actionContainer.classList.remove("d-none");
+        };
+        rowDiv.onmouseleave = function () {
+            actionContainer.classList.add("d-none");
+        };
+
+        return actionContainer;
     }
 
 </script>
