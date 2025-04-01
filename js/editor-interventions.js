@@ -77,15 +77,15 @@ function createInterventionForm(id, day, name, type, description, row) {
             <div class="row card-white mb-2">
                 <input type="hidden" id="interventionId" value="${id}">
                 <div class="col-12 mb-2">
-                    <label for="interventionName" class="form-label">Type</label>
-                    <input type="text" id="interventionName" class="form-control" placeholder="Name" value="${name}">
+                    <label for="interventionName" class="form-label">Nom</label>
+                    <input type="text" id="interventionName" class="form-control" placeholder="Nom" value="${name}">
                 </div>
                 <div class="col-12 mb-2">
                     <textarea id="interventionDescription" class="form-control"
                         placeholder="Ajouter une description">${description}</textarea>
                 </div>
                 <div class="col-12 mb-2">
-                    <label for="interventionDay" class="form-label">Date</label>
+                    <label for="interventionDay" class="form-label">Quel jour après la plantation ?</label>
                     <input type="number" id="interventionDay" class="form-control" placeholder="Jour"
                         value="${day}">
                 </div>
