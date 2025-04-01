@@ -11,19 +11,25 @@ function addInterventionClickEvent() {
         selectedCrop.addIntervention(day, name, type, description);
 
         document.getElementById("newInterventionButton").classList.remove("d-none");
-        document.getElementById("newInterventionContainer").innerHTML = "";
+        getAndCleanElement("newInterventionContainer");
     }
     refreshAllTables();
 }
 
 function refreshInterventionsTable() {
-    let interventionsContainer = document.getElementById("interventionsContainer");
-    interventionsContainer.innerHTML = "";
+    let interventionsTopContainer = getAndCleanElement("interventionsTopContainer");
+    let interventionsBottomContainer = getAndCleanElement("interventionsBottomContainer");
 
     if (selectedCrop) {
         selectedCrop.interventions.forEach((intervention) => {
             const rowDiv = createInterventionRow(intervention);
-            interventionsContainer.appendChild(rowDiv);
+
+            if (intervention.type === crops.options.title_top_interventions) {
+                interventionsTopContainer.appendChild(rowDiv);
+            } else {
+                interventionsBottomContainer.appendChild(rowDiv);
+            }
+
         });
     }
 }
@@ -80,13 +86,15 @@ function createInterventionForm(id, day, name, type, description, row) {
                 </div>
                 <div class="col-12 mb-2">
                     <label for="interventionDay" class="form-label">Date</label>
-                    <input type="number" id="interventionDay" class="form-control" placeholder="Day"
+                    <input type="number" id="interventionDay" class="form-control" placeholder="Jour"
                         value="${day}">
                 </div>
                 <div class="col-12 mb-2">
                     <select id="interventionType" class="form-select" aria-label="Type">
-                        <option value="Autres interventions" selected>Autres interventions</option>
-                        <option value="Protection des plantes">Protection des plantes</option>
+                        <option value="${crops.options.title_top_interventions}" 
+                        ${type === crops.options.title_top_interventions ? "selected" : ""}>${crops.options.title_top_interventions}</option>
+                        <option value="${crops.options.title_bottom_interventions}" 
+                        ${type === crops.options.title_bottom_interventions ? "selected" : ""}>${crops.options.title_bottom_interventions}</option>
                     </select>
                 </div>
 

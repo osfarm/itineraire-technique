@@ -117,8 +117,14 @@
                         <div class="col-12">
                             <h4>Interventions</h4>
                             <div class="row">
-                                <div id="interventionsContainer" class="container"></div>
+                                <p id="interventionsTopName" class="h6"></p>
+                                <div id="interventionsTopContainer" class="container"></div>
                             </div>
+                            <div class="row">
+                                <p id="interventionsBottomName" class="h6"></p>
+                                <div id="interventionsBottomContainer" class="container"></div>
+                            </div>
+
                             <button id="newInterventionButton" type="button" onclick="createInterventionForm()"
                                 class="btn btn-primary primary-button w-100">Ajouter</button>
                             <div id="newInterventionContainer"></div>
@@ -277,6 +283,8 @@
         crop.addAttribute("Type de semoir", " ");
         crop.addAttribute("Date des semis", "");
 
+        document.getElementById("interventionsTopName").textContent = crops.options.title_top_interventions;
+        document.getElementById("interventionsBottomName").textContent = crops.options.title_bottom_interventions;
         //select last created crop to be editable
         selectedCrop = crop;
     }
@@ -399,5 +407,12 @@
 
         return actionContainer;
     }
+
+    function getAndCleanElement(elementId) {
+        let element = document.getElementById(elementId);
+        element.innerHTML = "";
+        return element;
+    }
+
 
 </script>

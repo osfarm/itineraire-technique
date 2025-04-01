@@ -9,7 +9,7 @@ function addOrUpdateAttributeClickEvent() {
         selectedCrop.addAttribute(key, value);
 
         document.getElementById("newAttributeButton").classList.remove("d-none");
-        document.getElementById("newAttributeContainer").innerHTML = "";
+        getAndCleanElement("newAttributeContainer");
     }
 
     refreshAllTables();
