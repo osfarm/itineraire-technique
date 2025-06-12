@@ -354,12 +354,8 @@
     function deleteCrop(id) {
         crops.steps = crops.steps.filter(function (crop) { return crop.id != id })
 
-        //avoid bug if last crop is deleted
-        if (crops.steps.length == 0) {
-            selectCrop(null);
-        } else {
-            selectCrop(crops.steps.slice(-1)[0].id);
-        }
+        refreshAllTables();
+        displayCropListView();
     }
 
     function selectCrop(cropId) {
