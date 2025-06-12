@@ -25,7 +25,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12 text-center main-header mb-2">
-                <h1>Itinéraire technique</h1>
+                <h1 id="title">Itinéraire technique</h1>
             </div>
         </div>
         <div class="row">
@@ -187,6 +187,14 @@
 
     let selectedCrop;
 
+    initializeOptions();
+
+    function initializeOptions() {
+        document.getElementById("title").textContent = crops.title;
+        document.getElementById("interventionsTopName").textContent = crops.options.title_top_interventions;
+        document.getElementById("interventionsBottomName").textContent = crops.options.title_bottom_interventions;
+    }
+
     class Crop {
         constructor(name, color, startDate, endDate, description) {
             this.id = crypto.randomUUID();
@@ -299,9 +307,7 @@
         crop.addAttribute("Type de semoir", " ");
         crop.addAttribute("Date des semis", "");
 
-        document.getElementById("interventionsTopName").textContent = crops.options.title_top_interventions;
-        document.getElementById("interventionsBottomName").textContent = crops.options.title_bottom_interventions;
-        //select last created crop to be editable
+         //select last created crop to be editable
         selectedCrop = crop;
     }
 
@@ -431,6 +437,7 @@
 
         crops = cropsFromJson;
 
+        initializeOptions();
         refreshAllTables();
         displayCropListView();
     }
