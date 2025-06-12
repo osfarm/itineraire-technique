@@ -1,0 +1,153 @@
+{
+  "title": "Itin\u00e9raire technique de ma ferme - test version",
+  "options": {
+    "view": "horizontal",
+    "show_transcript": true,
+    "title_top_interventions": "Contr\u00f4le adventices",
+    "title_bottom_interventions": "Apport azote",
+    "title_steps": "Rotation des cultures"
+  },
+  "steps": [
+    {
+      "id": "dece4bee-7ec9-4e66-9ea9-ed319a816169",
+      "name": "Bl\u00e9 tendre",
+      "color": "#1f77b4",
+      "startDate": "2025-10-01T00:00:00Z",
+      "endDate": "2025-12-30T00:00:00Z",
+      "description": "Culture de bl\u00e9 tendre",
+      "interventions": [
+        {
+          "id": "0ab08415-7147-4d9c-aa60-c16531fe3d21",
+          "day": "12",
+          "name": "Fauche m\u00e9canique",
+          "type": "Contr\u00f4le adventices",
+          "description": "Coupe des adventices entre les rangs"
+        },
+        {
+          "id": "615efcd0-6452-408a-8990-134e5e145f84",
+          "day": "26",
+          "name": "Engrais foliaire",
+          "type": "Apport azote",
+          "description": "Pulv\u00e9risation d\u2019un engrais azot\u00e9 en croissance"
+        }
+      ],
+      "attributes": [
+        {
+          "id": "dd415a3a-6184-4572-b8d5-2dd86012ac81",
+          "name": "Pr\u00e9-semis",
+          "value": "Oui"
+        },
+        {
+          "id": "49a45b61-89dc-470a-8651-cf98ba7d392c",
+          "name": "Travail du sol",
+          "value": "Labour"
+        },
+        {
+          "id": "2a75129d-967b-429e-9aca-305d6874011a",
+          "name": "Type de semoir",
+          "value": "Monograine"
+        },
+        {
+          "id": "4f80795e-ae94-4e16-b448-72a5035a0737",
+          "name": "Date des semis",
+          "value": "2025-10-01"
+        }
+      ],
+      "duration": 3
+    },
+    {
+      "id": "9a3a5a49-12ab-419d-9c9a-15076e17c693",
+      "name": "Orge",
+      "color": "#ff7f0e",
+      "startDate": "2025-12-30T00:00:00Z",
+      "endDate": "2026-03-20T00:00:00Z",
+      "description": "Culture de orge",
+      "interventions": [
+        {
+          "id": "123cc674-a8f5-481f-b9f1-28e535792026",
+          "day": "8",
+          "name": "D\u00e9sherbage cibl\u00e9",
+          "type": "Contr\u00f4le adventices",
+          "description": "Application d'un herbicide s\u00e9lectif"
+        },
+        {
+          "id": "212a10ed-10dd-49b3-af39-d185374ed4b3",
+          "day": "37",
+          "name": "Fumure de fond",
+          "type": "Apport azote",
+          "description": "Incorporation de compost azot\u00e9 avant semis"
+        }
+      ],
+      "attributes": [
+        {
+          "id": "94dba007-7b3d-41cd-972e-a9e5f121e846",
+          "name": "Pr\u00e9-semis",
+          "value": "Non"
+        },
+        {
+          "id": "68ba27a5-bab1-4ce7-8f1b-bbc051217c62",
+          "name": "Travail du sol",
+          "value": "D\u00e9chaumage"
+        },
+        {
+          "id": "32da1648-25f5-42b6-bcdf-f92753f904d2",
+          "name": "Type de semoir",
+          "value": "Direct"
+        },
+        {
+          "id": "67d58706-f4fe-4c62-82c1-77602cbae6a8",
+          "name": "Date des semis",
+          "value": "2026-01-05"
+        }
+      ],
+      "duration": 2
+    },
+    {
+      "id": "96e71b5a-d204-42db-889e-78799f408772",
+      "name": "Tournesol",
+      "color": "#2ca02c",
+      "startDate": "2026-03-20T00:00:00Z",
+      "endDate": "2026-06-28T00:00:00Z",
+      "description": "Culture de tournesol",
+      "interventions": [
+        {
+          "id": "c8303267-d8d3-4a36-9dbb-0938d8c5a923",
+          "day": "39",
+          "name": "Binage manuel",
+          "type": "Contr\u00f4le adventices",
+          "description": "Binage pour a\u00e9rer le sol et limiter les mauvaises herbes"
+        },
+        {
+          "id": "87612407-8aae-4724-a397-2daa64a24ea0",
+          "day": "23",
+          "name": "Fumure de fond",
+          "type": "Apport azote",
+          "description": "Incorporation de compost azot\u00e9 avant semis"
+        }
+      ],
+      "attributes": [
+        {
+          "id": "aaa00fdd-bc21-4fc0-9aac-9154dd4cac1b",
+          "name": "Pr\u00e9-semis",
+          "value": "Oui"
+        },
+        {
+          "id": "3cf8d13c-8a05-49e9-b1e2-eaaad57623a2",
+          "name": "Travail du sol",
+          "value": "Rotavator"
+        },
+        {
+          "id": "646f7473-c1b4-406d-bda1-c1a82f3be27a",
+          "name": "Type de semoir",
+          "value": "Pneumatique"
+        },
+        {
+          "id": "a002e555-7711-4506-9801-c5871ea50335",
+          "name": "Date des semis",
+          "value": "2026-04-15"
+        }
+      ],
+      "duration": 3
+    }
+  ]
+}
