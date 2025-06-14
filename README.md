@@ -8,7 +8,10 @@ Ce projet vise à proposer une alternative, pour décrire un itinéraire techniq
 
 ![Le rendu peut se faire au format frise, avec un zoom temporel, et la possibilité de cliquer sur chaque étape de la rotation ou chaque intervention pour en savoir plus](https://www.osfarm.org/itineraire-technique/images/rendu_frise.png)
 
+Le rendu peut se faire au format frise, avec un zoom temporel, et la possibilité de cliquer sur chaque étape de la rotation ou chaque intervention pour en savoir plus.
+
 ![L'utilisateur peut passer au format rotation pour voir l'ensemble de la rotation sur un cercle](https://www.osfarm.org/itineraire-technique/images/rendu_rotation.png)
+L'utilisateur peut passer au format rotation pour voir l'ensemble de la rotation sur un cercle
 
 ### Rendu démo
 [Cliquez ici](https://osfarm.github.io/itineraire-technique/rendu_statique_1.html) pour accéder à la démo !
