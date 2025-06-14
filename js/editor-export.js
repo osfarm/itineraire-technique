@@ -40,23 +40,21 @@ function parseCropsFromJson(cropsFromJson) {
     return {
         title: cropsFromJson.title || "",
         options: cropsFromJson.options || {},
-        steps: cropsFromJson.steps.map(parseStep)
+        steps: cropsFromJson.steps?.map(step => {
+            const crop = new Crop(
+                step.name || "",
+                step.color || "",
+                new Date(step.startDate),
+                new Date(step.endDate),
+                step.description || ""
+            );
+
+            crop.interventions = step.interventions?.map(parseIntervention);
+            crop.attributes = step.attributes?.map(parseAttribute);
+
+            return crop;
+        })
     };
-}
-
-function parseStep(step) {
-    const crop = new Crop(
-        step.name || "",
-        step.color || "",
-        new Date(step.startDate),
-        new Date(step.endDate),
-        step.description || ""
-    );
-
-    crop.interventions = step.interventions.map(parseIntervention);
-    crop.attributes = step.attributes.map(parseAttribute);
-
-    return crop;
 }
 
 function parseIntervention(intervention) {
