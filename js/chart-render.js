@@ -1,8 +1,8 @@
 
 class RotationRenderer {
-    constructor(divID, transcriptDivID, rotationData) { 
+    constructor(divID, transcriptDivID, rotationData) {
         this.barHeight = 100;
-        
+
         this.currentFocusIndex = null;
         this.noFocusUpdate = false;
 
@@ -10,6 +10,28 @@ class RotationRenderer {
 
         this.chartIndex = new Map();
 
+        if (Array.isArray(rotationData)) {
+            this.hasTimeline = true;
+            rotationData = rotationData.map((item) => {
+                return this.fixRotationData(item);
+            });
+            this.chartOptions = rotationData[0].options;
+        }
+        else {
+            this.hasTimeline = false;
+            rotationData = this.fixRotationData(rotationData);
+            this.chartOptions = rotationData.options;
+        }
+
+        this.initialLayout = this.chartOptions.view ?? 'horizontal';
+
+        this.data = rotationData;
+
+        this.divID = divID;
+        this.transcriptDivID = transcriptDivID;
+    }
+
+    fixRotationData(rotationData) {
         if (rotationData.options == undefined)
             rotationData.options = {};
 
@@ -27,10 +49,7 @@ class RotationRenderer {
             return item;
         });
 
-        this.data = rotationData;
-        
-        this.divID = divID;
-        this.transcriptDivID = transcriptDivID;
+        return rotationData;
     }
 
     render() {
@@ -49,16 +68,16 @@ class RotationRenderer {
             $('#' + self.transcriptDivID + " .rotation_item").on("click", function () {
                 $(this).toggleClass('show-all');
             });
-    
+
             $('#' + self.transcriptDivID + " .rotation_item").on("mouseover", function () {
                 self.highlightItem(this.id);
             });
-        
+
             // Add a click event on the transcript to scroll to the corresponding item in the chart
             $('#' + self.transcriptDivID + " .intervention").on('mouseover', function (e) {
                 self.highlightItem(this.id);
                 e.stopPropagation();
-            });                    
+            });
         }
         else
             $('#' + self.transcriptDivID).hide();
@@ -79,7 +98,7 @@ class RotationRenderer {
         this.currentFocusIndex = null;
         this.noFocusUpdate = false;
 
-        if (self.data.options.view == 'horizontal')
+        if (self.initialLayout == 'horizontal')
             option = this.getStepsOption();
         else
             option = this.getDonutOption();
@@ -88,7 +107,7 @@ class RotationRenderer {
         self.chart.setOption(option, false);
 
         console.log(option);
-        
+
         let options = this.chart.getOption();
         options.series[0].data.forEach((item, index) => {
             if (item.divId != undefined)
@@ -103,13 +122,13 @@ class RotationRenderer {
             let element = $("#" + params.data.divId + " h4");
             if (element.length == 0)
                 element = $("#" + params.data.divId);
-    
+
             self.noFocusUpdate = true;
-    
+
             setTimeout(() => {
                 self.noFocusUpdate = false;
             }, 1500);
-    
+
             element[0].scrollIntoView({ block: "start" });
 
             $("#" + params.data.divId).toggleClass("show-all");
@@ -141,35 +160,100 @@ class RotationRenderer {
         let self = this;
 
         // Specify the configuration items and data for the chart
-        var data = [];
-    
-                // "options": {
-        //     "view" : "donut",
-        //     "show_transcript": false,
-        //     "title_top_interventions": "Contrôle adventices",
-        //     "title_bottom_interventions": "Autres interventions",
-        //     "title_steps": "Étapes de la rotation dans la parcelle",
-        // },
+        var categories = self.getCategoriesLabels();
 
-        var categories = [self.data.options.title_bottom_interventions ?? '', 
-                          self.data.options.title_steps ?? '', 
-                          self.data.options.title_top_interventions ?? ''];
+        let minMaxDates = {};
 
-        // simulate some wrapping of the category labels
-        categories = categories.map((item) => {
-            return Array.from(item.matchAll(/(?=\S).{0,13}\S(?!\S)|\S{7}/gm), (m) => m[0]).join("\n");
-        }); 
+        if (self.hasTimeline)
+            minMaxDates = self.getMinMaxDates(self.data[0].steps);
+        else
+            minMaxDates = self.getMinMaxDates(self.data.steps);
 
+        let option = self.getDefaultOption({
+            dataZoom: [
+                {
+                    type: 'slider',
+                    filterMode: 'weakFilter',
+                    showDataShadow: false,
+                    top: self.barHeight * 3 + 100,
+                    labelFormatter: ''
+                },
+                {
+                    type: 'inside',
+                    filterMode: 'weakFilter'
+                }
+            ],
+
+            grid: {
+                height: self.barHeight * 3,
+                right: 6
+            },
+
+            xAxis: {
+                min: minMaxDates.min,
+                max: minMaxDates.max,
+                type: 'time',
+                axisTick: { show: true },
+                axisLine: { show: true },
+                splitLine: { show: true },
+                axisLabel: {
+                    formatter: {
+                        year: '{yyyy}',
+                        month: '{MMM} {yy}',
+                        day: '{d} {MMM} {yy}'
+                    },
+                }
+            },
+
+            yAxis: {
+                data: categories,
+                axisLabel: {
+                    width: 100,
+                }
+            },
+
+            series: []
+        });
+
+        if (self.hasTimeline) {
+            option.series = self.getStepsSeries(self.data[0].steps);
+            option.options = [];
+
+            self.data.forEach((item) => {
+                option.options.push({
+                    series: self.getStepsSeries(item.steps)
+                    // ,
+                    // title: item.timelineTitle ?? item.title
+                });
+            }
+            );
+        } else {
+            option.series = self.getStepsSeries(self.data.steps);
+        }
+
+        return option;
+    }
+
+    getMinMaxDates(steps) {
         let minDate = null;
         let maxDate = null;
 
-        self.data.steps.forEach((item, index) => {
-            if (!minDate)
+        steps.forEach((item) => {
+            if (!minDate || minDate > item.startDate.valueOf())
                 minDate = item.startDate.valueOf();
 
             if (!maxDate || maxDate < item.endDate.valueOf())
                 maxDate = item.endDate.valueOf() + 86400000 * 30; // Add some space for the end of the arrow
+        });
 
+        return { min: minDate, max: maxDate };
+    }
+
+    getStepsSeries(steps) {
+        let self = this;
+        let data = [];
+
+        steps.forEach((item, index) => {
             data.push({
                 name: item.name,
                 divId: 'Step_' + index,
@@ -188,20 +272,20 @@ class RotationRenderer {
                 itemStyle: {
                     color: item.color
                 }
-            });    
+            });
 
             if (item.interventions) {
                 item.interventions.forEach((intervention, interventionIndex) => {
-   
+
                     data.push({
                         name: intervention.name,
                         type: intervention.type,
                         value: [
-                            intervention.type == self.data.options.title_top_interventions ? 2 : 0, // Parcelle (index de la série)
+                            intervention.type == self.chartOptions.title_top_interventions ? 2 : 0, // Parcelle (index de la série)
                             item.startDate.valueOf() + intervention.day * 86400000, // Date de début (ms)
                             item.startDate.valueOf() + (intervention.day + 1) * 86400000, // Date de début (ms)
                             intervention.important === true ? intervention.name + ' 🛈' : intervention.name, // Nom
-                            intervention.type == self.data.options.title_top_interventions ? 'intervention_top' : 'intervention_bottom' // Type
+                            intervention.type == self.chartOptions.title_top_interventions ? 'intervention_top' : 'intervention_bottom' // Type
                         ],
                         divId: 'Intervention_' + index + '_' + interventionIndex,
                         interventionDate: new Date(item.startDate.valueOf()),
@@ -209,15 +293,16 @@ class RotationRenderer {
                         itemStyle: {
                             color: item.color
                         }
-                    });    
-                });    
+                    });
+                });
             }
         });
-    
+
+
         let maxXPositions = new Map();
 
         function renderItem(params, api) {
-            
+
             var categoryIndex = api.value(0);
             var start = api.coord([api.value(1), categoryIndex]);
             var end = api.coord([api.value(2), categoryIndex]);
@@ -359,7 +444,7 @@ class RotationRenderer {
                 if (currentLeft > x)
                     maxXPositions.set('track_left_' + categoryIndex + '_' + trackToUse, x);
 
-                // A nicer solution could be to draw large items in a reduced format until there is enough space for 
+                // A nicer solution could be to draw large items in a reduced format until there is enough space for
                 // drawing them fully. Unfortunately that would require a two pass drawing which does not exist with Echarts ?
 
                 const arrowWidth = 3;
@@ -427,50 +512,7 @@ class RotationRenderer {
             }
         }
 
-        let option = self.getDefaultOption({
-            dataZoom: [
-                {
-                    type: 'slider',
-                    filterMode: 'weakFilter',
-                    showDataShadow: false,
-                    top: self.barHeight * 3 + 100,
-                    labelFormatter: ''
-                },
-                {
-                    type: 'inside',
-                    filterMode: 'weakFilter'
-                }
-            ],
-    
-            grid: {
-                height: self.barHeight * 3,
-                right: 6
-            },
-    
-            xAxis: {
-                min: minDate,
-                max: maxDate,
-                type: 'time',
-                axisTick: { show: true },
-                axisLine: { show: true },
-                splitLine: { show: true },
-                axisLabel: {
-                    formatter: {
-                        year: '{yyyy}',
-                        month: '{MMM} {yy}',
-                        day: '{d} {MMM} {yy}'
-                    },
-                }
-            },
-    
-            yAxis: {
-                data: categories,
-                axisLabel: {
-                    width: 100,
-                }
-            },
-    
-            series: [
+        return [
                 {
                     type: 'custom',
                     renderItem: renderItem,
@@ -484,19 +526,31 @@ class RotationRenderer {
                     },
                     data: data
                 }
-            ]
+            ];
+    }
+
+    getCategoriesLabels() {
+        let self = this;
+
+        let categories = [self.chartOptions.title_bottom_interventions ?? '',
+                          self.chartOptions.title_steps ?? '',
+                          self.chartOptions.title_top_interventions ?? ''];
+
+        // simulate some wrapping of the category labels
+        categories = categories.map((item) => {
+            return Array.from(item.matchAll(/(?=\S).{0,13}\S(?!\S)|\S{7}/gm), (m) => m[0]).join("\n");
         });
-    
-        return option;
+
+        return categories;
     }
 
     buildHTML() {
         let html = '';
-    
+
         let self = this;
 
         self.data.steps.forEach((item, index) => {
-                
+
             let collapseButton = '';
             if (item.interventions?.length > 0 || item.attributes?.length > 0)
                 collapseButton = '<div class="collapse-button"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>';
@@ -513,7 +567,7 @@ class RotationRenderer {
                 + '<p class="step_description">' + (item.description ?? '') + '</p>'
                 + '<div class="details">'
                 + (item.attributes?.length > 0 ? item.attributes.map((attribute) => { return '<p><dt>' + attribute.name + '</dt><dd>' + attribute.value + '</dd></p>' }).join('') : '');
-        
+
             if (item.interventions?.length > 0) {
                 html += '<h5>Interventions</h5>';
                 item.interventions.forEach((intervention, interventionIndex) => {
@@ -523,30 +577,47 @@ class RotationRenderer {
                         intDate += ' (J+' + days + ')';
                     else
                         intDate += ' (J' + days + ')';
-    
+
                     let title = intervention.name;
-    
+
                     if (intervention.important === true)
                         title = '<i class="fa fa-exclamation-circle" aria-hidden="true" style="color: #ff9a1c"></i> ' + title;
-    
+
                     html += '<div id="Intervention_' + index + '_' + interventionIndex + '" class="intervention"><span class="intervention_title">' + title + '</span>'
                         + '<span class="intervention_date badge rounded-pill">' + intDate + '</span>'
-                        + '<div class="intervention_description">' + intervention.description + '</div></div>';   
-                });    
+                        + '<div class="intervention_description">' + intervention.description + '</div></div>';
+                });
             }
-    
+
             html += '</div></div>';
         });
-    
+
         return '<div>' + html + '</div>';
     }
 
     getDonutOption() {
         let self = this;
 
-        let option = self.getDefaultOption({              
-            "series": []
+        let option = self.getDefaultOption({
         });
+
+        if (self.hasTimeline) {
+            option.series = this.getDonutSeries(self.data[0].steps);
+            option.options = [];
+            self.data.forEach((item) => {
+                option.options.series = this.getDonutSeries(item.steps);
+            });
+        }
+        else {
+            option.series = this.getDonutSeries(self.data.steps);
+        }
+
+        return option;
+    }
+
+    getDonutSeries(steps) {
+        let series = [];
+        let self = this;
 
         // Build the crop ring
         let crops = {
@@ -563,12 +634,12 @@ class RotationRenderer {
             },
             data: []
         };
-    
-        let totalMonths = 0;  
+
+        let totalMonths = 0;
         let minDate = null;
         let lastDayOfPreviousStep = null;
 
-        self.data.steps.forEach((item, index) => {
+        steps.forEach((item, index) => {
 
             totalMonths += item.duration;
 
@@ -580,7 +651,7 @@ class RotationRenderer {
 
             if (!minDate)
                 minDate = new Date(item.startDate.valueOf());
-            
+
             let pieItem = {
                 'name': item.name,
                 'value': days,
@@ -597,9 +668,9 @@ class RotationRenderer {
 
             crops.data.push(pieItem);
         });
-    
-        option.series.push(crops);
-    
+
+        series.push(crops);
+
         // Create the calendar ring
         let months = {
             name: 'Months',
@@ -622,7 +693,7 @@ class RotationRenderer {
             emphasis: { disabled: true },
             data: []
         };
-    
+
         const monthsColorScale = [
             '#c7d2e3', // winter
             '#c7d2e3',
@@ -637,29 +708,29 @@ class RotationRenderer {
             '#f8e0c5',
             '#c7d2e3'
         ];
-    
+
         let monthsPerYear = new Map();
         for (let month = 1; month <= totalMonths; month++) {
             let monthName = minDate.toLocaleDateString(undefined, { month: 'short' });
-    
+
             let item = { 'name': monthName, 'value': 1 };
             const year = minDate.getFullYear();
 
             item.itemStyle = { color: monthsColorScale[minDate.getMonth()] };
-    
+
             months.data.push(item);
-    
+
             let currentMonthsPerYear = monthsPerYear.get(year);
             if (currentMonthsPerYear == undefined)
                 currentMonthsPerYear = 0;
             monthsPerYear.set(year, ++currentMonthsPerYear);
-    
+
             // increment the current month
             minDate.setMonth(minDate.getMonth() + 1);
         }
 
-        option.series.push(months);
-    
+        series.push(months);
+
         // Create the calendar years ring
         let years = {
             name: 'Years',
@@ -679,14 +750,14 @@ class RotationRenderer {
             },
             data: []
         };
-    
+
         monthsPerYear.forEach((nbMonths, year) => {
             years.data.push({ 'name': year, 'value': nbMonths });
         });
 
-        option.series.push(years);
-    
-        return option;
+        series.push(years);
+
+        return series;
     }
 
     getDefaultOption(option) {
@@ -698,29 +769,51 @@ class RotationRenderer {
             left: 'center'
         };
 
+        if (Array.isArray(self.data) && self.hasTimeline) {
+            option.timeline = {
+                axisType: 'category',
+                // realtime: false,
+                // loop: false,
+                autoPlay: true,
+                top: self.barHeight * 3 + 150,
+                // currentIndex: 2,
+                playInterval: 5000,
+                replaceMerge: 'series',
+
+                // controlStyle: {
+                //     position: 'left'
+                // },
+                data: [],
+            };
+
+            self.data.forEach((item) => {
+                option.timeline.data.push(item.timelineTitle ?? item.title);
+            });
+        }
+
         option.tooltip = {
                 formatter: function (params) {
                     if (params.data.type == 'rotation_item') {
                         let start = params.data.startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
                         let end = params.data.endDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
-    
+
                         return params.marker + params.name + ' : ' + params.data.duration + ' mois (' + start + ' ➜ ' + end + ')<br>' + params.data.description;
                     }
                     else {
                         let interventionDate = params.data.interventionDate;
                         const days = params.data.interventionDays;
                         let dateString = interventionDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-    
+
                         if (days >= 0)
                             dateString += ' (J+' + days + ')';
                         else
                             dateString += ' (J' + days + ')';
-    
+
                         return params.marker + params.name + ' - ' + dateString;
                     }
                 }
             };
-    
+
         option.toolbox = {
                 "itemSize": 25,
                 "iconStyle": {
@@ -733,7 +826,7 @@ class RotationRenderer {
                         "title": 'Rotation',
                         "icon": 'path://M18.15,12.99c-.06-.07-.14-.13-.23-.17l-.38-.15c.33-.93.51-1.92.51-2.96,0-3-1.49-5.65-3.77-7.26l-3.03,2.72c1.72.79,2.91,2.53,2.91,4.54,0,.54-.09,1.07-.25,1.56l-.44-.17c-.3-.12-.64.03-.76.33-.04.1-.05.21-.03.31l.79,4.82c.06.32.36.53.68.47.1-.02.19-.06.27-.13l3.66-3.1c.25-.21.28-.58.07-.82ZM6.94,5.24c.46-.23.97-.39,1.5-.47l.13.59c.07.32.38.52.69.45.1-.02.2-.07.28-.14l3.59-3.31c.23-.22.24-.59.02-.83-.07-.07-.16-.13-.26-.16L8.3.02c-.31-.09-.63.09-.73.39-.03.09-.03.19-.01.29l.06.27c-1.12.2-2.16.6-3.1,1.17l2.41,3.09ZM5.88,5.96l-2.39-3.06c-.98.82-1.79,1.84-2.34,3.01l3.62,1.44c.29-.53.66-1,1.11-1.39ZM4.17,9.72c0-.41.05-.81.14-1.19l-3.63-1.44c-.18.57-.3,1.16-.35,1.77l3.84,1.1c0-.08,0-.16,0-.24ZM9.17,14.72c-1.59,0-3-.74-3.92-1.9l.42-.38c.24-.22.26-.59.04-.83-.07-.08-.16-.14-.26-.17l-4.66-1.47c-.31-.09-.64.08-.73.39-.03.1-.03.2,0,.3l1.12,4.66c.07.31.39.51.7.43.09-.02.18-.07.25-.13l.23-.21c1.63,1.94,4.07,3.18,6.8,3.18,1.3,0,2.54-.28,3.66-.79l-.8-3.99c-.81.56-1.79.9-2.86.9Z',
                         onclick: function (){
-                            self.data.options.view = 'donut';
+                            self.initialLayout = 'donut';
                             self.renderChart();
                         }
                     },
@@ -742,7 +835,7 @@ class RotationRenderer {
                         "title": 'Frise',
                         "icon": 'path://M4.63,0H0v10.01h4.97c.07,0,.13-.05.19-.14l2.61-4.14c.17-.28.23-.89.12-1.35-.03-.15-.08-.27-.13-.35L5.16.12c-.05-.08-.11-.12-.17-.12h-.37ZM11.9,4.38c-.03-.15-.08-.27-.13-.35L9.17.12c-.05-.08-.11-.12-.17-.12h-.37s-2.26,0-2.26,0v.03s.06.05.08.09l2.6,3.9c.06.08.1.21.13.35.1.47.05,1.07-.12,1.35l-2.61,4.14s-.05.07-.08.09v.04h2.6c.07,0,.13-.05.19-.14l2.61-4.14c.17-.28.23-.89.12-1.35ZM18.28,4.38c-.03-.15-.08-.27-.13-.35L15.55.12c-.05-.08-.11-.12-.17-.12h-.37s-4.63,0-4.63,0v.03s.06.05.08.09l2.6,3.9c.06.08.1.21.13.35.1.47.05,1.07-.12,1.35l-2.61,4.14s-.05.07-.08.09v.04h4.97c.07,0,.13-.05.19-.14l2.61-4.14c.17-.28.23-.89.12-1.35Z',
                         onclick: function (){
-                            self.data.options.view = 'horizontal';
+                            self.initialLayout = 'horizontal';
                             self.renderChart();
                         }
                     },
