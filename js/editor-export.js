@@ -12,6 +12,16 @@ function exportToJsonFile(data, fileName = 'export-itk.json') {
 }
 
 function importFromJsonFile(callback) {
+    if (crops.steps && crops.steps.length > 0) {
+        showConfirmationModal(() => {
+            openFileInput(callback);
+        });
+    } else {
+        openFileInput(callback);
+    }
+}
+
+function openFileInput(callback) {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.json';
@@ -41,6 +51,22 @@ function showJsonErrorModal(errorMessage) {
     const errorModal = new bootstrap.Modal(document.getElementById('jsonErrorModal'));
     document.getElementById('jsonErrorMessage').textContent = errorMessage;
     errorModal.show();
+}
+
+function showConfirmationModal(onConfirm) {
+    const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+    const confirmButton = document.getElementById('confirmImport');
+
+    // Avoid multiple event listeners
+    const newConfirmButton = confirmButton.cloneNode(true);
+    confirmButton.replaceWith(newConfirmButton);
+
+    newConfirmButton.addEventListener('click', () => {
+        confirmationModal.hide();
+        onConfirm();
+    });
+
+    confirmationModal.show();
 }
 
 function parseCropsFromJson(cropsFromJson) {

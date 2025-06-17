@@ -69,6 +69,12 @@
                                 Ajouter une étape de rotation</button>
                         </div>
                         <div class="row">
+                            <button type="button" onclick="importFromJsonFile(reloadCropsFromJson)"
+                                class="w-100 btn btn-outline-primary primary-button mt-2"
+                                id="importFromJsonButton"><i class="fa fa-upload" aria-hidden="true"></i>
+                                Charger un itinéraire</button>
+                        </div>
+                        <div class="row">
                             <button type="button" onclick="exportToJsonFile(crops)"
                                 class="w-100 btn btn-outline-primary primary-button mt-2" id="exportToJsonButton"><i
                                     class="fa fa-download" aria-hidden="true"></i>
@@ -171,6 +177,24 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Attention : des étapes existent déjà. Importer un nouvel itinéraire écrasera les données existantes. Voulez-vous continuer ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cancelImport">Annuler</button>
+                    <button type="button" class="btn btn-primary" id="confirmImport">Continuer</button>
                 </div>
             </div>
         </div>
