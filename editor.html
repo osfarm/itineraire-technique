@@ -107,12 +107,6 @@
                                     <input type="color" id="cropColor" class="form-control form-control-color w-100">
                                 </div>
                             </div>
-                            <div class="row mb-2">
-                                <div class="col-12">
-                                    <button type="button" onclick="updateSelectedCropFromEditorClickEvent()"
-                                        class="w-100 btn btn-outline-primary primary-button">Valider</button>
-                                </div>
-                            </div>
                         </form>
                     </div>
                     <div class="row card-holder attributes-view mb-2">
@@ -189,6 +183,12 @@
         document.getElementById("title").textContent = crops.title;
         document.getElementById("interventionsTopName").textContent = crops.options.title_top_interventions;
         document.getElementById("interventionsBottomName").textContent = crops.options.title_bottom_interventions;
+
+        document.getElementById("cropName").addEventListener("input", updateSelectedCrop);
+        document.getElementById("cropDescription").addEventListener("input", updateSelectedCrop);
+        document.getElementById("cropStartDate").addEventListener("change", updateSelectedCrop);
+        document.getElementById("cropEndDate").addEventListener("change", updateSelectedCrop);
+        document.getElementById("cropColor").addEventListener("input", updateSelectedCrop);
     }
 
     class Crop {
@@ -267,7 +267,7 @@
         }
     }
 
-    function updateSelectedCropFromEditorClickEvent() {
+    function updateSelectedCrop() {
         selectedCrop.name = getInputValue("cropName");
         selectedCrop.color = getInputValue("cropColor");
         selectedCrop.startDate = new Date(getInputValue("cropStartDate"));

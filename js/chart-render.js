@@ -106,7 +106,7 @@ class RotationRenderer {
         self.chart.clear();
         self.chart.setOption(option, false);
 
-        console.log(option);
+        // console.log(option);
 
         let options = this.chart.getOption();
         options.series[0].data.forEach((item, index) => {
