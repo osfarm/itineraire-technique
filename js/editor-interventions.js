@@ -20,7 +20,7 @@ function refreshInterventionsTable() {
     let interventionsTopContainer = getAndCleanElement("interventionsTopContainer");
     let interventionsBottomContainer = getAndCleanElement("interventionsBottomContainer");
 
-    if (selectedCrop) {
+    if (selectedCrop && selectedCrop.interventions) {
         selectedCrop.interventions.forEach((intervention) => {
             const rowDiv = createInterventionRow(intervention);
 

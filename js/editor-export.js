@@ -56,8 +56,8 @@ function parseCropsFromJson(cropsFromJson) {
                 step.description || ""
             );
 
-            crop.interventions = step.interventions?.map(parseIntervention);
-            crop.attributes = step.attributes?.map(parseAttribute);
+            crop.interventions = step.interventions?.map(parseIntervention) || [];
+            crop.attributes = step.attributes?.map(parseAttribute) || [];
 
             return crop;
         })

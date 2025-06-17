@@ -19,7 +19,7 @@ function refreshAttributesTable() {
     let attributesContainer = document.getElementById("attributesContainer");
     attributesContainer.innerHTML = "";
 
-    if (selectedCrop) {
+    if (selectedCrop && selectedCrop.attributes) {
         selectedCrop.attributes.forEach((attribute) => {
             const rowDiv = createAttributeRow(attribute);
             attributesContainer.appendChild(rowDiv);
