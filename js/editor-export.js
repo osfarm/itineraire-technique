@@ -27,6 +27,7 @@ function importFromJsonFile(callback) {
                     callback(parsedCrops);
                 } catch (error) {
                     console.error("Error parsing JSON file:", error);
+                    showJsonErrorModal(error.message);
                 }
             };
             reader.readAsText(file);
@@ -34,6 +35,12 @@ function importFromJsonFile(callback) {
     });
 
     input.click();
+}
+
+function showJsonErrorModal(errorMessage) {
+    const errorModal = new bootstrap.Modal(document.getElementById('jsonErrorModal'));
+    document.getElementById('jsonErrorMessage').textContent = errorMessage;
+    errorModal.show();
 }
 
 function parseCropsFromJson(cropsFromJson) {
