@@ -26,7 +26,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12 text-center main-header mb-2">
-                <h1 id="title">Itinéraire technique</h1>
+                <h1 id="title" contenteditable="true">Itinéraire technique</h1>
             </div>
         </div>
         <div class="row">
@@ -163,8 +163,10 @@
 
 <script>
 
+    const DEFAULT_TITLE = "Nouvel itinéraire technique";
+
     let crops = {
-        "title": "Nouvel itinéraire technique",
+        "title": DEFAULT_TITLE,
         "options": {
             "view": "horizontal",
             "show_transcript": true,
@@ -184,11 +186,8 @@
         document.getElementById("interventionsTopName").textContent = crops.options.title_top_interventions;
         document.getElementById("interventionsBottomName").textContent = crops.options.title_bottom_interventions;
 
-        document.getElementById("cropName").addEventListener("input", updateSelectedCrop);
-        document.getElementById("cropDescription").addEventListener("input", updateSelectedCrop);
-        document.getElementById("cropStartDate").addEventListener("change", updateSelectedCrop);
-        document.getElementById("cropEndDate").addEventListener("change", updateSelectedCrop);
-        document.getElementById("cropColor").addEventListener("input", updateSelectedCrop);
+        attachCropInputListeners();
+        enableTitleEditing();
     }
 
     class Crop {
@@ -372,6 +371,23 @@
         initializeOptions();
         refreshAllTables();
         displayCropListView();
+    }
+
+    function attachCropInputListeners() {
+        document.getElementById("cropName").addEventListener("input", updateSelectedCrop);
+        document.getElementById("cropDescription").addEventListener("input", updateSelectedCrop);
+        document.getElementById("cropStartDate").addEventListener("change", updateSelectedCrop);
+        document.getElementById("cropEndDate").addEventListener("change", updateSelectedCrop);
+        document.getElementById("cropColor").addEventListener("input", updateSelectedCrop);
+    }
+
+    function enableTitleEditing() {
+        document.getElementById("title").addEventListener("blur", function () {
+            if (this.textContent.trim() === "") {
+                this.textContent = DEFAULT_TITLE;
+            }
+            crops.title = this.textContent;
+        });
     }
 
 </script>
