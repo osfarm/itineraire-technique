@@ -72,7 +72,7 @@ function createAttributForm(id, name, value, row) {
                     <input type="text" id="attributeName" class="form-control" placeholder="Nom" value="${name}">
                 </div>
                 <div class="col-12 mb-2">
-                    <input type="text" id="attributeValue" class="form-control" placeholder="Description" value="${value}" selected>
+                    <input type="text" id="attributeValue" class="form-control" placeholder="Description" value="${value}">
                 </div>
                 <div class="col-12 mb-2">
                     <button type="button" onclick="addOrUpdateAttributeClickEvent()"
@@ -89,5 +89,9 @@ function createAttributForm(id, name, value, row) {
         document.getElementById("newAttributeButton").classList.add("d-none");
     }
 
-    $("#attributeValue").focus();
+    if (name === "") {
+        document.getElementById("attributeName").focus();
+    } else {
+        document.getElementById("attributeValue").focus();
+    }
 }
