@@ -3,13 +3,24 @@
   color: white;
   height: 3rem;
   display: flex;
-  justify-content: center;
   align-items: center;
 }
 
 .editor-view {
   overflow-y: auto;
   height: calc(100vh - 4rem);
+}
+
+.step-edit {
+    margin-left: 10px;
+    font-size: 70%;
+    vertical-align: super;
+}
+
+.rotation_item:hover .step-edit {
+    color: #878787;
+    cursor: pointer;
+    display: inline !important;
 }
 
 .welcome-view {
@@ -34,7 +45,7 @@
 }
 
 .attribute-row {
-  background-color: rgb(225, 225, 225);
+  background-color: #f7f7f7;
   min-height: 3rem;
   display: flex;
   align-items: center;

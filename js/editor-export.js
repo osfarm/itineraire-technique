@@ -11,17 +11,66 @@ function exportToJsonFile(data, fileName = 'export-itk.json') {
     URL.revokeObjectURL(url);
 }
 
-function importFromJsonFile(callback) {
+function importFromJsonFile() {
     if (crops.steps && crops.steps.length > 0) {
         showConfirmationModal(() => {
-            openFileInput(callback);
+            openFileInput();
         });
     } else {
-        openFileInput(callback);
+        openFileInput();
     }
 }
 
-function openFileInput(callback) {
+function importFromTestJson() {
+    if (crops.steps && crops.steps.length > 0) {
+        showConfirmationModal(() => {
+            importTestJSON();
+        });
+    } else {
+        importTestJSON();
+    }    
+}
+
+function importTestJSON() {
+  fetch('test/test.json')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Erreur HTTP " + response.status);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log("Données JSON :", data);
+      reloadCropsFromJson(data);
+    })
+    .catch(error => {
+      console.error("Impossible de charger le JSON :", error);
+    });
+}
+
+function wipe() {
+    let crops = {
+        "title": DEFAULT_TITLE,
+        "options": {
+            "view": "horizontal",
+            "show_transcript": true,
+            "title_top_interventions": "Contrôle adventices",
+            "title_bottom_interventions": "Autres interventions",
+            "title_steps": "Étapes de la rotation dans la parcelle",
+        },
+        "steps": []
+    };
+
+    if (crops.steps && crops.steps.length > 0) {
+        showConfirmationModal(() => {
+            reloadCropsFromJson(crops);
+        });
+    } else {
+        reloadCropsFromJson(crops);
+    } 
+}
+
+function openFileInput() {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.json';
@@ -34,7 +83,7 @@ function openFileInput(callback) {
                 try {
                     const jsonData = JSON.parse(reader.result);
                     let parsedCrops = parseCropsFromJson(jsonData);
-                    callback(parsedCrops);
+                    reloadCropsFromJson(parsedCrops);
                 } catch (error) {
                     console.error("Error parsing JSON file:", error);
                     showJsonErrorModal(error.message);
@@ -74,13 +123,7 @@ function parseCropsFromJson(cropsFromJson) {
         title: cropsFromJson.title || "",
         options: cropsFromJson.options || {},
         steps: cropsFromJson.steps?.map(step => {
-            const crop = new Crop(
-                step.name || "",
-                step.color || "",
-                new Date(step.startDate),
-                new Date(step.endDate),
-                step.description || ""
-            );
+            const crop = new StepModel(step);
 
             crop.interventions = step.interventions?.map(parseIntervention) || [];
             crop.attributes = step.attributes?.map(parseAttribute) || [];

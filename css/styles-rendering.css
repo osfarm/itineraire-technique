@@ -82,4 +82,7 @@ div.rotation_item div.details div.intervention div.intervention_description {
   padding: 3px;
 }
 
+.step-edit {
+    display: none;
+}
 /*# sourceMappingURL=styles-rendering.css.map */

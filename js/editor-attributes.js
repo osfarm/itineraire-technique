@@ -4,9 +4,9 @@ function addOrUpdateAttributeClickEvent() {
     let value = getInputValue("attributeValue");
 
     if (id != "") {
-        selectedCrop.updateAttribute(id, key, value);
+        selectedStep.updateAttribute(id, key, value);
     } else {
-        selectedCrop.addAttribute(key, value);
+        selectedStep.addAttribute(key, value);
 
         document.getElementById("newAttributeButton").classList.remove("d-none");
         getAndCleanElement("newAttributeContainer");
@@ -19,8 +19,8 @@ function refreshAttributesTable() {
     let attributesContainer = document.getElementById("attributesContainer");
     attributesContainer.innerHTML = "";
 
-    if (selectedCrop && selectedCrop.attributes) {
-        selectedCrop.attributes.forEach((attribute) => {
+    if (selectedStep && selectedStep.getStep().attributes) {
+        selectedStep.getStep().attributes.forEach((attribute) => {
             const rowDiv = createAttributeRow(attribute);
             attributesContainer.appendChild(rowDiv);
         });
@@ -53,7 +53,7 @@ function createAttributeNameAndValueColumn(attribute) {
 }
 
 function deleteCropAttribute(id) {
-    selectedCrop.removeAttribute(id);
+    selectedStep.removeAttribute(id);
     refreshAllTables();
 }
 

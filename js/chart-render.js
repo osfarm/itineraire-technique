@@ -281,11 +281,11 @@ class RotationRenderer {
                         name: intervention.name,
                         type: intervention.type,
                         value: [
-                            intervention.type == self.chartOptions.title_top_interventions ? 2 : 0, // Parcelle (index de la série)
+                            intervention.type == 'intervention_top' ? 2 : 0, // Interventions en haut ou en bas (index de la série)
                             item.startDate.valueOf() + intervention.day * 86400000, // Date de début (ms)
                             item.startDate.valueOf() + (intervention.day + 1) * 86400000, // Date de début (ms)
                             intervention.important === true ? intervention.name + ' 🛈' : intervention.name, // Nom
-                            intervention.type == self.chartOptions.title_top_interventions ? 'intervention_top' : 'intervention_bottom' // Type
+                            intervention.type == 'intervention_top' ? 'intervention_top' : 'intervention_bottom' // Type
                         ],
                         divId: 'Intervention_' + index + '_' + interventionIndex,
                         interventionDate: new Date(item.startDate.valueOf()),
@@ -562,7 +562,7 @@ class RotationRenderer {
 
             html += '<div id="Step_' + index + '" class="rotation_item" style="border-color: ' + item.color + '">'
                 + '<div class="step_dates">' + dates + '</div>'
-                + '<h4>' + item.name + '</h4>'
+                + '<h4>' + item.name + '<i class="fa fa-pencil step-edit" aria-hidden="true"></i></h4>'
                 + collapseButton
                 + '<p class="step_description">' + (item.description ?? '') + '</p>'
                 + '<div class="details">'

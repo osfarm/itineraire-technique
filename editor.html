@@ -26,7 +26,19 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-12 text-center main-header mb-2">
+            <div class="col-6 text-left main-header file-icons mb-2">
+                <button type="button" onclick="importFromJsonFile()" class="btn btn-outline-primary primary-button mt-2"
+                    id="importFromJsonButton"><i class="fa fa-upload" aria-hidden="true"></i> Charger (JSON)</button>
+                <button type="button" onclick="importFromTestJson()" class="btn btn-outline-primary primary-button mt-2"
+                    id="importFromJsonButton"><i class="fa fa-upload" aria-hidden="true"></i> Charger un
+                    exemple</button>
+                <button type="button" onclick="exportToJsonFile(crops)"
+                    class="btn btn-outline-primary primary-button mt-2" id="exportToJsonButton"><i
+                        class="fa fa-download" aria-hidden="true"></i> Exporter</button>
+                <button type="button" onclick="wipe(crops)" class="btn btn-outline-primary primary-button mt-2"
+                    id="exportToJsonButton"><i class="fa fa-trash" aria-hidden="true"></i> Tout effacer</button>
+            </div>
+            <div class="col-6 text-center main-header mb-2">
                 <h1 id="title" contenteditable="true">Itinéraire technique</h1>
             </div>
         </div>
@@ -43,44 +55,30 @@
 
                     <div class="row">
                         <div class="col-12">
-                            <button type="button" onclick="addNewCropClickEvent()"
-                                class="w-100 btn btn-outline-primary primary-button" id="addNewCropButton"><i class="fa fa-plus-square" aria-hidden="true"></i>
+                            <button type="button" onclick="addNewStepClickEvent()"
+                                class="w-100 btn btn-outline-primary primary-button" id="addNewCropButton"><i
+                                    class="fa fa-plus-square" aria-hidden="true"></i>
                                 Ajouter une étape de rotation</button>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <button type="button" onclick="importFromJsonFile(reloadCropsFromJson)"
-                                class="w-100 btn btn-outline-primary primary-button mt-2"
-                                id="importFromJsonButton"><i class="fa fa-upload" aria-hidden="true"></i>
-                                Charger un itinéraire</button>
-                        </div>
-                    </div>
+
                 </div>
 
-                <div class="d-none" id="cropListView">
-                    <div class="col-12">
+                <div class="d-none welcome-view container px-4" id="cropListView">
+                        <div class="row">
+                            <div class="col-12">
+                                <p>Liste des étapes</p>
+                            </div>
+                        </div>
                         <div class="row">
                             <div id="cropsContainer" class="container"></div>
                         </div>
                         <div class="row">
-                            <button type="button" onclick="addNewCropClickEvent()" class="w-100 btn btn-outline-primary primary-button"
-                                id="addNewCropButton"><i class="fa fa-plus-square" aria-hidden="true"></i>
+                            <button type="button" onclick="addNewStepClickEvent()"
+                                class="w-100 btn btn-outline-primary primary-button" id="addNewCropButton"><i
+                                    class="fa fa-plus-square" aria-hidden="true"></i>
                                 Ajouter une étape de rotation</button>
                         </div>
-                        <div class="row">
-                            <button type="button" onclick="importFromJsonFile(reloadCropsFromJson)"
-                                class="w-100 btn btn-outline-primary primary-button mt-2"
-                                id="importFromJsonButton"><i class="fa fa-upload" aria-hidden="true"></i>
-                                Charger un itinéraire</button>
-                        </div>
-                        <div class="row">
-                            <button type="button" onclick="exportToJsonFile(crops)"
-                                class="w-100 btn btn-outline-primary primary-button mt-2" id="exportToJsonButton"><i
-                                    class="fa fa-download" aria-hidden="true"></i>
-                                Exporter l'itinéraire</button>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="d-none" id="cropDetailView">
@@ -123,7 +121,8 @@
                                 <div id="attributesContainer" class="container"></div>
                             </div>
                             <button id="newAttributeButton" type="button" onclick="createAttributForm()"
-                                class="btn btn-primary primary-button w-100"><i class="fa fa-plus-square" aria-hidden="true"></i> Ajouter</button>
+                                class="btn btn-primary primary-button w-100"><i class="fa fa-plus-square"
+                                    aria-hidden="true"></i> Ajouter</button>
                             <div id="newAttributeContainer"></div>
                         </div>
                     </div>
@@ -141,7 +140,8 @@
                             </div>
 
                             <button id="newInterventionButton" type="button" onclick="createInterventionForm()"
-                                class="btn btn-primary primary-button w-100"><i class="fa fa-plus-square" aria-hidden="true"></i> Ajouter</button>
+                                class="btn btn-primary primary-button w-100"><i class="fa fa-plus-square"
+                                    aria-hidden="true"></i> Ajouter</button>
                             <div id="newInterventionContainer"></div>
                         </div>
                     </div>
@@ -166,7 +166,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="modal fade" id="jsonErrorModal" tabindex="-1" aria-labelledby="jsonErrorModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -184,7 +184,8 @@
         </div>
     </div>
 
-    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -192,10 +193,12 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Attention : des étapes existent déjà. Importer un nouvel itinéraire écrasera les données existantes. Voulez-vous continuer ?
+                    Attention : des étapes existent déjà. Importer un nouvel itinéraire écrasera les données existantes.
+                    Voulez-vous continuer ?
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cancelImport">Annuler</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                        id="cancelImport">Annuler</button>
                     <button type="button" class="btn btn-primary" id="confirmImport">Continuer</button>
                 </div>
             </div>
@@ -221,7 +224,7 @@
         "steps": []
     };
 
-    let selectedCrop;
+    let selectedStep; // an instance of Crop
 
     initializeOptions();
 
@@ -234,35 +237,41 @@
         enableTitleEditing();
     }
 
-    class Crop {
-        constructor(name, color, startDate, endDate, description) {
-            this.id = crypto.randomUUID();
-            this.name = name || "";
-            this.color = color || "#0db3bf";
-            this.startDate = startDate || new Date();
-            this.endDate = endDate || new Date();
-            this.description = description || "";
-            this.interventions = [];
-            this.attributes = [];
+    class StepModel {
+        constructor(step) {
+            this.step = step; // keep a reference to the original object
+
+            this.step.id = step.id || crypto.randomUUID();
+            this.step.name = step.name || "";
+            this.step.color = step.color || "#0db3bf";
+            this.step.startDate = step.startDate ? new Date(step.startDate) : new Date();
+            this.step.endDate = step.endDate ? new Date(step.endDate) : new Date();
+            this.step.description = step.description || "";
+            this.step.interventions = step.interventions?.map(i => new Intervention(i.day, i.name, i.type, i.description)) || [];
+            this.step.attributes = step.attributes?.map(a => new Attribute(a.name, a.value)) || [];                
         }
 
-        setDurationInMonths = function setDurationInMonths(durationInMonths) {
-            this.endDate = new Date(this.startDate);
-            this.endDate.setMonth(this.startDate.getMonth() + durationInMonths);
+        getStep() {
+            return this.step;
         }
 
-        addIntervention = function addIntervention(day, name, type, description) {
+        setDurationInMonths(durationInMonths) {
+            this.step.endDate = new Date(this.step.startDate);
+            this.step.endDate.setMonth(this.step.startDate.getMonth() + durationInMonths);
+        }
+
+        addIntervention(day, name, type, description) {
             let intervention = new Intervention(day, name, type, description);
-            this.interventions.push(intervention);
+            this.step.interventions.push(intervention);
         }
 
-        addAttribute = function addAttribute(key, value) {
+        addAttribute(key, value) {
             let attribute = new Attribute(key, value);
-            this.attributes.push(attribute);
+            this.step.attributes.push(attribute);
         }
 
-        updateAttribute = function updateAttribute(attributeId, key, value) {
-            this.attributes = this.attributes.map(function (attribute) {
+        updateAttribute(attributeId, key, value) {
+            this.step.attributes = this.step.attributes.map(function (attribute) {
                 if (attribute.id == attributeId) {
                     attribute.name = key;
                     attribute.value = value;
@@ -271,24 +280,31 @@
             });
         }
 
-        removeAttribute = function removeAttribute(attributeId) {
-            this.attributes = this.attributes.filter(function (attribute) { return attribute.id != attributeId });
+        removeAttribute(attributeId) {
+            this.step.attributes = this.step.attributes.filter(function (attribute) { return attribute.id != attributeId });
         }
 
-        updateIntervention = function updateIntervention(interventionId, day, name, type, description) {
-            this.interventions = this.interventions.map(function (intervention) {
-                if (intervention.id == interventionId) {
-                    intervention.day = day;
-                    intervention.name = name;
-                    intervention.type = type;
-                    intervention.description = description;
-                }
-                return intervention;
-            });
+        updateIntervention(interventionId, day, name, type, description) {
+            let intervention = this.step.interventions.find((it) => it.id == interventionId);
+
+            if (intervention != undefined) {
+                intervention.day = day;
+                intervention.name = name;
+                intervention.type = type;
+                intervention.description = description;
+            }
         }
 
-        removeIntervention = function removeIntervention(interventionId) {
-            this.interventions = this.interventions.filter(function (intervention) { return intervention.id != interventionId });
+        removeIntervention(interventionId) {
+            this.step.interventions = this.step.interventions.filter(function (intervention) { return intervention.id != interventionId });
+        }
+
+        updateFromForm() {
+            this.step.name = getInputValue("cropName");
+            this.step.description = getInputValue("cropDescription");
+            this.step.startDate = new Date(getInputValue("cropStartDate"));
+            this.step.endDate = new Date(getInputValue("cropEndDate"));
+            this.step.color = getInputValue("cropColor");
         }
     }
 
@@ -296,26 +312,22 @@
         constructor(day, name, type, description) {
             this.id = crypto.randomUUID();
             this.day = day;
-            this.name = name || "";;
+            this.name = name || "";
             this.type = type;
-            this.description = description || "";;
+            this.description = description || "";
         }
     }
 
     class Attribute {
-        constructor(key, value) {
+        constructor(name, value) {
             this.id = crypto.randomUUID();
-            this.name = key || "";;
-            this.value = value || "";;
+            this.name = name || "";
+            this.value = value || "";
         }
     }
 
-    function updateSelectedCrop() {
-        selectedCrop.name = getInputValue("cropName");
-        selectedCrop.color = getInputValue("cropColor");
-        selectedCrop.startDate = new Date(getInputValue("cropStartDate"));
-        selectedCrop.endDate = new Date(getInputValue("cropEndDate"));
-        selectedCrop.description = getInputValue("cropDescription");
+    function updateSelectedStep() {
+        selectedStep.updateFromForm();
 
         refreshAllTables();
     }
@@ -347,7 +359,7 @@
     }
 
     function refreshAllTables() {
-        refreshCropsTable();
+        refreshStepsButtonList();
         refreshAttributesTable();
         refreshInterventionsTable();
         renderChart();
@@ -369,6 +381,16 @@
     function renderChart() {
         let renderer = new RotationRenderer('itk_chart', 'itk_text', crops);
         renderer.render();
+
+        $('.step-edit').click(function (event) {
+            event.stopPropagation();
+            let stepId = event.target.closest('.rotation_item').id;
+            let index = stepId.split('_')[1];
+            selectedStep = new StepModel(crops.steps[index]);
+            // populateCropDetailView(selectedStep);
+            // displayCropDetailView();
+            selectCrop(selectedStep);
+        });
     }
 
     function getLatestEndDate() { //this could be in a Crops object
@@ -418,11 +440,11 @@
     }
 
     function attachCropInputListeners() {
-        document.getElementById("cropName").addEventListener("input", updateSelectedCrop);
-        document.getElementById("cropDescription").addEventListener("input", updateSelectedCrop);
-        document.getElementById("cropStartDate").addEventListener("change", updateSelectedCrop);
-        document.getElementById("cropEndDate").addEventListener("change", updateSelectedCrop);
-        document.getElementById("cropColor").addEventListener("input", updateSelectedCrop);
+        document.getElementById("cropName").addEventListener("input", updateSelectedStep);
+        document.getElementById("cropDescription").addEventListener("input", updateSelectedStep);
+        document.getElementById("cropStartDate").addEventListener("change", updateSelectedStep);
+        document.getElementById("cropEndDate").addEventListener("change", updateSelectedStep);
+        document.getElementById("cropColor").addEventListener("input", updateSelectedStep);
     }
 
     function enableTitleEditing() {

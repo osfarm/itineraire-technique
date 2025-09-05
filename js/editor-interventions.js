@@ -6,9 +6,9 @@ function addInterventionClickEvent() {
     let description = getInputValue("interventionDescription");
 
     if (id != "") {
-        selectedCrop.updateIntervention(id, day, name, type, description);
+        selectedStep.updateIntervention(id, day, name, type, description);
     } else {
-        selectedCrop.addIntervention(day, name, type, description);
+        selectedStep.addIntervention(day, name, type, description);
 
         document.getElementById("newInterventionButton").classList.remove("d-none");
         getAndCleanElement("newInterventionContainer");
@@ -20,8 +20,8 @@ function refreshInterventionsTable() {
     let interventionsTopContainer = getAndCleanElement("interventionsTopContainer");
     let interventionsBottomContainer = getAndCleanElement("interventionsBottomContainer");
 
-    if (selectedCrop && selectedCrop.interventions) {
-        selectedCrop.interventions.forEach((intervention) => {
+    if (selectedStep && selectedStep.getStep().interventions) {
+        selectedStep.getStep().interventions.forEach((intervention) => {
             const rowDiv = createInterventionRow(intervention);
 
             if (intervention.type === crops.options.title_top_interventions) {
@@ -60,7 +60,7 @@ function createInterventionNameAndValueColumn(intervention) {
 }
 
 function deleteCropIntervention(id) {
-    selectedCrop.removeIntervention(id);
+    selectedStep.removeIntervention(id);
     refreshAllTables();
 }
 
@@ -91,10 +91,10 @@ function createInterventionForm(id, day, name, type, description, row) {
                 </div>
                 <div class="col-12 mb-2">
                     <select id="interventionType" class="form-select" aria-label="Type">
-                        <option value="${crops.options.title_top_interventions}" 
-                        ${type === crops.options.title_top_interventions ? "selected" : ""}>${crops.options.title_top_interventions}</option>
-                        <option value="${crops.options.title_bottom_interventions}" 
-                        ${type === crops.options.title_bottom_interventions ? "selected" : ""}>${crops.options.title_bottom_interventions}</option>
+                        <option value="intervention_top" 
+                        ${type === "intervention_top" ? "selected" : ""}>${crops.options.title_top_interventions}</option>
+                        <option value="intervention_bottom" 
+                        ${type === "intervention_bottom" ? "selected" : ""}>${crops.options.title_bottom_interventions}</option>
                     </select>
                 </div>
 
