@@ -7,9 +7,14 @@
     <title>Itinéraire technique TIKA</title>
 
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-ui@1.14.1/dist/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-ui@1.14.1/themes/base/jquery-ui.css">
+
     <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.7/underscore-umd-min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="./js/chart-render.js"></script>
     <script src="./js/editor-attributes.js"></script>
     <script src="./js/editor-interventions.js"></script>
@@ -65,20 +70,20 @@
                 </div>
 
                 <div class="d-none welcome-view container px-4" id="cropListView">
-                        <div class="row">
-                            <div class="col-12">
-                                <p>Liste des étapes</p>
-                            </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <p>Liste des étapes</p>
                         </div>
-                        <div class="row">
-                            <div id="cropsContainer" class="container"></div>
-                        </div>
-                        <div class="row">
-                            <button type="button" onclick="addNewStepClickEvent()"
-                                class="w-100 btn btn-outline-primary primary-button" id="addNewCropButton"><i
-                                    class="fa fa-plus-square" aria-hidden="true"></i>
-                                Ajouter une étape de rotation</button>
-                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="cropsContainer" class="container"></div>
+                    </div>
+                    <div class="row">
+                        <button type="button" onclick="addNewStepClickEvent()"
+                            class="w-100 btn btn-outline-primary primary-button" id="addNewCropButton"><i
+                                class="fa fa-plus-square" aria-hidden="true"></i>
+                            Ajouter une étape de rotation</button>
+                    </div>
                 </div>
 
                 <div class="d-none" id="cropDetailView">
@@ -235,6 +240,56 @@
 
         attachCropInputListeners();
         enableTitleEditing();
+
+        let cropsContainer = $("#cropsContainer");
+        
+        // Make cropsContainer sortable
+        cropsContainer.sortable({
+            handle: '.drag-handle',
+            axis: 'y',
+            update: function (event, ui) {
+                // Set new order
+                let movedStepId = ui.item.data('id');
+                let lastStepEnd = null;
+
+                let newOrder = [];
+                cropsContainer.children('.step-row').each(function () {
+                    let id = $(this).data('id');
+
+                    let step = crops.steps.find(function (crop) { return crop.id == id });
+
+                    if (movedStepId == id) {
+                        let movedStep = new StepModel(step);
+                        let duration = movedStep.getDurationInDays();
+
+                        if (lastStepEnd != null) { 
+                            lastStepEnd.setDate(lastStepEnd.getDate() + 1);
+
+                            movedStep.setStartDate(lastStepEnd);
+                            movedStep.setDurationInDays(duration);
+                        } else {
+                            // This is the first step in the list, set its start date before the previously first step start date
+                            let nextStep = crops.steps[0];
+                            let newStartDate = new Date(nextStep.startDate.valueOf());
+                            newStartDate.setDate(newStartDate.getDate() - duration);
+                            movedStep.setStartDate(newStartDate);
+                            movedStep.setDurationInDays(duration);
+                        }
+
+                        step = movedStep.getStep();
+                    }
+                    else {
+                        lastStepEnd = new Date(step.endDate.valueOf());
+                    }
+
+                    newOrder.push(step);
+                });
+
+                crops.steps = newOrder;
+
+                refreshAllTables();
+            }
+        });
     }
 
     class StepModel {
@@ -248,16 +303,30 @@
             this.step.endDate = step.endDate ? new Date(step.endDate) : new Date();
             this.step.description = step.description ?? "";
             this.step.interventions = step.interventions?.map(i => new Intervention(i.day, i.name, i.type, i.description)) || [];
-            this.step.attributes = step.attributes?.map(a => new Attribute(a.name, a.value)) || [];                
+            this.step.attributes = step.attributes?.map(a => new Attribute(a.name, a.value)) || [];
         }
 
         getStep() {
             return this.step;
         }
 
+        setStartDate(date) {
+            this.step.startDate = new Date(date);
+        }
+
         setDurationInMonths(durationInMonths) {
             this.step.endDate = new Date(this.step.startDate);
             this.step.endDate.setMonth(this.step.startDate.getMonth() + durationInMonths);
+        }
+
+        setDurationInDays(durationInDays) {
+            this.step.endDate = new Date(this.step.startDate);
+            this.step.endDate.setDate(this.step.startDate.getDate() + durationInDays);
+        }
+
+        getDurationInDays() {
+            const diffTime = Math.abs(this.step.endDate - this.step.startDate);
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         }
 
         addIntervention(day, name, type, description) {
@@ -340,24 +409,6 @@
         document.getElementById(elementId).value = value;
     }
 
-    function createEditIcon() {
-        let editIcon = document.createElement("button");
-        editIcon.innerHTML = '<i class="fa fa-pencil"></i>';
-        editIcon.className = "edit-button btn btn-outline-primary float-end me-1";
-        return editIcon;
-    }
-
-    function createDeleteButton(id, deleteAction) {
-        let button = document.createElement("button");
-        button.innerHTML = '<i class="fa fa-trash"></i>';
-        button.className = "btn btn-outline-danger float-end";
-        button.onclick = function (event) {
-            event.stopPropagation(); // Prevent other onclick events from triggering
-            deleteAction(id);
-        };
-        return button;
-    }
-
     function refreshAllTables() {
         refreshStepsButtonList();
         refreshAttributesTable();
@@ -414,24 +465,22 @@
         return latestEndDate;
     }
 
-    function createActionContainer(rowDiv, deleteId, deleteFunction) {
-        let actionContainer = document.createElement("div");
-        actionContainer.className = "position-absolute top-center end-0 float-end d-none";
+    function addEditAndRemoveButtons(rowDiv, deleteId, editFunction, deleteFunction) {
+        rowDiv = $(rowDiv);
 
-        let deleteButton = createDeleteButton(deleteId, deleteFunction);
-        actionContainer.appendChild(deleteButton);
+        let actionContainer = $('<div class="position-absolute top-center end-0 float-end edit-buttons"></div>');
 
-        let editIcon = createEditIcon();
-        actionContainer.appendChild(editIcon);
+        actionContainer.append($('<button class="btn btn-outline-danger float-end"><i class="fa fa-trash"></i></button>').click(function (event) {
+            event.stopPropagation(); // Prevent other onclick events from triggering
+            deleteFunction(deleteId);
+        }));
 
-        rowDiv.onmouseenter = function () {
-            actionContainer.classList.remove("d-none");
-        };
-        rowDiv.onmouseleave = function () {
-            actionContainer.classList.add("d-none");
-        };
+        actionContainer.append($('<button class="edit-button btn btn-outline-primary float-end me-1"><i class="fa fa-pencil"></i></button>').click(function (event) {
+            event.stopPropagation(); // Prevent other onclick events from triggering
+            editFunction();
+        }));
 
-        return actionContainer;
+        rowDiv.append(actionContainer);
     }
 
     function getAndCleanElement(elementId) {

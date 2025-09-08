@@ -31,49 +31,44 @@ function loadSelectedStepToEditor(aStep) {
 }
 
 function refreshStepsButtonList() {
-    let cropsContainer = document.getElementById("cropsContainer");
-    cropsContainer.innerHTML = "";
+    let cropsContainer = $("#cropsContainer");
+    cropsContainer.html('');
 
     crops.steps.forEach((crop) => {
         const rowDiv = createCropRow(crop);
-        cropsContainer.appendChild(rowDiv);
+        cropsContainer.append(rowDiv);
     });
+    
+    cropsContainer.sortable("refresh");
 }
 
 function createCropRow(crop) {
-    let rowDiv = document.createElement("div");
-    rowDiv.className = "row mb-2 attribute-row position-relative";
+    let step = new StepModel(crop); // in case crop is a plain object, convert to Crop instance
 
-    crop = new StepModel(crop); // in case crop is a plain object, convert to Crop instance
+    let rowDiv = $('<div class="row mb-2 step-row position-relative" data-id="'+step.getStep().id +'"></div>');
 
-    let nameDiv = createCropNameColumn(crop);
-    rowDiv.appendChild(nameDiv);
+    rowDiv.append($('<div class="col"></div>')
+        .append($('<i class="fa fa-bars drag-handle" aria-hidden="true"></i>'))
+        .append($('<strong>' + step.getStep().name + '</strong>')));
 
-    let actionContainer = createActionContainer(rowDiv, crop.getStep().id, deleteCrop);
-    rowDiv.appendChild(actionContainer);
+    addEditAndRemoveButtons(rowDiv, 
+        step.getStep().id, 
+        function () {
+            console.log("Selected step:", step.getStep().name);
+            SelectStep(step);
+        },
+        function(id) {
+            crops.steps = crops.steps.filter(function (crop) { return crop.id != id })
 
-    rowDiv.onclick = function () {
-        console.log("Selected step:", crop.getStep().name);
-        SelectStep(crop);
-    };
+            refreshAllTables();
+            displayCropListView();
+        });
+
+    rowDiv.click();
 
     return rowDiv;
 }
 
-function createCropNameColumn(crop) {
-    let nameDiv = document.createElement("div");
-    nameDiv.className = "col";
-    nameDiv.innerHTML = `<strong>${crop.getStep().name}</strong>`;
-
-    return nameDiv;
-}
-
-function deleteCrop(id) {
-    crops.steps = crops.steps.filter(function (crop) { return crop.id != id })
-
-    refreshAllTables();
-    displayCropListView();
-}
 
 function SelectStep(crop) {
     selectedStep = crop;

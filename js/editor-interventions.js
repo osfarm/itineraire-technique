@@ -36,17 +36,22 @@ function refreshInterventionsTable() {
 
 function createInterventionRow(intervention) {
     let rowDiv = document.createElement("div");
-    rowDiv.className = "row mb-2 attribute-row position-relative";
+    rowDiv.className = "row mb-2 intervention-row position-relative";
 
     let nameValueDiv = createInterventionNameAndValueColumn(intervention);
     rowDiv.appendChild(nameValueDiv);
 
-    let actionContainer = createActionContainer(rowDiv, intervention.id, deleteCropIntervention);
-    rowDiv.appendChild(actionContainer);
-
-    rowDiv.onclick = function () {
-        createInterventionForm(intervention.id, intervention.day, intervention.name, intervention.type, intervention.description, rowDiv);
-    };
+    addEditAndRemoveButtons(
+        rowDiv,
+        intervention.id,
+        function () {
+            createInterventionForm(intervention.id, intervention.day, intervention.name, intervention.type, intervention.description, rowDiv);
+        },
+        function(id) {
+            selectedStep.removeIntervention(id);
+            refreshAllTables();
+        }
+    );
 
     return rowDiv;
 }
@@ -57,11 +62,6 @@ function createInterventionNameAndValueColumn(intervention) {
     nameValueDiv.innerHTML = `<strong>${intervention.name}</strong></br> ${intervention.description}`;
 
     return nameValueDiv;
-}
-
-function deleteCropIntervention(id) {
-    selectedStep.removeIntervention(id);
-    refreshAllTables();
 }
 
 function createInterventionForm(id, day, name, type, description, row) {

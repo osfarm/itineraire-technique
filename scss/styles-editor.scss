@@ -41,7 +41,7 @@ $header-height: 3rem;
     margin: auto
 }
 
-.attribute-row {
+.attribute-row, .intervention-row, .step-row {
     background-color: rgb(225, 225, 225);
     min-height: 3rem;
 
@@ -49,6 +49,14 @@ $header-height: 3rem;
     align-items: center;
 
     border-radius: 0.5rem;
+
+    .edit-buttons {
+        display: none;
+    }
+
+    &:hover > .edit-buttons {
+        display: block;
+    }
 }
 
 .primary-button {

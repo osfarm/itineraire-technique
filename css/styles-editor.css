@@ -44,7 +44,7 @@
   margin: auto;
 }
 
-.attribute-row {
+.attribute-row, .intervention-row, .step-row {
   background-color: #f7f7f7;
   min-height: 3rem;
   display: flex;
@@ -59,6 +59,15 @@
 }
 .primary-button:hover {
   background-color: rgb(2, 102, 2);
+}
+
+#cropsContainer .drag-handle {
+    color: #CCC;
+    font-weight: normal;
+    font-size: 86%;
+    margin-right: 10px;
+    vertical-align: middle;
+    cursor: grab;
 }
 
 /*# sourceMappingURL=styles-editor.css.map */

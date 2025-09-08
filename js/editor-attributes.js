@@ -34,12 +34,16 @@ function createAttributeRow(attribute) {
     let nameValueDiv = createAttributeNameAndValueColumn(attribute);
     rowDiv.appendChild(nameValueDiv);
 
-    let actionContainer = createActionContainer(rowDiv, attribute.id, deleteCropAttribute);
-    rowDiv.appendChild(actionContainer);
-
-    rowDiv.onclick = function () {
-        createAttributForm(attribute.id, attribute.name, attribute.value, rowDiv);
-    };
+    addEditAndRemoveButtons(
+        rowDiv, 
+        attribute.id, 
+        function() {
+            createAttributForm(attribute.id, attribute.name, attribute.value, rowDiv);
+        },
+        function(id) {
+            selectedStep.removeAttribute(id);
+            refreshAllTables();
+        });
 
     return rowDiv;
 }
@@ -50,11 +54,6 @@ function createAttributeNameAndValueColumn(attribute) {
     nameValueDiv.innerHTML = `<strong>${attribute.name}</strong></br> ${attribute.value}`;
 
     return nameValueDiv;
-}
-
-function deleteCropAttribute(id) {
-    selectedStep.removeAttribute(id);
-    refreshAllTables();
 }
 
 function createAttributForm(id, name, value, row) {
