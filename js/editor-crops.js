@@ -6,10 +6,12 @@ function addNewStepClickEvent() {
 }
 
 function createAndSelectEmptyCrop() {
-    let crop = new StepModel();
-    crop.startDate = getLatestEndDate();
+    let crop = new StepModel({
+        startDate: getRotationEndDate(),
+    });
+
     crop.setDurationInMonths(2)
-    crops.steps.push(crop);
+    crops.steps.push(crop.getStep());
 
     crop.addAttribute("Pré-semis", "");
     crop.addAttribute("Travail du sol", "");
@@ -47,12 +49,12 @@ function createCropRow(crop) {
     let nameDiv = createCropNameColumn(crop);
     rowDiv.appendChild(nameDiv);
 
-    let actionContainer = createActionContainer(rowDiv, crop.id, deleteCrop);
+    let actionContainer = createActionContainer(rowDiv, crop.getStep().id, deleteCrop);
     rowDiv.appendChild(actionContainer);
 
     rowDiv.onclick = function () {
-        console.log("Crop selected:", crop.name);
-        selectCrop(crop);
+        console.log("Selected step:", crop.getStep().name);
+        SelectStep(crop);
     };
 
     return rowDiv;
@@ -67,13 +69,13 @@ function createCropNameColumn(crop) {
 }
 
 function deleteCrop(id) {
-    crops.steps = crops.steps.filter(function (crop) { return crop.getStep().id != id })
+    crops.steps = crops.steps.filter(function (crop) { return crop.id != id })
 
     refreshAllTables();
     displayCropListView();
 }
 
-function selectCrop(crop) {
+function SelectStep(crop) {
     selectedStep = crop;
     loadSelectedStepToEditor(selectedStep);
     displayCropDetailView();

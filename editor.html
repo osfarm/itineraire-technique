@@ -241,12 +241,12 @@
         constructor(step) {
             this.step = step; // keep a reference to the original object
 
-            this.step.id = step.id || crypto.randomUUID();
-            this.step.name = step.name || "";
-            this.step.color = step.color || "#0db3bf";
+            this.step.id = step.id ?? crypto.randomUUID();
+            this.step.name = step.name ?? "Nouvelle culture";
+            this.step.color = step.color ?? "#0db3bf";
             this.step.startDate = step.startDate ? new Date(step.startDate) : new Date();
             this.step.endDate = step.endDate ? new Date(step.endDate) : new Date();
-            this.step.description = step.description || "";
+            this.step.description = step.description ?? "";
             this.step.interventions = step.interventions?.map(i => new Intervention(i.day, i.name, i.type, i.description)) || [];
             this.step.attributes = step.attributes?.map(a => new Attribute(a.name, a.value)) || [];                
         }
@@ -389,17 +389,28 @@
             selectedStep = new StepModel(crops.steps[index]);
             // populateCropDetailView(selectedStep);
             // displayCropDetailView();
-            selectCrop(selectedStep);
+            SelectStep(selectedStep);
         });
     }
 
-    function getLatestEndDate() { //this could be in a Crops object
-        let latestEndDate = new Date();
+    function getRotationEndDate() {
+        let latestEndDate = null;
         crops.steps.forEach(function (crop) {
-            if (crop.endDate > latestEndDate) {
+            if (latestEndDate == null || crop.endDate > latestEndDate) {
                 latestEndDate = crop.endDate;
             }
         });
+
+        // Clone the date to avoid reference issues
+        if (latestEndDate == null)
+            latestEndDate = new Date();
+        else {
+            latestEndDate = new Date(latestEndDate.valueOf());
+
+            // Move to the next day
+            latestEndDate.setDate(latestEndDate.getDate() + 1);
+        }
+
         return latestEndDate;
     }
 
