@@ -121,6 +121,7 @@
                                         <input type="color" id="cropColor" class="form-control form-control-color w-100">
                                     </div>
                                 </div>
+                                <div class="row"><div id="itk-api-comment" class="col text-center text-muted small"></div></div>
                             </form>
                         </div>
                     </div>
@@ -226,6 +227,10 @@
             <div class="modal-body">
                 <form>
                     <div class="mb-3">
+                        <label for="regionInput" class="form-label">Région</label>
+                        <input type="text" class="form-control" id="regionInput" value="France">
+                    </div>
+                    <div class="mb-3">
                         <label for="viewSelect" class="form-label">Affichage par défaut</label>
                         <select class="form-select" id="viewSelect">
                             <option value="horizontal">En frise</option>
@@ -247,8 +252,8 @@
                     <div class="mb-3">
                         <label for="stepsTitle" class="form-label">Titre des étapes de la rotation</label>
                         <input type="text" class="form-control" id="stepsTitle" value="Étapes de la rotation dans la parcelle">
-                    </div>  
-                </form>    
+                    </div>
+                </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
@@ -273,6 +278,7 @@
             "title_top_interventions": "Contrôle adventices",
             "title_bottom_interventions": "Autres interventions",
             "title_steps": "Étapes de la rotation dans la parcelle",
+            "region": "France"
         },
         "steps": []
     };
@@ -293,6 +299,16 @@
             displayCropListView();
         });
        
+        $(function() {
+            $('#cropForm').on('keydown', function(e) {
+                // Prevent form submit on Enter, but allow Enter in textarea
+                if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        });
+
         // Make cropsContainer sortable
         $("#cropsContainer").sortable({
             handle: '.drag-handle',
@@ -350,6 +366,7 @@
             $("#topInterventionsTitle").val(crops.options.title_top_interventions);
             $("#bottomInterventionsTitle").val(crops.options.title_bottom_interventions);
             $("#stepsTitle").val(crops.options.title_steps);
+            $("#regionInput").val(crops.options.region);
         });
 
         $("#paramsModalSaveButton").click(function () {
@@ -358,6 +375,7 @@
             crops.options.title_top_interventions = $("#topInterventionsTitle").val();
             crops.options.title_bottom_interventions = $("#bottomInterventionsTitle").val();
             crops.options.title_steps = $("#stepsTitle").val();
+            crops.options.region = $("#regionInput").val();
 
             // Close the modal:
             let modal = bootstrap.Modal.getInstance(document.getElementById('modalParams'));
@@ -379,6 +397,10 @@
             this.step.description = step.description ?? "";
             this.step.interventions = step.interventions?.map(i => new Intervention(i.day, i.name, i.type, i.description)) || [];
             this.step.attributes = step.attributes?.map(a => new Attribute(a.name, a.value)) || [];
+
+            this.step.useDefaultColor = step.useDefaultColor ?? true;
+            this.step.useDefaultStartDate = step.useDefaultStartDate ?? true;
+            this.step.useDefaultEndDate = step.useDefaultEndDate ?? true;
         }
 
         getStep() {
@@ -468,6 +490,31 @@
             this.name = name || "";
             this.value = value || "";
         }
+    }
+    
+    function updateSelectedStepColor() {
+        selectedStep.step.useDefaultColor = false;
+
+        selectedStep.updateFromForm();
+
+        refreshAllTables();
+    }
+
+    function updateSelectedStepStartDate() {
+        selectedStep.step.useDefaultStartDate = false;
+
+        selectedStep.updateFromForm();
+
+        refreshAllTables();
+    }
+
+    
+    function updateSelectedStepEndDate() {
+        selectedStep.step.useDefaultEndDate = false;
+
+        selectedStep.updateFromForm();
+
+        refreshAllTables();
     }
 
     function updateSelectedStep() {
@@ -574,12 +621,96 @@
         displayCropListView();
     }
 
+    function getChatGPTInfoFromCropName() {
+
+        if (selectedStep.step.useDefaultColor == false &&
+            selectedStep.step.useDefaultStartDate == false &&
+            selectedStep.step.useDefaultEndDate == false) {
+            // If the user has modified all fields, do not call the API again
+            $('#itk-api-comment').text('');
+            console.log("All fields modified by user, skipping API call");
+            return;
+        }
+
+        let newCropName = $("#cropName").val();
+
+        $('#itk-api-comment').html('<i class="fa fa-spinner fa-spin"></i> ...');
+
+        $.ajax({
+            url: "https://itk-info.tripleperformance.fr/api/culture",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                culture: newCropName,
+                region: crops.options.region ?? "France"
+            }),
+            success: function(data) {
+                console.log("Réponse:", data);
+                    
+                if (data.color_hex && selectedStep.step.useDefaultColor) {
+                    setInputValue("cropColor", data.color_hex);
+                    updateSelectedStep();
+                }
+        
+                let startDate = new Date();
+                if (data.average_sowing_date && selectedStep.step.useDefaultStartDate) {
+                    // data.average_sowing_date is in MM-DD format, we need to convert it to YYYY-MM-DD
+                    // for the current year
+                    let currentYear = new Date().getFullYear();
+                    startDate = new Date(`${currentYear}-${data.average_sowing_date}`);
+                    // If the start date is before today, it means the crop starts next year
+                    if (startDate < new Date()) {
+                        startDate.setFullYear(startDate.getFullYear() + 1);
+                    }
+                    setInputValue("cropStartDate", startDate.toISOString().split('T')[0]);
+                    updateSelectedStep();
+                }
+
+                if (data.end_of_season && selectedStep.step.useDefaultEndDate) {
+                    // data.end_of_season is in MM-DD format, we need to convert it to YYYY-MM-DD
+                    // for the current year
+                    let currentYear = new Date().getFullYear();
+                    let endDate = new Date(`${currentYear}-${data.end_of_season}`);
+                    // If the end date is before the start date, it means the crop ends the next year
+                    if (endDate < startDate) {
+                        endDate.setFullYear(startDate.getFullYear() + 1);
+                    }
+
+                    setInputValue("cropEndDate", endDate.toISOString().split('T')[0]);
+                    updateSelectedStep();
+                }
+                  
+                if (data.source_explanation) {
+                    $('#itk-api-comment').text(data.source_explanation);
+                } else {
+                    $('#itk-api-comment').text('');
+                }
+
+                // {
+                //     "culture": "Colza",
+                //     "region": "France",
+                //     "average_sowing_date": "08-15",
+                //     "end_of_season": "07-15",
+                //     "color_hex": "#FFD700",
+                //     "confidence": "high",
+                //     "source_explanation": "Colza is typically sown in late summer and harvested in mid-summer in France."
+                // }
+
+            },
+            error: function(err) {
+                console.error("Erreur:", err);
+            }
+        });        
+    }
+
     function attachCropInputListeners() {
-        document.getElementById("cropName").addEventListener("input", updateSelectedStep);
-        document.getElementById("cropDescription").addEventListener("input", updateSelectedStep);
-        document.getElementById("cropStartDate").addEventListener("change", updateSelectedStep);
-        document.getElementById("cropEndDate").addEventListener("change", updateSelectedStep);
-        document.getElementById("cropColor").addEventListener("input", updateSelectedStep);
+        $("#cropName").on("input", _.debounce(getChatGPTInfoFromCropName, 1000));
+
+        $("#cropName").on("input", _.debounce(updateSelectedStep, 500));
+        $("#cropDescription").on("input", _.debounce(updateSelectedStep, 500));
+        $("#cropStartDate").on("change", _.debounce(updateSelectedStepStartDate, 500));
+        $("#cropEndDate").on("change", _.debounce(updateSelectedStepEndDate, 500));
+        $("#cropColor").on("input", _.debounce(updateSelectedStepColor, 500));
     }
 
     function enableTitleEditing() {
