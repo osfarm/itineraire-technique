@@ -31,21 +31,25 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-6 text-left main-header file-icons mb-2">
-                <button type="button" onclick="importFromJsonFile()" class="btn btn-outline-primary primary-button mt-2"
+            <div class="col-auto text-left main-header file-icons mb-2">
+                <button type="button" onclick="importFromJsonFile()" class="btn btn-outline-primary primary-button"
                     id="importFromJsonButton"><i class="fa fa-upload" aria-hidden="true"></i> Charger (JSON)</button>
-                <button type="button" onclick="importFromTestJson()" class="btn btn-outline-primary primary-button mt-2"
+                <button type="button" onclick="importFromTestJson()" class="btn btn-outline-primary primary-button"
                     id="importFromJsonButton"><i class="fa fa-upload" aria-hidden="true"></i> Charger un
                     exemple</button>
                 <button type="button" onclick="exportToJsonFile(crops)"
-                    class="btn btn-outline-primary primary-button mt-2" id="exportToJsonButton"><i
+                    class="btn btn-outline-primary primary-button" id="exportToJsonButton"><i
                         class="fa fa-download" aria-hidden="true"></i> Exporter</button>
-                <button type="button" onclick="wipe(crops)" class="btn btn-outline-primary primary-button mt-2"
+                <button type="button" onclick="wipe(crops)" class="btn btn-outline-primary primary-button"
                     id="exportToJsonButton"><i class="fa fa-trash" aria-hidden="true"></i> Tout effacer</button>
             </div>
-            <div class="col-6 text-center main-header mb-2">
-                <h1 id="title" contenteditable="true">Itinéraire technique</h1>
+            <div class="col text-center main-header mb-2">
+                <h1 id="title" contenteditable="true" style="width: 100%">Itinéraire technique</h1>
             </div>
+            <div class="col-auto text-right main-header file-icons mb-2">
+                <button type="button" class="btn btn-outline-primary primary-button"
+                    id="exportToJsonButton" data-bs-toggle="modal" data-bs-target="#modalParams"><i class="fa fa-cog" aria-hidden="true"></i> Réglages</button>
+            </div>            
         </div>
         <div class="row">
             <div class="col col-12 col-lg-3 editor-view"> <!-- Editor zone-->
@@ -210,6 +214,49 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="modalParams" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Paramètres de l'itinéraire technique</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="viewSelect" class="form-label">Affichage par défaut</label>
+                        <select class="form-select" id="viewSelect">
+                            <option value="horizontal">En frise</option>
+                            <option value="vertical">En donut</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="showTranscriptCheckbox" checked>
+                        <label class="form-check-label" for="showTranscriptCheckbox">Afficher la transcription textuelle</label>
+                    </div>
+                    <div class="mb-3">
+                        <label for="topInterventionsTitle" class="form-label">Titre des interventions du haut</label>
+                        <input type="text" class="form-control" id="topInterventionsTitle" value="Contrôle adventices">
+                    </div>
+                    <div class="mb-3">
+                        <label for="bottomInterventionsTitle" class="form-label">Titre des interventions du bas</label>
+                        <input type="text" class="form-control" id="bottomInterventionsTitle" value="Autres interventions">
+                    </div>
+                    <div class="mb-3">
+                        <label for="stepsTitle" class="form-label">Titre des étapes de la rotation</label>
+                        <input type="text" class="form-control" id="stepsTitle" value="Étapes de la rotation dans la parcelle">
+                    </div>  
+                </form>    
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-primary" id="paramsModalSaveButton">Enregistrer les modifications</button>
+            </div>
+        </div>
+    </div>
+    </div>  
 </body>
 
 </html>
@@ -292,6 +339,31 @@
 
                 refreshAllTables();
             }
+        });
+
+
+        $('#paramsModal').on('show.bs.modal', function (event) {
+
+            // Set the modal form inputs values from crops.options
+            $("#viewSelect").val(crops.options.view);
+            $("#showTranscriptCheckbox").prop("checked", crops.options.show_transcript);
+            $("#topInterventionsTitle").val(crops.options.title_top_interventions);
+            $("#bottomInterventionsTitle").val(crops.options.title_bottom_interventions);
+            $("#stepsTitle").val(crops.options.title_steps);
+        });
+
+        $("#paramsModalSaveButton").click(function () {
+            crops.options.view = $("#viewSelect").val();
+            crops.options.show_transcript = $("#showTranscriptCheckbox").prop("checked");
+            crops.options.title_top_interventions = $("#topInterventionsTitle").val();
+            crops.options.title_bottom_interventions = $("#bottomInterventionsTitle").val();
+            crops.options.title_steps = $("#stepsTitle").val();
+
+            // Close the modal:
+            let modal = bootstrap.Modal.getInstance(document.getElementById('modalParams'));
+            modal.hide();
+
+            refreshAllTables();
         });
     }
 

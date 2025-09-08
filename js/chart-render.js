@@ -64,7 +64,7 @@ class RotationRenderer {
         if (self.data.options.show_transcript) {
             var html = this.buildHTML();
             $('#' + self.transcriptDivID).html(html);
-
+            $('#' + self.transcriptDivID).show();
             $('#' + self.transcriptDivID + " .rotation_item").on("click", function () {
                 $(this).toggleClass('show-all');
             });
