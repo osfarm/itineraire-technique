@@ -45,7 +45,7 @@ function refreshStepsButtonList() {
 function createCropRow(crop) {
     let step = new StepModel(crop); // in case crop is a plain object, convert to Crop instance
 
-    let rowDiv = $('<div class="row mb-2 step-row position-relative" data-id="'+step.getStep().id +'"></div>');
+    let rowDiv = $('<div class="row mb-2 step-row editable-row position-relative" data-id="'+step.getStep().id +'"></div>');
 
     rowDiv.append($('<div class="col"></div>')
         .append($('<i class="fa fa-bars drag-handle" aria-hidden="true"></i>'))

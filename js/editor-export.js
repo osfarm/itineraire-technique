@@ -82,8 +82,7 @@ function openFileInput() {
             reader.onload = () => {
                 try {
                     const jsonData = JSON.parse(reader.result);
-                    let parsedCrops = parseCropsFromJson(jsonData);
-                    reloadCropsFromJson(parsedCrops);
+                    reloadCropsFromJson(jsonData);
                 } catch (error) {
                     console.error("Error parsing JSON file:", error);
                     showJsonErrorModal(error.message);
@@ -116,35 +115,4 @@ function showConfirmationModal(onConfirm) {
     });
 
     confirmationModal.show();
-}
-
-function parseCropsFromJson(cropsFromJson) {
-    return {
-        title: cropsFromJson.title || "",
-        options: cropsFromJson.options || {},
-        steps: cropsFromJson.steps?.map(step => {
-            const crop = new StepModel(step);
-
-            crop.interventions = step.interventions?.map(parseIntervention) || [];
-            crop.attributes = step.attributes?.map(parseAttribute) || [];
-
-            return crop;
-        })
-    };
-}
-
-function parseIntervention(intervention) {
-    return new Intervention(
-        intervention.day || 0,
-        intervention.name || "",
-        intervention.type || "",
-        intervention.description || ""
-    );
-}
-
-function parseAttribute(attribute) {
-    return new Attribute(
-        attribute.name || "",
-        attribute.value || ""
-    );
 }

@@ -79,11 +79,15 @@ div.rotation_item {
             }
         }
     }
+
+    .step-edit {
+        display: none;
+    }
 }
 
 .charts {
     width  : 100%;
-    height : 450px;
+    height : 500px;
     display: inline-block;
 }
 

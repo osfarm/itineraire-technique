@@ -254,6 +254,9 @@ class RotationRenderer {
         let data = [];
 
         steps.forEach((item, index) => {
+            if (item.name == Number(item.name))
+                item.name = "Etape " + item.name; // Force the item name to be a string
+
             data.push({
                 name: item.name,
                 divId: 'Step_' + index,
@@ -282,8 +285,8 @@ class RotationRenderer {
                         type: intervention.type,
                         value: [
                             intervention.type == 'intervention_top' ? 2 : 0, // Interventions en haut ou en bas (index de la série)
-                            item.startDate.valueOf() + intervention.day * 86400000, // Date de début (ms)
-                            item.startDate.valueOf() + (intervention.day + 1) * 86400000, // Date de début (ms)
+                            item.startDate.valueOf() + Number(intervention.day) * 86400000, // Date de début (ms)
+                            item.startDate.valueOf() + (Number(intervention.day) + 1) * 86400000, // Date de début (ms)
                             intervention.important === true ? intervention.name + ' 🛈' : intervention.name, // Nom
                             intervention.type == 'intervention_top' ? 'intervention_top' : 'intervention_bottom' // Type
                         ],

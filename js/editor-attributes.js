@@ -29,7 +29,7 @@ function refreshAttributesTable() {
 
 function createAttributeRow(attribute) {
     let rowDiv = document.createElement("div");
-    rowDiv.className = "row mb-2 attribute-row position-relative";
+    rowDiv.className = "row mb-2 attribute-row editable-row position-relative";
 
     let nameValueDiv = createAttributeNameAndValueColumn(attribute);
     rowDiv.appendChild(nameValueDiv);

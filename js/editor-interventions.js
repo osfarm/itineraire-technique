@@ -36,7 +36,7 @@ function refreshInterventionsTable() {
 
 function createInterventionRow(intervention) {
     let rowDiv = document.createElement("div");
-    rowDiv.className = "row mb-2 intervention-row position-relative";
+    rowDiv.className = "row mb-2 intervention-row editable-row position-relative";
 
     let nameValueDiv = createInterventionNameAndValueColumn(intervention);
     rowDiv.appendChild(nameValueDiv);

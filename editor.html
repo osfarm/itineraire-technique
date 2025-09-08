@@ -87,37 +87,38 @@
                 </div>
 
                 <div class="d-none" id="cropDetailView">
-                    <div class="row">
-                        <h4>Étape</h4>
-                        <form id="cropForm">
-                            <div class="row mb-2">
-                                <div class="col">
-                                    <label for="cropName" class="form-label">Culture principale</label>
-                                    <input type="text" id="cropName" class="form-control"
-                                        placeholder="Nom de la culture">
+                    <div class="row card-holder mb-2">
+                        <div class="col-12">
+                            <button class="float-end close-step-button close-step-times" ><i class="fa fa-times" aria-hidden="true"></i></button>
+                            <h4>Étape</h4>
+                            <form id="cropForm">
+                                <div class="row mb-2">
+                                    <div class="col">
+                                        <input type="text" id="cropName" class="form-control" placeholder="Nom de la culture">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col">
-                                    <textarea type="text" id="cropDescription" class="form-control"
-                                        placeholder="Description" rows="4"></textarea>
+                                <div class="row mb-2">
+                                    <div class="col">
+                                        <textarea type="text" id="cropDescription" class="form-control"
+                                            placeholder="Description" rows="4"></textarea>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-5 pe-0">
-                                    <label for="cropStartDate" class="form-label">Début</label>
-                                    <input type="date" id="cropStartDate" class="form-control">
+                                <div class="row mb-2">
+                                    <div class="col-5 pe-0">
+                                        <label for="cropStartDate" class="form-label">Début</label>
+                                        <input type="date" id="cropStartDate" class="form-control">
+                                    </div>
+                                    <div class="col-5 pe-0">
+                                        <label for="cropEndDate" class="form-label">Fin</label>
+                                        <input type="date" id="cropEndDate" class="form-control">
+                                    </div>
+                                    <div class="col-2 d-flex align-items-end">
+                                        <label for="cropColor" class="form-label"></label>
+                                        <input type="color" id="cropColor" class="form-control form-control-color w-100">
+                                    </div>
                                 </div>
-                                <div class="col-5 pe-0">
-                                    <label for="cropEndDate" class="form-label">Fin</label>
-                                    <input type="date" id="cropEndDate" class="form-control">
-                                </div>
-                                <div class="col-2 d-flex align-items-end">
-                                    <label for="cropColor" class="form-label"></label>
-                                    <input type="color" id="cropColor" class="form-control form-control-color w-100">
-                                </div>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
                     </div>
                     <div class="row card-holder attributes-view mb-2">
                         <div class="col-12">
@@ -152,8 +153,8 @@
                     </div>
                     <div class="row">
                         <div class="col-12">
-                            <button type="button" onclick="displayCropListView()"
-                                class="w-100 btn btn-outline-primary primary-button mt-2">Retour à la liste des
+                            <button type="button"
+                                class="w-100 btn btn-outline-primary primary-button mt-2 close-step-button">Retour à la liste des
                                 étapes</button>
                         </div>
                     </div>
@@ -241,10 +242,12 @@
         attachCropInputListeners();
         enableTitleEditing();
 
-        let cropsContainer = $("#cropsContainer");
-        
+        $('.close-step-button').click(function() {
+            displayCropListView();
+        });
+       
         // Make cropsContainer sortable
-        cropsContainer.sortable({
+        $("#cropsContainer").sortable({
             handle: '.drag-handle',
             axis: 'y',
             update: function (event, ui) {
@@ -253,7 +256,7 @@
                 let lastStepEnd = null;
 
                 let newOrder = [];
-                cropsContainer.children('.step-row').each(function () {
+                $(event.target).children('.step-row').each(function () {
                     let id = $(this).data('id');
 
                     let step = crops.steps.find(function (crop) { return crop.id == id });
@@ -468,7 +471,7 @@
     function addEditAndRemoveButtons(rowDiv, deleteId, editFunction, deleteFunction) {
         rowDiv = $(rowDiv);
 
-        let actionContainer = $('<div class="position-absolute top-center end-0 float-end edit-buttons"></div>');
+        let actionContainer = $('<div class="col-auto edit-buttons"></div>');
 
         actionContainer.append($('<button class="btn btn-outline-danger float-end"><i class="fa fa-trash"></i></button>').click(function (event) {
             event.stopPropagation(); // Prevent other onclick events from triggering

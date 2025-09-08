@@ -5,6 +5,7 @@
   "main": "editor.html",
   "scripts": {
     "build:scss": "sass --style=compressed scss/styles-editor.scss css/styles-editor.css && sass --style=compressed scss/styles-rendering.scss css/styles-rendering.css",
+    "dev:scss": "sass scss/styles-editor.scss css/styles-editor.css && sass scss/styles-rendering.scss css/styles-rendering.css",
     "watch:scss": "sass --watch scss/styles-editor.scss:css/styles-editor.css scss/styles-rendering.scss:css/styles-rendering.css",
     "build": "npm run build:scss",
     "start": "npm run watch:scss"
