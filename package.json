@@ -1,5 +1,5 @@
 {
-  "name": "itineraire-technique",
+  "name": "@osfarm/itineraire-technique",
   "version": "0.0.1",
   "description": "A visualisation tool to show agricultural technical itineraries based on Echarts",
   "main": "editor.html",
