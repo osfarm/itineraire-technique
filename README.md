@@ -25,3 +25,38 @@ Ce visualisateur est avant tout conçu pour être utilisé sur [Triple Performan
 
 ## Utilisation dans un autre contexte / logiciel
 Il est possible d'utiliser cette librairie très facilement dans n'importe quel outil. Le visualisateur a été conçu pour être très facile à intégrer dans une page HTML, il ne dépend que de briques Javascript (Apache Echarts, JQuery et Bootstrap). N'hésitez pas à nous contacter si vous décidez de l'utiliser et à contribuer si vous faites des évolutions !
+ 
+
+Pour utiliser le package, le plus simple est d'utiliser npm :
+
+```
+npm i @osfarm/itineraire-technique
+```
+Puis de copier les fichiers js et css dans votre code :
+```
+{
+  "private": true,
+  "dependencies": {
+    "@osfarm/itineraire-technique": "^1.0.0"
+  },
+  "scripts": {
+     "build": "cp node_modules/@osfarm/itineraire-technique/js/chart-render.js js/ && cp node_modules/@osfarm/itineraire-technique/css/styles-rendering.css css"
+   }
+}
+```
+Dans votre HTML, inclure les fichiers d'echarts : 
+```
+<link  href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"  rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"  crossorigin="anonymous">
+<script  src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.js"></script>
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script  src="https://cdn.jsdelivr.net/npm/underscore@1.13.7/underscore-umd-min.js"></script>
+
+<link  href="./css/styles-rendering.css"  rel="stylesheet">
+<script  src="./js/chart-render.js"></script>
+```
+
+Puis appeler la fonction de rendu sur votre JSON (vous devez avoir deux div dans votre html, un pour le graphique et un pour la liste textuelle des étapes) : 
+```
+let  renderer = new  RotationRenderer('itk_chart_div', 'itk_transcription_div', jsonData);
+renderer.render();
+```
