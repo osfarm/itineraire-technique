@@ -83,12 +83,14 @@ class RotationRenderer {
             $('#' + self.transcriptDivID).hide();
 
         // resize all charts when the windows is resized
-        $(window).on('resize', _.debounce(function () {
-            $(".charts").each(function () {
-                var id = $(this).attr('_echarts_instance_');
-                window.echarts.getInstanceById(id).resize();
-            });
-        }, 500));
+        if (typeof _ !== 'undefined' && typeof _.debounce === 'function') {
+            $(window).on('resize', _.debounce(function () {
+                $(".charts").each(function () {
+                    var id = $(this).attr('_echarts_instance_');
+                    window.echarts.getInstanceById(id).resize();
+                });
+            }, 500));
+        }
     }
 
     renderChart() {
