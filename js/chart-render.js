@@ -29,10 +29,10 @@ class RotationRenderer {
 
         this.itk_container = $("#" + divID).css({ 'width': '100%' });
 
-        this.itk_container.append(`<div class="row">
-            <div class="col-auto d-none d-lg-block col-lg-4"><div class="transcript"></div></div>
-            <div class="col col-12 col-lg-8"><div class="charts"></div></div>
-            <div class="col col-12 d-block d-lg-none"><div class="transcript"></div></div>
+        this.itk_container.append(`<div class="row mainITKContainer">
+            <div class="col-auto left-transcript"><div class="transcript"></div></div>
+            <div class="col col-auto chart-div"><div class="charts"></div></div>
+            <div class="col col-12 bottom-transcript"><div class="transcript"></div></div>
         </div>`);        
     }
 
