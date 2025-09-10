@@ -15,7 +15,7 @@ Le rendu peut se faire au format frise, avec un zoom temporel, et la possibilit�
 L'utilisateur peut passer au format rotation pour voir l'ensemble de la rotation sur un cercle
 
 ### Rendu démo
-[Cliquez ici](https://osfarm.github.io/itineraire-technique/rendu_statique_1.html) pour accéder à la démo !
+[Cliquez ici](https://osfarm.github.io/itineraire-technique/visualisateur.html) pour accéder à la démo !
 
 ### Editeur
 Le visualisateur est fourni avec un éditeur qui permet de créer son propre itinéraire technique et l'intégrer facilement dans n'importe quel contexte. [Cliquez ici](https://www.osfarm.org/itineraire-technique/editor.html) pour accéder à l'éditeur.

@@ -1,6 +1,6 @@
 
 class RotationRenderer {
-    constructor(divID, transcriptDivID, rotationData) {
+    constructor(divID, rotationData) {
         this.barHeight = 100;
 
         this.currentFocusIndex = null;
@@ -27,8 +27,13 @@ class RotationRenderer {
 
         this.data = rotationData;
 
-        this.divID = divID;
-        this.transcriptDivID = transcriptDivID;
+        this.itk_container = $("#" + divID).css({ 'width': '100%' });
+
+        this.itk_container.append(`<div class="row">
+            <div class="col d-none d-lg-block col-lg-4"><div class="transcript"></div></div>
+            <div class="col col-12 col-lg-8"><div class="charts"></div></div>
+            <div class="col col-12 d-block d-lg-none"><div class="transcript"></div></div>
+        </div>`);        
     }
 
     fixRotationData(rotationData) {
@@ -57,30 +62,30 @@ class RotationRenderer {
         let self = this;
 
         // Initialize the echarts instance based on the prepared dom
-        self.chart = echarts.init(document.getElementById(self.divID));
+        self.chart = echarts.init(this.itk_container.find('.charts')[0]);
 
         self.renderChart();
 
         if (self.data.options.show_transcript) {
             var html = this.buildHTML();
-            $('#' + self.transcriptDivID).html(html);
-            $('#' + self.transcriptDivID).show();
-            $('#' + self.transcriptDivID + " .rotation_item").on("click", function () {
+            this.itk_container.find('.transcript').html(html);
+            this.itk_container.find('.transcript').show();
+            this.itk_container.find('.transcript .rotation_item').on("click", function () {
                 $(this).toggleClass('show-all');
             });
 
-            $('#' + self.transcriptDivID + " .rotation_item").on("mouseover", function () {
+            this.itk_container.find('.transcript .rotation_item').on("mouseover", function () {
                 self.highlightItem(this.id);
             });
 
             // Add a click event on the transcript to scroll to the corresponding item in the chart
-            $('#' + self.transcriptDivID + " .intervention").on('mouseover', function (e) {
+            this.itk_container.find('.transcript .intervention').on('mouseover', function (e) {
                 self.highlightItem(this.id);
                 e.stopPropagation();
             });
         }
         else
-            $('#' + self.transcriptDivID).hide();
+            this.itk_container.find('.transcript').hide();
 
         // resize all charts when the windows is resized
         if (typeof _ !== 'undefined' && typeof _.debounce === 'function') {
@@ -289,7 +294,7 @@ class RotationRenderer {
                             intervention.type == 'intervention_top' ? 2 : 0, // Interventions en haut ou en bas (index de la série)
                             item.startDate.valueOf() + Number(intervention.day) * 86400000, // Date de début (ms)
                             item.startDate.valueOf() + (Number(intervention.day) + 1) * 86400000, // Date de début (ms)
-                            intervention.important === true ? intervention.name + ' 🛈' : intervention.name, // Nom
+                            intervention.important === true ? intervention.name + ' ⚠️' : intervention.name, // Nom
                             intervention.type == 'intervention_top' ? 'intervention_top' : 'intervention_bottom' // Type
                         ],
                         divId: 'Intervention_' + index + '_' + interventionIndex,
@@ -586,11 +591,11 @@ class RotationRenderer {
                     let title = intervention.name;
 
                     if (intervention.important === true)
-                        title = '<i class="fa fa-exclamation-circle" aria-hidden="true" style="color: #ff9a1c"></i> ' + title;
+                        title = title + '⚠️';
 
                     html += '<div id="Intervention_' + index + '_' + interventionIndex + '" class="intervention"><span class="intervention_title">' + title + '</span>'
-                        + '<span class="intervention_date badge rounded-pill">' + intDate + '</span>'
-                        + '<div class="intervention_description">' + intervention.description + '</div></div>';
+                          + '<span class="intervention_date badge rounded-pill">' + intDate + '</span>'
+                          + '<div class="intervention_description">' + intervention.description + '</div></div>';
                 });
             }
 
