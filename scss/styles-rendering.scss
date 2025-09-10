@@ -5,6 +5,7 @@ div.rotation_item {
     padding         : 13px;
     margin          : 12px 0;
     overflow-x      : hidden;
+    position        : relative;
 
     &.highlighted {
         box-shadow: 0px 4px 4px 0px var(--UI-Shadow, rgba(17, 36, 69, 0.16)),
@@ -18,27 +19,28 @@ div.rotation_item {
 
     div.step_dates {
         font-size       : 11px;
-        float           : right;
         background-color: #cdcccc;
         color           : #ffffff;
-        margin-right    : 45px;
+        margin          : 5px;
         padding         : 2px 5px;
         border-radius   : 5px;
-        margin-top: 7px;
+        height          : 20px;
+        right           : 33px;
+        top             : 12px;
+        position        : absolute;
     }
 
     div.collapse-button {
-        float        : right;
         border-radius: 50%;
         width        : 30px;
         height       : 30px;
         text-align   : center;
-        padding-top  : 5px;
+        padding      : 5px 0px;
+        margin-right : 0 5px 3px 0;
         cursor       : pointer;
         background   : #dfe6f7;
         color        : #7a8bad;
         transition   : transform 0.3s ease-in-out;
-        margin-top   : -26px;
     }
 
     &.show-all {

@@ -30,7 +30,7 @@ class RotationRenderer {
         this.itk_container = $("#" + divID).css({ 'width': '100%' });
 
         this.itk_container.append(`<div class="row">
-            <div class="col d-none d-lg-block col-lg-4"><div class="transcript"></div></div>
+            <div class="col-auto d-none d-lg-block col-lg-4"><div class="transcript"></div></div>
             <div class="col col-12 col-lg-8"><div class="charts"></div></div>
             <div class="col col-12 d-block d-lg-none"><div class="transcript"></div></div>
         </div>`);        
@@ -62,7 +62,7 @@ class RotationRenderer {
         let self = this;
 
         // Initialize the echarts instance based on the prepared dom
-        self.chart = echarts.init(this.itk_container.find('.charts')[0]);
+        self.chart = echarts.init(self.itk_container.find('.charts')[0]);
 
         self.renderChart();
 
@@ -75,12 +75,12 @@ class RotationRenderer {
             });
 
             this.itk_container.find('.transcript .rotation_item').on("mouseover", function () {
-                self.highlightItem(this.id);
+                self.highlightItem(self.getElementID(this));
             });
 
             // Add a click event on the transcript to scroll to the corresponding item in the chart
             this.itk_container.find('.transcript .intervention').on('mouseover', function (e) {
-                self.highlightItem(this.id);
+                self.highlightItem(self.getElementID(this));
                 e.stopPropagation();
             });
         }
@@ -96,6 +96,10 @@ class RotationRenderer {
                 });
             }, 500));
         }
+    }
+
+    getElementID(element) {
+        return element.classList.values().find(item => item.match(/Intervention_[0-9]+_[0-9]+|Step_[0-9]+/));
     }
 
     renderChart() {
@@ -126,9 +130,9 @@ class RotationRenderer {
             if (!params.data.divId)
                 return;
 
-            let element = $("#" + params.data.divId + " h4");
+            let element = self.getVisibleTranscriptDiv().find('.' + params.data.divId + " h4");
             if (element.length == 0)
-                element = $("#" + params.data.divId);
+                element = self.getVisibleTranscriptDiv().find('.' + params.data.divId);
 
             self.noFocusUpdate = true;
 
@@ -138,10 +142,14 @@ class RotationRenderer {
 
             element[0].scrollIntoView({ block: "start" });
 
-            $("#" + params.data.divId).toggleClass("show-all");
+            self.getVisibleTranscriptDiv().find('.' + params.data.divId).closest('.rotation_item').addClass("show-all");
 
             self.highlightItem(params.data.divId);
         });
+    }
+
+    getVisibleTranscriptDiv() {
+        return this.itk_container.find('.transcript:visible');
     }
 
     highlightItem(divID) {
@@ -160,7 +168,7 @@ class RotationRenderer {
 
         $(".rotation_item").removeClass('highlighted');
         $(".intervention").removeClass('highlighted');
-        $('#' + divID).addClass('highlighted');
+        self.itk_container.find('.' + divID).addClass('highlighted');
     }
 
     getStepsOption() {
@@ -563,16 +571,16 @@ class RotationRenderer {
 
             let collapseButton = '';
             if (item.interventions?.length > 0 || item.attributes?.length > 0)
-                collapseButton = '<div class="collapse-button"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>';
+                collapseButton = '<div class="collapse-button col-auto"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>';
 
             let start = item.startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
             let end = item.endDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
 
             let dates = '<b>' + item.duration + ' mois</b> (' + start + ' ➜ ' + end + ')';
 
-            html += '<div id="Step_' + index + '" class="rotation_item" style="border-color: ' + item.color + '">'
-                + '<div class="step_dates">' + dates + '</div>'
-                + '<h4>' + item.name + '<i class="fa fa-pencil step-edit" aria-hidden="true"></i></h4>'
+            html += '<div class="Step_' + index + ' rotation_item text-start" style="border-color: ' + item.color + '"><div class="row">'
+                + '<h4 class="col">' + item.name + '<i class="fa fa-pencil step-edit" aria-hidden="true"></i></h4>'
+                + '<div class="step_dates col-auto">' + dates + '</div>'
                 + collapseButton
                 + '<p class="step_description">' + (item.description ?? '') + '</p>'
                 + '<div class="details">'
@@ -593,13 +601,13 @@ class RotationRenderer {
                     if (intervention.important === true)
                         title = title + '⚠️';
 
-                    html += '<div id="Intervention_' + index + '_' + interventionIndex + '" class="intervention"><span class="intervention_title">' + title + '</span>'
+                    html += '<div class="Intervention_' + index + '_' + interventionIndex + ' intervention"><span class="intervention_title">' + title + '</span>'
                           + '<span class="intervention_date badge rounded-pill">' + intDate + '</span>'
                           + '<div class="intervention_description">' + intervention.description + '</div></div>';
                 });
             }
 
-            html += '</div></div>';
+            html += '</div></div></div>';
         });
 
         return '<div>' + html + '</div>';
