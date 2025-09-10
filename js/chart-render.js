@@ -29,11 +29,13 @@ class RotationRenderer {
 
         this.itk_container = $("#" + divID).css({ 'width': '100%' });
 
-        this.itk_container.append(`<div class="row mainITKContainer">
-            <div class="col-auto left-transcript"><div class="transcript"></div></div>
-            <div class="col col-auto chart-div"><div class="charts"></div></div>
-            <div class="col col-12 bottom-transcript"><div class="transcript"></div></div>
-        </div>`);        
+        if (this.itk_container.find('.mainITKContainer').length == 0) {
+            this.itk_container.append(`<div class="row mainITKContainer">
+                <div class="col-auto left-transcript"><div class="transcript"></div></div>
+                <div class="col col-auto chart-div"><div class="charts"></div></div>
+                <div class="col col-12 bottom-transcript"><div class="transcript"></div></div>
+            </div>`);        
+        }
     }
 
     fixRotationData(rotationData) {

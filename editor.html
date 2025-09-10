@@ -553,7 +553,8 @@
 
         $('.step-edit').click(function (event) {
             event.stopPropagation();
-            let stepId = event.target.closest('.rotation_item').id;
+            let stepId = renderer.getElementID(event.target.closest('.rotation_item'));;
+            
             let index = stepId.split('_')[1];
             selectedStep = new StepModel(crops.steps[index]);
             // populateCropDetailView(selectedStep);
