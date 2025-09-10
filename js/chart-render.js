@@ -571,20 +571,22 @@ class RotationRenderer {
 
         self.data.steps.forEach((item, index) => {
 
-            let collapseButton = '';
+            let visibility = 'invisible';
             if (item.interventions?.length > 0 || item.attributes?.length > 0)
-                collapseButton = '<div class="collapse-button col-auto"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>';
+                visibility = "visible";
+
+            let collapseButton = '<div class="collapse-button '+visibility+ '"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>';
 
             let start = item.startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
             let end = item.endDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
 
             let dates = '<b>' + item.duration + ' mois</b> (' + start + ' ➜ ' + end + ')';
 
-            html += '<div class="Step_' + index + ' rotation_item text-start" style="border-color: ' + item.color + '"><div class="row">'
-                + '<h4 class="col">' + item.name + '<i class="fa fa-pencil step-edit" aria-hidden="true"></i></h4>'
-                + '<div class="step_dates col-auto">' + dates + '</div>'
+            html += '<div class="Step_' + index + ' rotation_item text-start" style="border-color: ' + item.color + '"><div class="step-header">'
                 + collapseButton
-                + '<p class="step_description">' + (item.description ?? '') + '</p>'
+                + '<div class="step_dates">' + dates + '</div>'
+                + '<h4 class="">' + item.name + '<i class="fa fa-pencil step-edit" aria-hidden="true"></i></h4>'
+                + '</div><p class="step_description clearfix">' + (item.description ?? '') + '</p>'
                 + '<div class="details">'
                 + (item.attributes?.length > 0 ? item.attributes.map((attribute) => { return '<p><dt>' + attribute.name + '</dt><dd>' + attribute.value + '</dd></p>' }).join('') : '');
 
@@ -609,7 +611,7 @@ class RotationRenderer {
                 });
             }
 
-            html += '</div></div></div>';
+            html += '</div></div>';
         });
 
         return '<div>' + html + '</div>';

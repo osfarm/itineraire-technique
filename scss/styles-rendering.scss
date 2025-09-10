@@ -1,10 +1,12 @@
 div.mainITKContainer {
     container-type: inline-size;
     container-name: myparent;
+    line-height   : 1rem;
 
     .left-transcript {
-        display: none;
-        width  : 50%;
+        display    : none;
+        width      : 50%;
+        font-family: Segoe UI;
     }
 
     .chart-div {
@@ -12,7 +14,8 @@ div.mainITKContainer {
     }
 
     .bottom-transcript {
-        display: block;
+        display    : block;
+        font-family: Segoe UI;
     }
 
     @container myparent (min-width: 800px) {
@@ -36,7 +39,7 @@ div.mainITKContainer {
         }
 
         .chart-div {
-            width  : 60%;
+            width: 60%;
         }
 
         .bottom-transcript {
@@ -48,10 +51,9 @@ div.mainITKContainer {
         background-color: #F8FAFC;
         border-left     : #FFFFFF 14px solid;
         border-radius   : 7px;
-        padding         : 13px;
+        padding         : 8px 3px 5px 9px;
         margin          : 12px 0;
         overflow-x      : hidden;
-        position        : relative;
 
         &.highlighted {
             box-shadow: 0px 4px 4px 0px var(--UI-Shadow, rgba(17, 36, 69, 0.16)),
@@ -59,34 +61,40 @@ div.mainITKContainer {
             background-color: #F0F3F5;
         }
 
-        h4 {
-            margin-bottom: 0;
+
+        div.step-header {
+            h4 {
+                margin-bottom: 0;
+            }
+
+            div.step_dates {
+                font-size       : 11px;
+                background-color: #cdcccc;
+                color           : #ffffff;
+                margin          : 5px;
+                padding         : 2px 5px;
+                border-radius   : 5px;
+                height          : 20px;
+                float           : right;
+            }
+
+            div.collapse-button {
+                border-radius: 50%;
+                width        : 30px;
+                height       : 30px;
+                text-align   : center;
+                padding      : 5px 0px;
+                margin       : 0 5px 3px 0;
+                cursor       : pointer;
+                background   : #dfe6f7;
+                color        : #7a8bad;
+                float        : right;
+                transition   : transform 0.3s ease-in-out;
+            }
         }
 
-        div.step_dates {
-            font-size       : 11px;
-            background-color: #cdcccc;
-            color           : #ffffff;
-            margin          : 5px;
-            padding         : 2px 5px;
-            border-radius   : 5px;
-            height          : 20px;
-            right           : 36px;
-            top             : 13px;
-            position        : absolute;
-        }
-
-        div.collapse-button {
-            border-radius: 50%;
-            width        : 30px;
-            height       : 30px;
-            text-align   : center;
-            padding      : 5px 0px;
-            margin       : 0 5px 3px 0;
-            cursor       : pointer;
-            background   : #dfe6f7;
-            color        : #7a8bad;
-            transition   : transform 0.3s ease-in-out;
+        .step_description {
+            clear: both;
         }
 
         &.show-all {
