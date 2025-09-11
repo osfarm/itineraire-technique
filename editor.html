@@ -13,7 +13,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-ui@1.14.1/themes/base/jquery-ui.css">
 
     <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.7/underscore-umd-min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+     integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
     <script src="./js/chart-render.js"></script>
     <script src="./js/editor-attributes.js"></script>
@@ -22,8 +23,9 @@
     <script src="./js/editor-export.js"></script>
     <script src="./js/editor-wiki-editor.js"></script>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" 
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="./css/styles-editor.css" rel="stylesheet">
     <link href="./css/styles-rendering.css" rel="stylesheet">    
@@ -358,7 +360,7 @@
         });
 
 
-        $('#paramsModal').on('show.bs.modal', function (event) {
+        $('#modalParams').on('show.bs.modal', function (event) {
 
             // Set the modal form inputs values from crops.options
             $("#viewSelect").val(crops.options.view);
@@ -366,7 +368,7 @@
             $("#topInterventionsTitle").val(crops.options.title_top_interventions);
             $("#bottomInterventionsTitle").val(crops.options.title_bottom_interventions);
             $("#stepsTitle").val(crops.options.title_steps);
-            $("#regionInput").val(crops.options.region);
+            $("#regionInput").val(crops.options.region ?? "France");
         });
 
         $("#paramsModalSaveButton").click(function () {
