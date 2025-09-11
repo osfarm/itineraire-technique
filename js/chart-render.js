@@ -289,7 +289,7 @@ class RotationRenderer {
                 startDate: new Date(item.startDate.valueOf()), // Date de début
                 endDate: new Date(item.endDate.valueOf()), // Date de fin
                 duration: item.duration,
-                description: (item.description ?? ''),
+                description: self.getHTMLFormatedDescription(item.description),
                 value: [
                     1, // Parcelle (index de la série)
                     item.startDate.valueOf(), // Date de début
@@ -690,7 +690,7 @@ class RotationRenderer {
                 'startDate': new Date(item.startDate.valueOf()), // Date de début
                 'endDate': new Date(item.endDate.valueOf()), // Date de fin
                 'duration': item.duration,
-                'description': (item.description ?? '')// + (item.attributes ? item.attributes.map((attribute) => { return '<p><dt>' + attribute.name + '</dt><dd>' + attribute.value + '</dd></p>' }).join('') : '')
+                'description': self.getHTMLFormatedDescription(item.description)
             };
 
             if (pieItem.color != '#ffffff')
@@ -822,6 +822,8 @@ class RotationRenderer {
         }
 
         option.tooltip = {
+                extraCssText: "text-wrap: wrap;",
+                className: "rotation-tooltip",
                 formatter: function (params) {
                     if (params.data.type == 'rotation_item') {
                         let start = params.data.startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
@@ -876,5 +878,19 @@ class RotationRenderer {
             };
 
         return option;
+    }
+
+    getHTMLFormatedDescription(description) {
+
+        if (description == undefined)
+            return '';
+
+        // If a line has a column in it, split the line in two and add bold to the first part:
+        description = description.replace(/^([^:\n]+):/gm, "<b>$1:</b>");
+        description = description.replace(/\n([^:\n]+):/gm, "\n<b>$1:</b>");
+
+        description = description.replace(/\n/g, '<br/>');
+
+        return description;
     }
 }
