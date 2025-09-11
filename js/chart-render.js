@@ -29,12 +29,20 @@ class RotationRenderer {
 
         this.itk_container = $("#" + divID).css({ 'width': '100%' });
 
-        if (this.itk_container.find('.mainITKContainer').length == 0) {
-            this.itk_container.append(`<div class="row mainITKContainer">
-                <div class="col-auto left-transcript"><div class="transcript"></div></div>
-                <div class="col col-auto chart-div"><div class="charts"></div></div>
-                <div class="col col-12 bottom-transcript"><div class="transcript"></div></div>
-            </div>`);        
+        if (this.data.options.show_transcript) {
+            if (this.itk_container.find('.mainITKContainer').length == 0) {
+                this.itk_container.append(`<div class="row mainITKContainer">
+                    <div class="col-auto left-transcript"><div class="transcript"></div></div>
+                    <div class="col col-auto chart-div"><div class="charts"></div></div>
+                    <div class="col col-12 bottom-transcript"><div class="transcript"></div></div>
+                </div>`);        
+            }
+        } else {
+            if (this.itk_container.find('.mainITKContainer').length == 0) {
+                this.itk_container.append(`<div class="row mainITKContainer">
+                    <div class="col col-12 chart-div"><div class="charts"></div></div>
+                </div>`);        
+            }            
         }
     }
 
