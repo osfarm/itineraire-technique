@@ -25,6 +25,10 @@ class WikiEditor {
                     if (data.parse && data.parse.wikitext) {
                         try {
                             const content = JSON.parse(data.parse.wikitext['*']);
+                            content.steps.forEach(step => {
+                                let sm = new StepModel(step)
+                                sm.setAsEdited();
+                            });
                             reloadCropsFromJson(content);
                         } catch (e) {
                             console.error("Erreur lors de l'analyse du JSON de la page :", e);
@@ -43,7 +47,7 @@ class WikiEditor {
                             const jsonErrorModal = new bootstrap.Modal(document.getElementById('jsonErrorModal'));
                             jsonErrorModal.show();
                         }
-                        
+
                     }
                 });
 

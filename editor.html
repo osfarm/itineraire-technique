@@ -293,6 +293,9 @@
         enableTitleEditing();
 
         $('.close-step-button').click(function() {
+            // Set the current step to be fully edited now:
+            selectedStep.setAsEdited();
+
             displayCropListView();
         });
        
@@ -400,6 +403,12 @@
             this.step.useDefaultColor = step.useDefaultColor ?? true;
             this.step.useDefaultStartDate = step.useDefaultStartDate ?? true;
             this.step.useDefaultEndDate = step.useDefaultEndDate ?? true;
+        }
+
+        setAsEdited() {
+            this.step.useDefaultColor = false;
+            this.step.useDefaultStartDate = false;
+            this.step.useDefaultEndDate = false;
         }
 
         getStep() {

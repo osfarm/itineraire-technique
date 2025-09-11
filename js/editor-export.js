@@ -28,24 +28,28 @@ function importFromTestJson() {
         });
     } else {
         importTestJSON();
-    }    
+    }
 }
 
 function importTestJSON() {
-  fetch('test/test.json')
-    .then(response => {
-      if (!response.ok) {
-        throw new Error("Erreur HTTP " + response.status);
-      }
-      return response.json();
-    })
-    .then(data => {
-      console.log("Données JSON :", data);
-      reloadCropsFromJson(data);
-    })
-    .catch(error => {
-      console.error("Impossible de charger le JSON :", error);
-    });
+    fetch('test/test.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Erreur HTTP " + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("Données JSON :", data);
+            data.steps.forEach(step => {
+                let sm = new StepModel(step)
+                sm.setAsEdited();
+            });
+            reloadCropsFromJson(data);
+        })
+        .catch(error => {
+            console.error("Impossible de charger le JSON :", error);
+        });
 }
 
 function wipe() {
@@ -67,7 +71,7 @@ function wipe() {
         });
     } else {
         reloadCropsFromJson(crops);
-    } 
+    }
 }
 
 function openFileInput() {
@@ -82,6 +86,10 @@ function openFileInput() {
             reader.onload = () => {
                 try {
                     const jsonData = JSON.parse(reader.result);
+                    jsonData.steps.forEach(step => {
+                        let sm = new StepModel(step)
+                        sm.setAsEdited();
+                    });
                     reloadCropsFromJson(jsonData);
                 } catch (error) {
                     console.error("Error parsing JSON file:", error);
