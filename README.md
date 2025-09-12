@@ -57,6 +57,8 @@ Dans votre HTML, inclure les fichiers d'echarts :
 
 Puis appeler la fonction de rendu sur votre JSON (vous devez avoir deux div dans votre html, un pour le graphique et un pour la liste textuelle des étapes) : 
 ```
-let  renderer = new  RotationRenderer('itk_chart_div', 'itk_transcription_div', jsonData);
+let  renderer = new  RotationRenderer('uneDIVID', jsonData);
 renderer.render();
 ```
+
+Le JSON doit respecter le format que vous pourrez trouver dans les différents [exemples de test](https://osfarm.github.io/itineraire-technique/test/test.json).
