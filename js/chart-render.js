@@ -320,7 +320,8 @@ class RotationRenderer {
                         interventionDays: intervention.day,
                         itemStyle: {
                             color: item.color
-                        }
+                        },
+                        description: self.getHTMLFormatedDescription(intervention.description)
                     });
                 });
             }
@@ -664,23 +665,40 @@ class RotationRenderer {
             },
             data: []
         };
-
-        let totalMonths = 0;
-        let minDate = null;
+        
         let lastDayOfPreviousStep = null;
 
         steps.forEach((item, index) => {
+            
+            if (lastDayOfPreviousStep) {
+                // If there's a gap between the end of the previous step and the start of the new step, we add an dummy pie item:
+                let days = Math.round((item.startDate - lastDayOfPreviousStep) / (1000 * 60 * 60 * 24));
+                if (days > 0) {
+                    
+                    let pieItem = {
+                        'name': '',
+                        'value': days,
+                        'divId': '',
+                        'type': 'rotation_item',
+                        'startDate': new Date(lastDayOfPreviousStep.valueOf()), // Date de début
+                        'endDate': new Date(item.startDate.valueOf()), // Date de fin
+                        'duration': Math.round(days / 30),
+                        'description': '',
+                        'emphasis': {'disabled': true},
+                        'select': {'disabled': true},
+                        'tooltip': {'show': false},
+                        'itemStyle': {
+                            'color': '#FFFFFF'
+                        }                        
+                    };
 
-            totalMonths += item.duration;
+                    crops.data.push(pieItem);
+                }
+            }
+                
 
-            if (!lastDayOfPreviousStep)
-                lastDayOfPreviousStep = new Date(item.startDate.valueOf());
-
-            let days = Math.round((item.endDate - lastDayOfPreviousStep) / (1000 * 60 * 60 * 24));
+            let days = Math.round((item.endDate - item.startDate) / (1000 * 60 * 60 * 24));
             lastDayOfPreviousStep = new Date(item.endDate.valueOf());
-
-            if (!minDate)
-                minDate = new Date(item.startDate.valueOf());
 
             let pieItem = {
                 'name': item.name,
@@ -718,9 +736,8 @@ class RotationRenderer {
             itemStyle: {
                 borderColor: '#555',
                 color: '#FFFFFF',
-                borderWidth: 0
+                borderWidth: 1
             },
-            emphasis: { disabled: true },
             data: []
         };
 
@@ -740,23 +757,26 @@ class RotationRenderer {
         ];
 
         let monthsPerYear = new Map();
-        for (let month = 1; month <= totalMonths; month++) {
-            let monthName = minDate.toLocaleDateString(undefined, { month: 'short' });
+        let startMonth = new Date(steps.at(0).startDate.valueOf());
+        while (startMonth < steps.at(-1).endDate) {
+            const monthName = startMonth.toLocaleDateString(undefined, { month: 'short' });
+            const year = startMonth.getFullYear();
 
-            let item = { 'name': monthName, 'value': 1 };
-            const year = minDate.getFullYear();
-
-            item.itemStyle = { color: monthsColorScale[minDate.getMonth()] };
-
-            months.data.push(item);
+            months.data.push({ 
+                'name': monthName, 
+                'value': 1,
+                'itemStyle': {
+                    'color': monthsColorScale[startMonth.getMonth()]
+                } 
+            });
 
             let currentMonthsPerYear = monthsPerYear.get(year);
             if (currentMonthsPerYear == undefined)
                 currentMonthsPerYear = 0;
-            monthsPerYear.set(year, ++currentMonthsPerYear);
+                monthsPerYear.set(year, ++currentMonthsPerYear);
 
             // increment the current month
-            minDate.setMonth(minDate.getMonth() + 1);
+            startMonth.setMonth(startMonth.getMonth() + 1);
         }
 
         series.push(months);
@@ -782,7 +802,10 @@ class RotationRenderer {
         };
 
         monthsPerYear.forEach((nbMonths, year) => {
-            years.data.push({ 'name': year, 'value': nbMonths });
+            years.data.push({ 
+                'name': year, 
+                'value': nbMonths 
+            });
         });
 
         series.push(years);
@@ -841,7 +864,7 @@ class RotationRenderer {
                         else
                             dateString += ' (J' + days + ')';
 
-                        return params.marker + params.name + ' - ' + dateString;
+                        return params.marker + params.name + ' - ' + dateString + '<br>' + params.data.description;
                     }
                 }
             };
@@ -893,4 +916,17 @@ class RotationRenderer {
 
         return description;
     }
+
+    monthDiff(date1, date2) {
+        let anneeDiff = date2.getFullYear() - date1.getFullYear();
+        let moisDiff = date2.getMonth() - date1.getMonth();
+
+        return anneeDiff * 12 + moisDiff;
+    }
 }
+
+
+// Les mois ne sont pas bien affichés
+// Les dates ne correspondent pas à la rotation (2023 ???) 
+// Les trous dans la rotation ne sont pas affichés correctement
+

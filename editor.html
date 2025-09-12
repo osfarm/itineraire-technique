@@ -663,11 +663,11 @@
                     updateSelectedStep();
                 }
         
-                let startDate = new Date();
+                let startDate = getRotationEndDate();
                 if (data.average_sowing_date && selectedStep.step.useDefaultStartDate) {
                     // data.average_sowing_date is in MM-DD format, we need to convert it to YYYY-MM-DD
                     // for the current year
-                    let currentYear = new Date().getFullYear();
+                    let currentYear = startDate.getFullYear();
                     startDate = new Date(`${currentYear}-${data.average_sowing_date}`);
                     // If the start date is before today, it means the crop starts next year
                     if (startDate < new Date()) {
@@ -680,7 +680,7 @@
                 if (data.end_of_season && selectedStep.step.useDefaultEndDate) {
                     // data.end_of_season is in MM-DD format, we need to convert it to YYYY-MM-DD
                     // for the current year
-                    let currentYear = new Date().getFullYear();
+                    let currentYear = startDate.getFullYear();
                     let endDate = new Date(`${currentYear}-${data.end_of_season}`);
                     // If the end date is before the start date, it means the crop ends the next year
                     if (endDate < startDate) {
