@@ -13,13 +13,13 @@ class RotationRenderer {
         if (Array.isArray(rotationData)) {
             this.hasTimeline = true;
             rotationData = rotationData.map((item) => {
-                return this.fixRotationData(item);
+                this.fixRotationData(item);
             });
             this.chartOptions = rotationData[0].options;
         }
         else {
             this.hasTimeline = false;
-            rotationData = this.fixRotationData(rotationData);
+            this.fixRotationData(rotationData);
             this.chartOptions = rotationData.options;
         }
 
@@ -916,4 +916,13 @@ class RotationRenderer {
 
         return description;
     }
+
+    monthDiff(date1, date2) {
+        let anneeDiff = date2.getFullYear() - date1.getFullYear();
+        let moisDiff = date2.getMonth() - date1.getMonth();
+
+        return anneeDiff * 12 + moisDiff;
+    }
 }
+
+window.RotationRenderer = RotationRenderer;
