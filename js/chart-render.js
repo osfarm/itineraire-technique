@@ -916,17 +916,4 @@ class RotationRenderer {
 
         return description;
     }
-
-    monthDiff(date1, date2) {
-        let anneeDiff = date2.getFullYear() - date1.getFullYear();
-        let moisDiff = date2.getMonth() - date1.getMonth();
-
-        return anneeDiff * 12 + moisDiff;
-    }
 }
-
-
-// Les mois ne sont pas bien affichés
-// Les dates ne correspondent pas à la rotation (2023 ???) 
-// Les trous dans la rotation ne sont pas affichés correctement
-
