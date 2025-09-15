@@ -595,7 +595,7 @@ class RotationRenderer {
                 + collapseButton
                 + '<div class="step_dates">' + dates + '</div>'
                 + '<h4 class="">' + item.name + '<i class="fa fa-pencil step-edit" aria-hidden="true"></i></h4>'
-                + '</div><p class="step_description clearfix">' + (item.description ?? '') + '</p>'
+                + '</div><p class="step_description clearfix">' + self.getHTMLFormatedDescription(item.description) + '</p>'
                 + '<div class="details">'
                 + (item.attributes?.length > 0 ? item.attributes.map((attribute) => { return '<p><dt>' + attribute.name + '</dt><dd>' + attribute.value + '</dd></p>' }).join('') : '');
 
