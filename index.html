@@ -1,22 +1,31 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projet TIKA - Visualisation d'itinéraires techniques</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"
+        integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plq7G5tGm0rU+1SPhVotteLpBERwTkw==" crossorigin="anonymous">
     <link href="./css/styles-rendering.css" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css" rel="stylesheet">
+
     <style>
         .hero-section {
             background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%);
             color: white;
             padding: 4rem 0;
         }
+
         .demo-image {
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             margin: 1rem 0;
         }
+
         .code-block {
             background-color: #f8f9fa;
             border: 1px solid #e9ecef;
@@ -26,16 +35,19 @@
             font-size: 0.875rem;
             overflow-x: auto;
         }
+
         .btn-demo {
             background-color: #28a745;
             border-color: #28a745;
             font-weight: 500;
             padding: 0.75rem 1.5rem;
         }
+
         .btn-demo:hover {
             background-color: #218838;
             border-color: #1e7e34;
         }
+
         .section-header {
             border-bottom: 3px solid #4CAF50;
             padding-bottom: 0.5rem;
@@ -44,7 +56,8 @@
     </style>
 
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.7/underscore-umd-min.js"></script>
@@ -55,6 +68,7 @@
 
 
 </head>
+
 <body>
     <!-- Hero Section -->
     <div class="hero-section">
@@ -64,7 +78,7 @@
                     <h1 class="display-4 fw-bold mb-4">Projet TIKA</h1>
                     <h2 class="h3 mb-4">Visualisation d'itinéraires techniques</h2>
                     <p class="lead mb-4">
-                        Une solution moderne pour visualiser et éditer les itinéraires techniques agricoles, 
+                        Une solution moderne pour visualiser et éditer les itinéraires techniques agricoles,
                         de la préparation du sol à la récolte.
                     </p>
                     <div class="d-flex gap-3">
@@ -86,20 +100,22 @@
         <div class="row mb-5">
             <div class="col-lg-10 mx-auto">
                 <p class="fs-5 text-muted">
-                    Les itinéraires techniques désignent l'ensemble des interventions qui sont opérées sur une parcelle donnée, 
-                    de la préparation du sol à la récolte. Les itinéraires techniques sont intéressants à étudier, en particulier 
-                    quand il s'agit de successions de cultures sur plusieurs années, afin de comprendre la stratégie d'un agriculteur 
+                    Les itinéraires techniques désignent l'ensemble des interventions qui sont opérées sur une parcelle
+                    donnée, de la préparation du sol à la récolte. Les itinéraires techniques sont intéressants à étudier, en
+                    particulier quand il s'agit de successions de cultures sur plusieurs années, afin de comprendre la stratégie
+                    d'un agriculteur
                     ou bien d'expliciter le bénéfice de telle ou telle rotation.
                 </p>
                 <p class="fs-5 text-muted">
-                    En revanche, la visualisation d'un itinéraire technique (aussi appelé schémas décisionnel) se fait souvent 
-                    aujourd'hui avec des outils tels que PowerPoint à défaut d'autre chose. Outre le fait que ces outils ne gèrent 
-                    pas bien les proportionalités entre les séquences de temps, ils sont rapidement limités dans leur capacité 
-                    d'afficher beaucoup d'information.
+                    En revanche, la visualisation d'un itinéraire technique (aussi appelé schémas décisionnel) se fait
+                    souvent aujourd'hui avec des outils tels que PowerPoint à défaut d'autre chose. Outre le fait que ces outils
+                    ne gèrent pas bien les proportionalités entre les séquences de temps, ils sont rapidement limités dans leur
+                    capacité d'afficher beaucoup d'information.
                 </p>
                 <p class="fs-5 text-muted">
-                    Ce projet vise à proposer une alternative, pour décrire un itinéraire technique complet, avec un maximum 
-                    d'interventions et d'informations annexes (par exemple l'écartement du rang, la variété ou la densité de semis).
+                    Ce projet vise à proposer une alternative, pour décrire un itinéraire technique complet, avec un
+                    maximum d'interventions et d'informations annexes (par exemple l'écartement du rang, la variété ou la
+                    densité de semis).
                 </p>
             </div>
         </div>
@@ -109,12 +125,12 @@
             <div class="col-md-6">
                 <div class="card">
 
-                    <div id="rotation-chart-horizontal" ></div>
+                    <div id="rotation-chart-horizontal"></div>
 
                     <div class="card-body">
                         <h5 class="card-title">Format Frise</h5>
                         <p class="card-text">
-                            Le rendu peut se faire au format frise, avec un zoom temporel, et la possibilité de cliquer 
+                            Le rendu peut se faire au format frise, avec un zoom temporel, et la possibilité de cliquer
                             sur chaque étape de la rotation ou chaque intervention pour en savoir plus.
                         </p>
                     </div>
@@ -127,7 +143,8 @@
                     <div class="card-body">
                         <h5 class="card-title">Format Rotation</h5>
                         <p class="card-text">
-                            L'utilisateur peut passer au format rotation pour voir l'ensemble de la rotation sur un cercle.
+                            L'utilisateur peut passer au format rotation pour voir l'ensemble de la rotation sur un
+                            cercle.
                         </p>
                     </div>
                 </div>
@@ -142,9 +159,9 @@
                         <h4 class="card-title mb-0">Démo Interactive</h4>
                     </div>
                     <div class="card-body">
-                        <p class="card-text">Découvrez les fonctionnalités du visualisateur avec des données d'exemple.</p>
-                        <a href="visualisateur.html" 
-                           class="btn btn-success btn-demo">Accéder à la démo</a>
+                        <p class="card-text">Découvrez les fonctionnalités du visualisateur avec des données d'exemple.
+                        </p>
+                        <a href="visualisateur.html" class="btn btn-success btn-demo"><i class="fas fa-chart-line me-2"></i>Accéder à la démo</a>
                     </div>
                 </div>
             </div>
@@ -155,9 +172,9 @@
                         <h4 class="card-title mb-0">Éditeur</h4>
                     </div>
                     <div class="card-body">
-                        <p class="card-text">Créez votre propre itinéraire technique et intégrez-le facilement dans n'importe quel contexte.</p>
-                        <a href="editor.html" 
-                           class="btn btn-primary btn-demo">Accéder à l'éditeur</a>
+                        <p class="card-text">Créez votre propre itinéraire technique et intégrez-le facilement dans
+                            n'importe quel contexte.</p>
+                        <a href="editor.html" class="btn btn-primary btn-demo"><i class="fas fa-edit me-2"></i>Accéder à l'éditeur</a>
                     </div>
                 </div>
             </div>
@@ -168,17 +185,21 @@
             <div class="col-12">
                 <h2 class="section-header">Triple Performance</h2>
                 <p class="fs-5">
-                    Ce visualisateur est avant tout conçu pour être utilisé sur 
-                    <a href="https://wiki.tripleperformance.fr/" class="text-decoration-none">Triple Performance</a>. 
-                    Vous y trouverez de 
-                    <a href="https://wiki.tripleperformance.fr/wiki/Retours_d%27exp%C3%A9rience" class="text-decoration-none">nombreux</a> 
-                    <a href="https://wiki.tripleperformance.fr/wiki/Ferme_de_Longueil" class="text-decoration-none">retours d'expérience</a> 
+                    Ce visualisateur est avant tout conçu pour être utilisé sur
+                    <a href="https://wiki.tripleperformance.fr/" class="text-decoration-none">Triple Performance</a>.
+                    Vous y trouverez de
+                    <a href="https://wiki.tripleperformance.fr/wiki/Retours_d%27exp%C3%A9rience"
+                        class="text-decoration-none">nombreux</a>
+                    <a href="https://wiki.tripleperformance.fr/wiki/Ferme_de_Longueil"
+                        class="text-decoration-none">retours d'expérience</a>
                     documentés avec des données technico-économiques ainsi que les itinéraires techniques associés.
                 </p>
                 <p class="fs-5">
-                    Les itinéraires peuvent être créés directement dans 
-                    <a href="https://wiki.tripleperformance.fr/wiki/Aide:Ins%C3%A9rer_des_graphiques_dans_une_page" class="text-decoration-none">Google Spreadsheet</a> 
-                    grâce à l'<a href="https://workspace.google.com/marketplace/app/triple_performance/427792115089" class="text-decoration-none">add-on</a> 
+                    Les itinéraires peuvent être créés directement dans
+                    <a href="https://wiki.tripleperformance.fr/wiki/Aide:Ins%C3%A9rer_des_graphiques_dans_une_page"
+                        class="text-decoration-none">Google Spreadsheet</a>
+                    grâce à l'<a href="https://workspace.google.com/marketplace/app/triple_performance/427792115089"
+                        class="text-decoration-none">add-on</a>
                     spécifiquement conçu pour Google Workspace.
                 </p>
             </div>
@@ -189,19 +210,20 @@
             <div class="col-12">
                 <h2 class="section-header">Utilisation dans un autre contexte / logiciel</h2>
                 <p class="fs-5 mb-4">
-                    Il est possible d'utiliser cette librairie très facilement dans n'importe quel outil. Le visualisateur 
-                    a été conçu pour être très facile à intégrer dans une page HTML, il ne dépend que de briques Javascript 
-                    (Apache Echarts, JQuery et Bootstrap). N'hésitez pas à nous contacter si vous décidez de l'utiliser et 
-                    à contribuer si vous faites des évolutions !
+                    Il est possible d'utiliser cette librairie très facilement dans n'importe quel outil. Le
+                    visualisateur a été conçu pour être très facile à intégrer dans une page HTML, il ne dépend que de briques
+                    Javascript (Apache Echarts, JQuery et Bootstrap). N'hésitez pas à nous contacter si vous décidez de l'utiliser
+                    et à contribuer si vous faites des évolutions !
                 </p>
 
                 <h3 class="h4 mb-3">Installation via npm</h3>
                 <div class="code-block mb-4">
-npm i @osfarm/itineraire-technique
+                    npm i @osfarm/itineraire-technique
                 </div>
 
                 <h3 class="h4 mb-3">Configuration du build</h3>
-                <div class="code-block mb-4"><pre>
+                <div class="code-block mb-4">
+                    <pre>
 {
   "private": true,
   "dependencies": {
@@ -210,10 +232,12 @@ npm i @osfarm/itineraire-technique
   "scripts": {
      "build": "cp node_modules/@osfarm/itineraire-technique/js/chart-render.js js/ && cp node_modules/@osfarm/itineraire-technique/css/styles-rendering.css css"
    }
-}</pre></div>
+}</pre>
+                </div>
 
                 <h3 class="h4 mb-3">Inclusion des dépendances HTML</h3>
-                <div class="code-block mb-4"><pre>
+                <div class="code-block mb-4">
+                    <pre>
 &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous"&gt;
 &lt;script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.js"&gt;&lt;/script&gt;
 &lt;script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"&gt;&lt;/script&gt;
@@ -221,10 +245,12 @@ npm i @osfarm/itineraire-technique
 <br>
 &lt;link href="./css/styles-rendering.css" rel="stylesheet"&gt;
 &lt;script src="./js/chart-render.js"&gt;&lt;/script&gt;
-                </pre></div>
+                </pre>
+                </div>
 
                 <h3 class="h4 mb-3">Utilisation</h3>
-                <div class="code-block mb-4"><pre>
+                <div class="code-block mb-4">
+                    <pre>
     fetch('ma_rotation.json')
         .then(response => {
             if (!response.ok) {
@@ -238,11 +264,13 @@ npm i @osfarm/itineraire-technique
         })
         .catch(error => {
             console.error("Impossible de charger le JSON :", error);
-        });</pre></div>
+        });</pre>
+                </div>
 
                 <p class="text-muted">
-                    Le JSON doit respecter le format que vous pourrez trouver dans les différents 
-                    <a href="https://osfarm.github.io/itineraire-technique/test/test.json" class="text-decoration-none">exemples de test</a>.
+                    Le JSON doit respecter le format que vous pourrez trouver dans les différents
+                    <a href="https://osfarm.github.io/itineraire-technique/test/test.json"
+                        class="text-decoration-none">exemples de test</a>.
                 </p>
             </div>
         </div>
@@ -252,54 +280,70 @@ npm i @osfarm/itineraire-technique
     <footer class="bg-dark text-light py-4">
         <div class="container">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-4 mb-4">
                     <h5>Projet TIKA</h5>
                     <p class="mb-0">Visualisation d'itinéraires techniques agricoles</p>
                 </div>
-                <div class="col-md-6 text-md-end">
+                <div class="col-md-4 text-md-center mb-4">
                     <a href="https://github.com/neayi/itineraire-technique" class="text-light text-decoration-none">
-                        <i class="fab fa-github me-2"></i>Voir sur GitHub
+                        <i class="fa-brands fa-github me-2"></i>Voir sur GitHub
                     </a>
                 </div>
+                <div class="col-md-4 text-md-end mb-4">
+                    <p>Fait avec ♡ par <a target="_blank" href="https://neayi.com/">Neayi</a> pour <a href="https://tripleperformance.fr">Triple Performance</a></p>
+                </div>
             </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-4 text-md-end">
+                    <img src="https://upload.wikimedia.org/wikipedia/fr/6/67/Logo_ADEME.svg" width="200" alt="Logo ADEME">
+                </div>
+                <div class="col-md-6 mb-4">
+                    <p class="mb-4">Opération réalisée avec le soutien financier de l'ADEME.</p>
+                </div>                
+            </div>
+
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script>
 
     <script>
 
-    fetch('test/test horizontal no transcript.json')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Erreur HTTP " + response.status);
-            }
-            return response.json();
-        })
-        .then(data => {
-            let renderer = new RotationRenderer('rotation-chart-horizontal', data);
-            renderer.render();
-        })
-        .catch(error => {
-            console.error("Impossible de charger le JSON :", error);
-        });
+        fetch('test/test horizontal no transcript.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Erreur HTTP " + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                let renderer = new RotationRenderer('rotation-chart-horizontal', data);
+                renderer.render();
+            })
+            .catch(error => {
+                console.error("Impossible de charger le JSON :", error);
+            });
 
 
-    fetch('test/test donut no transcript.json')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Erreur HTTP " + response.status);
-            }
-            return response.json();
-        })
-        .then(data => {
-            let renderer = new RotationRenderer('rotation-chart-donut', data);
-            renderer.render();
-        })
-        .catch(error => {
-            console.error("Impossible de charger le JSON :", error);
-        });
+        fetch('test/test donut no transcript.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Erreur HTTP " + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                let renderer = new RotationRenderer('rotation-chart-donut', data);
+                renderer.render();
+            })
+            .catch(error => {
+                console.error("Impossible de charger le JSON :", error);
+            });
 
     </script>
 </body>
+
 </html>
