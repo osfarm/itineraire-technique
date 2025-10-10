@@ -71,6 +71,18 @@ function createInterventionForm(id, day, name, type, description, row) {
     type = type || "";
     description = description || "";
 
+    // Calculate absolute date from relative day
+    let absoluteDate = "";
+    if (day == "")
+        day = 0;
+    
+    if (selectedStep && selectedStep.getStep().startDate) {
+        const stepStartDate = new Date(selectedStep.getStep().startDate);
+        const interventionDate = new Date(stepStartDate);
+        interventionDate.setDate(stepStartDate.getDate() + parseInt(day));
+        absoluteDate = interventionDate.toISOString().split('T')[0];
+    }
+
     const formContainer = document.createElement("div");
     formContainer.innerHTML =
         `<form id="interventionForm">
@@ -84,10 +96,14 @@ function createInterventionForm(id, day, name, type, description, row) {
                     <textarea id="interventionDescription" class="form-control"
                         placeholder="Ajouter une description">${description}</textarea>
                 </div>
-                <div class="col-12 mb-2">
-                    <label for="interventionDay" class="form-label">Quel jour après la plantation ?</label>
-                    <input type="number" id="interventionDay" class="form-control" placeholder="Jour"
+                <div class="col-4 mb-2">
+                    <label for="interventionDay" class="form-label">Jour relatif</label>
+                    <input type="number" id="interventionDay" class="form-control text-right" placeholder="Jour"
                         value="${day}">
+                </div>
+                <div class="col-8 mb-2">
+                    <label for="interventionDate" class="form-label">Date absolue</label>
+                    <input type="date" id="interventionDate" class="form-control" value="${absoluteDate}">
                 </div>
                 <div class="col-12 mb-2">
                     <select id="interventionType" class="form-select" aria-label="Type">
@@ -113,5 +129,49 @@ function createInterventionForm(id, day, name, type, description, row) {
         document.getElementById("newInterventionButton").classList.add("d-none");
     }
 
+    // Add event listeners for date synchronization
+    setupInterventionDateListeners();
+
     $("#interventionName").focus();
+}
+
+function setupInterventionDateListeners() {
+    // When relative day changes, update absolute date
+    $("#interventionDay").on("input change", function() {
+        updateAbsoluteDateFromRelative();
+    });
+
+    // When absolute date changes, update relative day
+    $("#interventionDate").on("change", function() {
+        updateRelativeDayFromAbsolute();
+    });
+}
+
+function updateAbsoluteDateFromRelative() {
+    const relativeDay = $("#interventionDay").val();
+    if (relativeDay == "")
+        relativeDay = 0;
+
+    if (selectedStep && selectedStep.getStep().startDate) {
+        const stepStartDate = new Date(selectedStep.getStep().startDate);
+        const interventionDate = new Date(stepStartDate);
+        interventionDate.setDate(stepStartDate.getDate() + parseInt(relativeDay));
+        
+        const absoluteDateStr = interventionDate.toISOString().split('T')[0];
+        $("#interventionDate").val(absoluteDateStr);
+    }
+}
+
+function updateRelativeDayFromAbsolute() {
+    const absoluteDate = $("#interventionDate").val();
+    if (absoluteDate !== "" && selectedStep && selectedStep.getStep().startDate) {
+        const stepStartDate = new Date(selectedStep.getStep().startDate);
+        const interventionDate = new Date(absoluteDate);
+        
+        // Calculate difference in days
+        const timeDiff = interventionDate.getTime() - stepStartDate.getTime();
+        const dayDiff = Math.round(timeDiff / (1000 * 60 * 60 * 24));
+        
+        $("#interventionDay").val(dayDiff);
+    }
 }

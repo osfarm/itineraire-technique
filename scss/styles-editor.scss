@@ -74,6 +74,10 @@ $header-height: 3rem;
     }
 }
 
+.intervention-row {
+    background: #e0e0e0;
+}
+
 .primary-button {
     color: $button-text-color;
     background-color: $button-color;
@@ -103,4 +107,10 @@ $header-height: 3rem;
     margin-right: 10px;
     vertical-align: middle;
     cursor: grab;
+}
+
+.form-control {
+    &.text-right {
+        text-align: right;
+    }
 }

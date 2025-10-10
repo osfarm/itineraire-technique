@@ -278,6 +278,8 @@ class RotationRenderer {
         let self = this;
         let data = [];
 
+        let bHasSecondaryCrops = steps.some(item => item.secondary_crop);
+
         steps.forEach((item, index) => {
             if (item.name == Number(item.name))
                 item.name = "Etape " + item.name; // Force the item name to be a string
@@ -296,7 +298,8 @@ class RotationRenderer {
                     item.endDate.valueOf(), // Date de fin
                     item.name, // Nom
                     'rotation_item', // Type
-                    item.secondary_crop ? true : false
+                    item.secondary_crop ? true : false,
+                    bHasSecondaryCrops ? true : false
                 ],
                 itemStyle: {
                     color: item.color
@@ -317,7 +320,7 @@ class RotationRenderer {
                             intervention.type == 'intervention_top' ? 'intervention_top' : 'intervention_bottom' // Type
                         ],
                         divId: 'Intervention_' + index + '_' + interventionIndex,
-                        interventionDate: new Date(item.startDate.valueOf()),
+                        interventionDate: new Date(item.startDate.valueOf() + intervention.day * 86400000),
                         interventionDays: intervention.day,
                         itemStyle: {
                             color: item.color
@@ -388,6 +391,7 @@ class RotationRenderer {
             var name = api.value(3);
             var type = api.value(4);
             let secondary_crop = api.value(5);
+            let bHasSecondaryCrops = api.value(6);
 
             const x = start[0];
             let y = start[1];
@@ -424,10 +428,17 @@ class RotationRenderer {
                 // params.coordSys.width, // largeur du canva
                 // params.coordSys.height // hauteur du canva
 
-                let height = self.barHeight - 40; // 20 px margin top and bottom
-                let top = y - height / 2 - 10;
+                let height = self.barHeight - 20; // 20 px margin top and bottom
+                let top = y - height / 2;
                 let textXMargin = 2;
                 let textYMargin = 10;
+
+                if (bHasSecondaryCrops) {
+                    height = self.barHeight - 40; // 20 px margin top and bottom
+                    top = y - height / 2 - 15;
+                    textXMargin = 2;
+                    textYMargin = 10;
+                }
 
                 if (secondary_crop) {
                     // Move secondary crops a bit down and reduce their size
@@ -494,7 +505,6 @@ class RotationRenderer {
             if (type == 'intervention_bottom' || type == 'intervention_top') {
 
                 const height = 20;
-                const border = 3;
                 const margin = 10;
                 const textMargin = 5;
 
@@ -542,8 +552,8 @@ class RotationRenderer {
 
                 const arrowWidth = 3;
 
-                let arrowTop = y + 60;
-                let arrowBottom = y - 60;
+                let arrowTop = y + 55;
+                let arrowBottom = y - 55;
 
                 y = margin + y + trackToUse * (height + margin) - (self.barHeight / 2);
 
@@ -669,9 +679,9 @@ class RotationRenderer {
                     let intDate = new Date(item.startDate.valueOf() + intervention.day * 86400000).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
                     let days = intervention.day;
                     if (days >= 0)
-                        intDate += ' (J+' + days + ')';
+                        intDate += ' (J+' + (days == 0 ? '0' : days) + ')';
                     else
-                        intDate += ' (J' + days + ')';
+                        intDate += ' (J-' + days + ')';
 
                     let title = intervention.name;
 
@@ -924,9 +934,9 @@ class RotationRenderer {
                     let dateString = interventionDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
 
                     if (days >= 0)
-                        dateString += ' (J+' + days + ')';
+                        dateString += ' (J+' + (days == 0 ? '0' : days) + ')';
                     else
-                        dateString += ' (J' + days + ')';
+                        dateString += ' (J-' + days + ')';
 
                     return params.marker + params.name + ' - ' + dateString + '<br>' + params.data.description;
                 }
