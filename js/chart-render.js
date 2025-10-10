@@ -35,14 +35,14 @@ class RotationRenderer {
                     <div class="col-auto left-transcript"><div class="transcript"></div></div>
                     <div class="col col-auto chart-div"><div class="charts"></div></div>
                     <div class="col col-12 bottom-transcript"><div class="transcript"></div></div>
-                </div>`);        
+                </div>`);
             }
         } else {
             if (this.itk_container.find('.mainITKContainer').length == 0) {
                 this.itk_container.append(`<div class="row mainITKContainer">
                     <div class="col col-12 chart-div"><div class="charts"></div></div>
-                </div>`);        
-            }            
+                </div>`);
+            }
         }
     }
 
@@ -328,6 +328,50 @@ class RotationRenderer {
             }
         });
 
+        function wrapText(echarts, text, maxWidth, maxHeight) {
+            const words = text.split(' ');
+            let line = '';
+            let lines = [];
+            let height = 0;
+
+
+            for (let word of words) {
+                const testLine = line + word + ' ';
+                const testWidth = echarts.format.getTextRect(testLine).width;
+                if (testWidth > maxWidth && line !== '') {
+                    lines.push(line);
+                    line = word + ' ';
+                } else {
+                    line = testLine;
+                }
+            }
+
+            if (line.length > 0) {
+                lines.push(line);
+            }
+
+            let wrapped = '';
+            let wrappedText = false;
+            lines.forEach(l => {
+                if (wrappedText)
+                    return;
+
+                let test = wrapped + l;
+                if (echarts.format.getTextRect(test).height > maxHeight)
+                {
+                    wrappedText = true;
+                    return;
+                }
+
+                wrapped += l + "\n";
+            });
+            
+            if (wrappedText) {
+                return wrapped.trim() + '...';
+            }
+            
+            return lines.join("\n");
+        }
 
         let maxXPositions = new Map();
 
@@ -377,15 +421,16 @@ class RotationRenderer {
 
                 let height = self.barHeight - 40; // 20 px margin top and bottom
                 let top = y - height / 2;
+                let textMargin = 10;
 
                 if (secondary_crop) {
                     height = height / 2;
                     top = y;
-                }                    
-                
+                    textMargin = 5;
+                }
+
                 const arrowWidth = height / 3;
                 const border = 3;
-                const textMargin = 10;
 
                 var points = [
                     [x, top],
@@ -396,11 +441,13 @@ class RotationRenderer {
                     [x + arrowWidth, top + height / 2],
                 ];
 
-                const itemLabelWidth = echarts.format.getTextRect(name).width + textMargin * 2;
+                //const itemLabelWidth = echarts.format.getTextRect(name).width + textMargin * 2;
                 const itemWidth = end[0] - x;
 
-                if (itemLabelWidth > itemWidth)
-                    name = ''; // Hide the label as we won't have the room to show it
+                // if (itemLabelWidth > itemWidth)
+                //     name = ''; // Hide the label as we won't have the room to show it
+
+                name = wrapText(echarts, name, itemWidth - textMargin * 2, height);
 
                 // See this for clip regions : https://stackoverflow.com/questions/71735038/setting-border-and-label-in-custom-apache-echarts
                 // https://stackoverflow.com/questions/73653691/how-to-draw-a-custom-triangle-in-renderitem-in-apache-echarts
@@ -422,7 +469,7 @@ class RotationRenderer {
                             },
                         },
                         textConfig: {
-                            position: [arrowWidth + textMargin, height / 2 - 5]
+                            position: [arrowWidth + textMargin, textMargin]
                         },
                         textContent: {
                             style: {
@@ -551,28 +598,28 @@ class RotationRenderer {
         }
 
         return [
-                {
-                    type: 'custom',
-                    renderItem: renderItem,
-                    clip: true,
-                    itemStyle: {
-                        opacity: 0.8
-                    },
-                    encode: {
-                        x: [1, 2],
-                        y: 0
-                    },
-                    data: data
-                }
-            ];
+            {
+                type: 'custom',
+                renderItem: renderItem,
+                clip: true,
+                itemStyle: {
+                    opacity: 0.8
+                },
+                encode: {
+                    x: [1, 2],
+                    y: 0
+                },
+                data: data
+            }
+        ];
     }
 
     getCategoriesLabels() {
         let self = this;
 
         let categories = [self.chartOptions.title_bottom_interventions ?? '',
-                          self.chartOptions.title_steps ?? '',
-                          self.chartOptions.title_top_interventions ?? ''];
+        self.chartOptions.title_steps ?? '',
+        self.chartOptions.title_top_interventions ?? ''];
 
         // simulate some wrapping of the category labels
         categories = categories.map((item) => {
@@ -593,7 +640,7 @@ class RotationRenderer {
             if (item.interventions?.length > 0 || item.attributes?.length > 0)
                 visibility = "visible";
 
-            let collapseButton = '<div class="collapse-button '+visibility+ '"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>';
+            let collapseButton = '<div class="collapse-button ' + visibility + '"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>';
 
             let start = item.startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
             let end = item.endDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
@@ -624,8 +671,8 @@ class RotationRenderer {
                         title = title + '⚠️';
 
                     html += '<div class="Intervention_' + index + '_' + interventionIndex + ' intervention"><span class="intervention_title">' + title + '</span>'
-                          + '<span class="intervention_date badge rounded-pill">' + intDate + '</span>'
-                          + '<div class="intervention_description">' + intervention.description + '</div></div>';
+                        + '<span class="intervention_date badge rounded-pill">' + intDate + '</span>'
+                        + '<div class="intervention_description">' + intervention.description + '</div></div>';
                 });
             }
 
@@ -674,16 +721,16 @@ class RotationRenderer {
             },
             data: []
         };
-        
+
         let lastDayOfPreviousStep = null;
 
         steps.forEach((item, index) => {
-            
+
             if (lastDayOfPreviousStep) {
                 // If there's a gap between the end of the previous step and the start of the new step, we add an dummy pie item:
                 let days = Math.round((item.startDate - lastDayOfPreviousStep) / (1000 * 60 * 60 * 24));
                 if (days > 0) {
-                    
+
                     let pieItem = {
                         'name': '',
                         'value': days,
@@ -693,18 +740,18 @@ class RotationRenderer {
                         'endDate': new Date(item.startDate.valueOf()), // Date de fin
                         'duration': Math.round(days / 30),
                         'description': '',
-                        'emphasis': {'disabled': true},
-                        'select': {'disabled': true},
-                        'tooltip': {'show': false},
+                        'emphasis': { 'disabled': true },
+                        'select': { 'disabled': true },
+                        'tooltip': { 'show': false },
                         'itemStyle': {
                             'color': '#FFFFFF'
-                        }                        
+                        }
                     };
 
                     crops.data.push(pieItem);
                 }
             }
-                
+
 
             let days = Math.round((item.endDate - item.startDate) / (1000 * 60 * 60 * 24));
             lastDayOfPreviousStep = new Date(item.endDate.valueOf());
@@ -771,18 +818,18 @@ class RotationRenderer {
             const monthName = startMonth.toLocaleDateString(undefined, { month: 'short' });
             const year = startMonth.getFullYear();
 
-            months.data.push({ 
-                'name': monthName, 
+            months.data.push({
+                'name': monthName,
                 'value': 1,
                 'itemStyle': {
                     'color': monthsColorScale[startMonth.getMonth()]
-                } 
+                }
             });
 
             let currentMonthsPerYear = monthsPerYear.get(year);
             if (currentMonthsPerYear == undefined)
                 currentMonthsPerYear = 0;
-                monthsPerYear.set(year, ++currentMonthsPerYear);
+            monthsPerYear.set(year, ++currentMonthsPerYear);
 
             // increment the current month
             startMonth.setMonth(startMonth.getMonth() + 1);
@@ -811,9 +858,9 @@ class RotationRenderer {
         };
 
         monthsPerYear.forEach((nbMonths, year) => {
-            years.data.push({ 
-                'name': year, 
-                'value': nbMonths 
+            years.data.push({
+                'name': year,
+                'value': nbMonths
             });
         });
 
@@ -854,60 +901,60 @@ class RotationRenderer {
         }
 
         option.tooltip = {
-                extraCssText: "text-wrap: wrap;",
-                className: "rotation-tooltip",
-                formatter: function (params) {
-                    if (params.data.type == 'rotation_item') {
-                        let start = params.data.startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
-                        let end = params.data.endDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
+            extraCssText: "text-wrap: wrap;",
+            className: "rotation-tooltip",
+            formatter: function (params) {
+                if (params.data.type == 'rotation_item') {
+                    let start = params.data.startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
+                    let end = params.data.endDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
 
-                        return params.marker + params.name + ' : ' + params.data.duration + ' mois (' + start + ' ➜ ' + end + ')<br>' + params.data.description;
-                    }
-                    else {
-                        let interventionDate = params.data.interventionDate;
-                        const days = params.data.interventionDays;
-                        let dateString = interventionDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-
-                        if (days >= 0)
-                            dateString += ' (J+' + days + ')';
-                        else
-                            dateString += ' (J' + days + ')';
-
-                        return params.marker + params.name + ' - ' + dateString + '<br>' + params.data.description;
-                    }
+                    return params.marker + params.name + ' : ' + params.data.duration + ' mois (' + start + ' ➜ ' + end + ')<br>' + params.data.description;
                 }
-            };
+                else {
+                    let interventionDate = params.data.interventionDate;
+                    const days = params.data.interventionDays;
+                    let dateString = interventionDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+
+                    if (days >= 0)
+                        dateString += ' (J+' + days + ')';
+                    else
+                        dateString += ' (J' + days + ')';
+
+                    return params.marker + params.name + ' - ' + dateString + '<br>' + params.data.description;
+                }
+            }
+        };
 
         option.toolbox = {
-                "itemSize": 25,
-                "iconStyle": {
-                    "borderColor": "#AAA",
-                    "borderWidth": 1
-                },
-                "feature": {
-                    "myTool1": {
-                        "show": true,
-                        "title": 'Rotation',
-                        "icon": 'path://M18.15,12.99c-.06-.07-.14-.13-.23-.17l-.38-.15c.33-.93.51-1.92.51-2.96,0-3-1.49-5.65-3.77-7.26l-3.03,2.72c1.72.79,2.91,2.53,2.91,4.54,0,.54-.09,1.07-.25,1.56l-.44-.17c-.3-.12-.64.03-.76.33-.04.1-.05.21-.03.31l.79,4.82c.06.32.36.53.68.47.1-.02.19-.06.27-.13l3.66-3.1c.25-.21.28-.58.07-.82ZM6.94,5.24c.46-.23.97-.39,1.5-.47l.13.59c.07.32.38.52.69.45.1-.02.2-.07.28-.14l3.59-3.31c.23-.22.24-.59.02-.83-.07-.07-.16-.13-.26-.16L8.3.02c-.31-.09-.63.09-.73.39-.03.09-.03.19-.01.29l.06.27c-1.12.2-2.16.6-3.1,1.17l2.41,3.09ZM5.88,5.96l-2.39-3.06c-.98.82-1.79,1.84-2.34,3.01l3.62,1.44c.29-.53.66-1,1.11-1.39ZM4.17,9.72c0-.41.05-.81.14-1.19l-3.63-1.44c-.18.57-.3,1.16-.35,1.77l3.84,1.1c0-.08,0-.16,0-.24ZM9.17,14.72c-1.59,0-3-.74-3.92-1.9l.42-.38c.24-.22.26-.59.04-.83-.07-.08-.16-.14-.26-.17l-4.66-1.47c-.31-.09-.64.08-.73.39-.03.1-.03.2,0,.3l1.12,4.66c.07.31.39.51.7.43.09-.02.18-.07.25-.13l.23-.21c1.63,1.94,4.07,3.18,6.8,3.18,1.3,0,2.54-.28,3.66-.79l-.8-3.99c-.81.56-1.79.9-2.86.9Z',
-                        onclick: function (){
-                            self.initialLayout = 'donut';
-                            self.renderChart();
-                        }
-                    },
-                    "myTool2": {
-                        "show": true,
-                        "title": 'Frise',
-                        "icon": 'path://M4.63,0H0v10.01h4.97c.07,0,.13-.05.19-.14l2.61-4.14c.17-.28.23-.89.12-1.35-.03-.15-.08-.27-.13-.35L5.16.12c-.05-.08-.11-.12-.17-.12h-.37ZM11.9,4.38c-.03-.15-.08-.27-.13-.35L9.17.12c-.05-.08-.11-.12-.17-.12h-.37s-2.26,0-2.26,0v.03s.06.05.08.09l2.6,3.9c.06.08.1.21.13.35.1.47.05,1.07-.12,1.35l-2.61,4.14s-.05.07-.08.09v.04h2.6c.07,0,.13-.05.19-.14l2.61-4.14c.17-.28.23-.89.12-1.35ZM18.28,4.38c-.03-.15-.08-.27-.13-.35L15.55.12c-.05-.08-.11-.12-.17-.12h-.37s-4.63,0-4.63,0v.03s.06.05.08.09l2.6,3.9c.06.08.1.21.13.35.1.47.05,1.07-.12,1.35l-2.61,4.14s-.05.07-.08.09v.04h4.97c.07,0,.13-.05.19-.14l2.61-4.14c.17-.28.23-.89.12-1.35Z',
-                        onclick: function (){
-                            self.initialLayout = 'horizontal';
-                            self.renderChart();
-                        }
-                    },
-                    "saveAsImage": {
-                        'excludeComponents': ["dataZoom", "toolbox"]
+            "itemSize": 25,
+            "iconStyle": {
+                "borderColor": "#AAA",
+                "borderWidth": 1
+            },
+            "feature": {
+                "myTool1": {
+                    "show": true,
+                    "title": 'Rotation',
+                    "icon": 'path://M18.15,12.99c-.06-.07-.14-.13-.23-.17l-.38-.15c.33-.93.51-1.92.51-2.96,0-3-1.49-5.65-3.77-7.26l-3.03,2.72c1.72.79,2.91,2.53,2.91,4.54,0,.54-.09,1.07-.25,1.56l-.44-.17c-.3-.12-.64.03-.76.33-.04.1-.05.21-.03.31l.79,4.82c.06.32.36.53.68.47.1-.02.19-.06.27-.13l3.66-3.1c.25-.21.28-.58.07-.82ZM6.94,5.24c.46-.23.97-.39,1.5-.47l.13.59c.07.32.38.52.69.45.1-.02.2-.07.28-.14l3.59-3.31c.23-.22.24-.59.02-.83-.07-.07-.16-.13-.26-.16L8.3.02c-.31-.09-.63.09-.73.39-.03.09-.03.19-.01.29l.06.27c-1.12.2-2.16.6-3.1,1.17l2.41,3.09ZM5.88,5.96l-2.39-3.06c-.98.82-1.79,1.84-2.34,3.01l3.62,1.44c.29-.53.66-1,1.11-1.39ZM4.17,9.72c0-.41.05-.81.14-1.19l-3.63-1.44c-.18.57-.3,1.16-.35,1.77l3.84,1.1c0-.08,0-.16,0-.24ZM9.17,14.72c-1.59,0-3-.74-3.92-1.9l.42-.38c.24-.22.26-.59.04-.83-.07-.08-.16-.14-.26-.17l-4.66-1.47c-.31-.09-.64.08-.73.39-.03.1-.03.2,0,.3l1.12,4.66c.07.31.39.51.7.43.09-.02.18-.07.25-.13l.23-.21c1.63,1.94,4.07,3.18,6.8,3.18,1.3,0,2.54-.28,3.66-.79l-.8-3.99c-.81.56-1.79.9-2.86.9Z',
+                    onclick: function () {
+                        self.initialLayout = 'donut';
+                        self.renderChart();
                     }
+                },
+                "myTool2": {
+                    "show": true,
+                    "title": 'Frise',
+                    "icon": 'path://M4.63,0H0v10.01h4.97c.07,0,.13-.05.19-.14l2.61-4.14c.17-.28.23-.89.12-1.35-.03-.15-.08-.27-.13-.35L5.16.12c-.05-.08-.11-.12-.17-.12h-.37ZM11.9,4.38c-.03-.15-.08-.27-.13-.35L9.17.12c-.05-.08-.11-.12-.17-.12h-.37s-2.26,0-2.26,0v.03s.06.05.08.09l2.6,3.9c.06.08.1.21.13.35.1.47.05,1.07-.12,1.35l-2.61,4.14s-.05.07-.08.09v.04h2.6c.07,0,.13-.05.19-.14l2.61-4.14c.17-.28.23-.89.12-1.35ZM18.28,4.38c-.03-.15-.08-.27-.13-.35L15.55.12c-.05-.08-.11-.12-.17-.12h-.37s-4.63,0-4.63,0v.03s.06.05.08.09l2.6,3.9c.06.08.1.21.13.35.1.47.05,1.07-.12,1.35l-2.61,4.14s-.05.07-.08.09v.04h4.97c.07,0,.13-.05.19-.14l2.61-4.14c.17-.28.23-.89.12-1.35Z',
+                    onclick: function () {
+                        self.initialLayout = 'horizontal';
+                        self.renderChart();
+                    }
+                },
+                "saveAsImage": {
+                    'excludeComponents': ["dataZoom", "toolbox"]
                 }
-            };
+            }
+        };
 
         return option;
     }

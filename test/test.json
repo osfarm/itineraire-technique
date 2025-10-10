@@ -14,39 +14,39 @@
       "description": "Tête de rotation",
       "attributes": [
         {
-          "id": "ec6c55fa-590d-4a9f-9e5b-2042fd474802",
+          "id": "e0266608-9cce-4a1d-8085-ea7ee92af199",
           "name": "Pré-semis",
           "value": "Possibilité d'un couvert multi-espèces en aout n-1"
         },
         {
-          "id": "0a85714b-9254-4c66-a3fa-fc8dd1cf5f86",
+          "id": "2b222e06-df5f-4342-8713-e3c556dcdf91",
           "name": "Travail du sol",
           "value": "déchaumage pour niveler le terrain et un binage en Juin à 1cm"
         },
         {
-          "id": "155f6cda-06db-481d-83c9-865c47e091ed",
+          "id": "d8bd11f9-f387-439a-b348-b82bb6a6454f",
           "name": "Type de semoir",
           "value": "trois passages de strip-till"
         },
         {
-          "id": "fc84362f-dd98-4fcd-abfa-223c2e440eb8",
+          "id": "d4810813-22e2-4c2b-b09e-713bc11f27ed",
           "name": "Date de semis",
           "value": "22/03"
         },
         {
-          "id": "6b7eb2fb-2f0b-4e3e-a01f-212228f11736",
+          "id": "7861987c-3279-41bc-a6ec-09fa07ebb823",
           "name": "Densité de semis",
           "value": "125mil graines/ha"
         },
         {
-          "id": "f8928fa2-f5b4-408a-99af-e008218b0ee9",
+          "id": "6b3dbfcb-c221-4279-a717-08e6c84fcca1",
           "name": "Plantes compagnes",
           "value": "avoine/orge fermière, 20kg/ha"
         }
       ],
       "interventions": [
         {
-          "id": "89f570fc-79a7-4ba8-8734-e9f57626b310",
+          "id": "ec225c64-6cc2-40c7-87db-b69e3202d3c3",
           "day": 0,
           "name": "Semis",
           "type": "intervention_bottom",
@@ -68,32 +68,32 @@
       "duration": 11,
       "attributes": [
         {
-          "id": "3aabc3f8-a5fd-403b-bd0d-5f4fad948234",
+          "id": "8e1ad3f1-93df-4e01-8d82-dff1d079748e",
           "name": "Pré-semis",
           "value": "désinfection du grain au vinaigre (1L/100kg)"
         },
         {
-          "id": "75e0d572-4732-45c1-a69d-3a6b3d192811",
+          "id": "776bc17d-91ec-4c42-bb02-c3c3886754d2",
           "name": "Travail du sol",
           "value": "aucun, semis direct pur"
         },
         {
-          "id": "9cd20425-c041-408b-ab1c-901285e5e7a2",
+          "id": "4dc557cf-01fa-4570-a4d1-fa42c5d6758b",
           "name": "Type de semoir",
           "value": "semoir à dents"
         },
         {
-          "id": "432e5243-0613-4b0d-8922-09359a80e5d4",
+          "id": "18d92067-e0c1-4662-8d79-3b5a77ff531d",
           "name": "Date de semis",
           "value": "11/10"
         },
         {
-          "id": "ed2d8b86-0f4c-431f-a77d-b843ee6379ff",
+          "id": "ad35a41c-b5f0-4331-a9bb-5e0cb1b6a7a5",
           "name": "Densité de semis",
           "value": "125kg/ha"
         },
         {
-          "id": "9c609f63-35a0-4151-9500-55d7decd1934",
+          "id": "0c2463e0-3be7-4478-a321-026925984ccf",
           "name": "Plantes compagnes",
           "value": "orge fermière, 20kg/ha (implantation semoir à disque)"
         }
@@ -115,148 +115,148 @@
       "description": "Travail du sol: aucun, semis direct pur, fissuration après récolte, avant le blé",
       "attributes": [
         {
-          "id": "3a33a570-3d69-4a2e-b408-672f9e9c4aa1",
+          "id": "112bf636-4430-4c5d-ac40-8a639bc02562",
           "name": "Type de semoir",
           "value": "semoir à dents"
         },
         {
-          "id": "e8b51085-ad52-44ed-9848-43144227a83d",
+          "id": "1fc4c72d-7960-4f14-89df-60a824202fd5",
           "name": "Date de semis",
           "value": "26/08"
         },
         {
-          "id": "68b589cd-3495-4f60-b7d6-f887184163ff",
+          "id": "1121f716-dcaa-4938-a7ec-df2af51ac478",
           "name": "Densité de semis",
           "value": "2kg/ha"
         },
         {
-          "id": "cf2c4054-24bb-44d7-81f0-e76afebcea79",
+          "id": "2554051a-e5e4-4ca9-b9b1-8d7748c07307",
           "name": "Plantes compagnes",
           "value": "feverole fermière, 60 pieds au m2"
         }
       ],
       "interventions": [
         {
-          "id": "042381df-16fc-4e5d-b6b6-41fca04585a0",
+          "id": "291ee59e-b545-4fb7-9da3-75615c608ca4",
           "day": -20,
           "name": "Labour",
           "type": "intervention_bottom",
           "description": ""
         },
         {
-          "id": "93f6826b-0275-4680-8c9e-5fb74698be86",
+          "id": "748cd931-3572-4890-9792-29121d873d8e",
           "day": -15,
           "name": "Travail superficiel",
           "type": "intervention_bottom",
           "description": ""
         },
         {
-          "id": "7e08db5c-dd34-4c8c-9aba-aa4315202a83",
+          "id": "e87d3137-be69-4148-be15-069978dfa8d6",
           "day": -10,
           "name": "Fertilisation",
           "type": "intervention_bottom",
           "description": "Fertilisation - tsp_45 (180 kg)"
         },
         {
-          "id": "0d893244-d987-4652-8fe1-4c6aa8ee18a6",
+          "id": "792ebc5d-782b-4287-be55-ac5cac8b301c",
           "day": -10,
           "name": "Fertilisation",
           "type": "intervention_bottom",
           "description": "Fertilisation - potassium_chloride (125 kg)"
         },
         {
-          "id": "d24ef0e0-7408-4c97-9cd1-0e6a165ee8eb",
+          "id": "360aa81d-64ba-4863-ac04-1eb2e5dbcabb",
           "day": -5,
           "name": "Pulverisation",
           "type": "intervention_top",
           "description": "intervention_top - Proplus (0,4 l)"
         },
         {
-          "id": "19dc2465-f157-41ca-a877-e5c70699af79",
+          "id": "b2d1af8e-f2d5-4b1d-adbb-c335ebec6e2d",
           "day": 0,
           "name": "Semis",
           "type": "intervention_bottom",
           "description": "Semence - Capello (2 kg)"
         },
         {
-          "id": "aca582ef-7622-4115-ab21-95bc3134ca25",
+          "id": "2b3b44f2-b9a0-4b58-bd19-0e78732366b7",
           "day": 0,
           "name": "Semis",
           "type": "intervention_top",
           "description": "intervention_top - Anti-limaces (4 kg)"
         },
         {
-          "id": "5720846e-4f28-4a3d-8600-d04f7c580cd4",
+          "id": "75c37296-10cb-4107-8b06-641a4a773eae",
           "day": 30,
           "name": "Pulverisation",
           "type": "intervention_top",
           "description": "intervention_top - Sweet Home (0,3 l)"
         },
         {
-          "id": "e78c3ad6-8d5d-44a5-89b7-fbd03b3dd08a",
+          "id": "15cfed19-3f42-4843-97b5-6eec2d104962",
           "day": 120,
           "name": "Fertilisation",
           "type": "intervention_bottom",
           "description": "Fertilisation - ammonitrate_33 (178 kg)"
         },
         {
-          "id": "51b3ac96-482f-45f9-8828-60f632b3f88f",
+          "id": "ab777df2-48a1-427d-afb0-6c88bd88f955",
           "day": 150,
           "name": "Fertilisation",
           "type": "intervention_bottom",
           "description": "Fertilisation - ammonium_sulphate (90 kg)"
         },
         {
-          "id": "fbe72702-8c30-4820-908c-07ee3491f7e4",
+          "id": "5433b475-cf92-4b34-838d-a91dcc19dcc0",
           "day": 165,
           "name": "Pulverisation",
           "type": "intervention_top",
           "description": "intervention_top - Boravi Wg (1 kg)"
         },
         {
-          "id": "c62c8ef8-914b-4ac9-a573-c64a6cc1a891",
+          "id": "dfac3c4a-b8b5-4c06-b050-90a5a4a7fb34",
           "day": 180,
           "name": "Fertilisation",
           "type": "intervention_bottom",
           "description": "Fertilisation - ammonitrate_33 (178 kg)"
         },
         {
-          "id": "de6eca0f-ee40-47de-aec3-451e3c2f1885",
+          "id": "a47999b2-aa69-4f72-bb94-42c56588dca6",
           "day": 210,
           "name": "Pulverisation",
           "type": "intervention_top",
           "description": "intervention_top - Elifor (0,5 l)"
         },
         {
-          "id": "13f70a9f-b48b-4124-b3ec-6ba75accbe1c",
+          "id": "03f1ed41-0005-4806-a625-ea32e03a3302",
           "day": 225,
           "name": "Pulverisation",
           "type": "intervention_top",
           "description": "intervention_top - Karakas (0,05 l)"
         },
         {
-          "id": "813eecc0-e946-4782-bbd5-80aa7daee18d",
+          "id": "6d336ca2-1ffb-4b10-ab1e-cbbbe02e7a36",
           "day": 240,
           "name": "Pulverisation",
           "type": "intervention_top",
           "description": "intervention_top - Sunorg Pro (0,4 l)"
         },
         {
-          "id": "b747a33e-319e-4518-877e-e43f6ed8133b",
+          "id": "fb764ed6-a6db-4ec1-9407-929f16879eff",
           "day": 255,
           "name": "Pulverisation",
           "type": "intervention_top",
           "description": "intervention_top - Boravi Wg (1 kg)"
         },
         {
-          "id": "7147d3da-dc88-42f2-ad95-1959260c03d8",
+          "id": "dc43263c-40b3-4d2d-a0ef-e3a8c985a974",
           "day": 300,
           "name": "Récolte",
           "type": "intervention_bottom",
           "description": "Récolte - Rendement (30 q)"
         },
         {
-          "id": "d20e8191-e76f-4d85-8226-baaa6712f791",
+          "id": "33a8c586-04e3-438a-bf03-d020daf6568b",
           "day": 300,
           "name": "Transport",
           "type": "intervention_bottom",
@@ -273,7 +273,7 @@
     },
     {
       "name": "Repousses",
-      "color": "#fff2cc",
+      "color": "#93824d",
       "duration": 1,
       "description": "",
       "startDate": "2024-10-01T00:00:00.000Z",
@@ -308,17 +308,17 @@
       "description": "Couvert d'interculture longue pour casser le cycle des graminées",
       "attributes": [
         {
-          "id": "9e60dee4-2fd2-43f2-99d1-6966a306f325",
+          "id": "da72ed56-d576-401c-a903-fce9379f7abf",
           "name": "Composition",
           "value": "trefle facscelie vesce, feverple,pois, lupin tournessol, avoine"
         },
         {
-          "id": "f6337384-497c-4175-8cc1-b7fffaaa1b55",
+          "id": "38a1a1b1-aba3-45b3-8749-0ec34691e1d6",
           "name": "Destruction",
           "value": "rouleau faca + gel"
         },
         {
-          "id": "9c96c61a-b60a-450c-822b-5541c95b35ea",
+          "id": "e24a5039-3ad9-4ea5-9ffc-e94095365445",
           "name": "Densité",
           "value": "250 pieds/m²"
         }
@@ -338,22 +338,22 @@
       "duration": 7,
       "attributes": [
         {
-          "id": "d0594ea8-05fe-4dc4-ad07-c08883b88a3c",
+          "id": "51137c9b-2fe3-48e6-9579-1e47b09b5453",
           "name": "Semis",
           "value": "Mars"
         },
         {
-          "id": "8533e4cb-f590-4f34-a9a2-6c751865c936",
+          "id": "e22c97e2-e9d2-4584-9e33-d8cb90588b8c",
           "name": "Type de semoir",
           "value": "semoir à disques"
         },
         {
-          "id": "e5ea38c6-e26a-4e88-bee0-2eb085b6b565",
+          "id": "dd9db2a6-0b85-4627-b12b-806f16cef6fc",
           "name": "Note",
           "value": "Très sensible à la compaction donc éloigné le plus possible de la récolte de betterave"
         },
         {
-          "id": "2d4fbb14-3521-42db-aae0-431122a16b4c",
+          "id": "473c635d-f856-452f-8ef0-e8f67389bbfc",
           "name": "Autre",
           "value": "Apport de BRF après lin, environ 10t/ha"
         }
@@ -390,27 +390,27 @@
       "description": "Couvert d'interculture court",
       "attributes": [
         {
-          "id": "2d6994d7-1f77-4de8-8025-139126351163",
+          "id": "35896a2e-67ec-4780-a033-c33e591713c4",
           "name": "Date de semis",
           "value": "28/09 ou plus tôt"
         },
         {
-          "id": "209d178c-2b6e-483b-91cc-3df527b3ae2f",
+          "id": "dc51f9bf-cef3-4111-897f-2948d6019166",
           "name": "Composition",
           "value": "avoine/pois/feverole/vesce/fascelie/radis/lupin/tournessol"
         },
         {
-          "id": "47dd023f-934b-4f3c-9d08-a3c5290772e2",
+          "id": "b1594cd2-f2a9-481d-aa8f-ca50aa216a1c",
           "name": "Densité",
           "value": "85 kg/ha"
         },
         {
-          "id": "90731acb-7f11-415e-b3db-d55bb0882b0a",
+          "id": "ab9ab489-e3e0-4122-aec4-3951dd610c4e",
           "name": "Destruction",
           "value": "26/01"
         },
         {
-          "id": "bd9c28e1-8f61-415d-b133-1d50260c5b95",
+          "id": "d8ab1a7d-3b1b-4b85-8df2-619ae6e6f895",
           "name": "Reliquats azotés",
           "value": "apporteront entre 20 et 40 u d'azote mobilisable"
         }
