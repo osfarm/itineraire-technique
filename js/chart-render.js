@@ -295,7 +295,8 @@ class RotationRenderer {
                     item.startDate.valueOf(), // Date de début
                     item.endDate.valueOf(), // Date de fin
                     item.name, // Nom
-                    'rotation_item' // Type
+                    'rotation_item', // Type
+                    item.secondary_crop ? true : false
                 ],
                 itemStyle: {
                     color: item.color
@@ -337,6 +338,7 @@ class RotationRenderer {
             var end = api.coord([api.value(2), categoryIndex]);
             var name = api.value(3);
             var type = api.value(4);
+            let secondary_crop = api.value(5);
 
             const x = start[0];
             let y = start[1];
@@ -373,18 +375,25 @@ class RotationRenderer {
                 // params.coordSys.width, // largeur du canva
                 // params.coordSys.height // hauteur du canva
 
-                const height = self.barHeight - 40; // 20 px margin top and bottom
+                let height = self.barHeight - 40; // 20 px margin top and bottom
+                let top = y - height / 2;
+
+                if (secondary_crop) {
+                    height = height / 2;
+                    top = y;
+                }                    
+                
                 const arrowWidth = height / 3;
                 const border = 3;
                 const textMargin = 10;
 
                 var points = [
-                    [x, y - height / 2],
-                    [end[0] - border, y - height / 2],
-                    [end[0] + arrowWidth - border, y],
-                    [end[0] - border, y + height / 2],
-                    [x, y + height / 2],
-                    [x + arrowWidth, y],
+                    [x, top],
+                    [end[0] - border, top],
+                    [end[0] + arrowWidth - border, top + height / 2],
+                    [end[0] - border, top + height],
+                    [x, top + height],
+                    [x + arrowWidth, top + height / 2],
                 ];
 
                 const itemLabelWidth = echarts.format.getTextRect(name).width + textMargin * 2;

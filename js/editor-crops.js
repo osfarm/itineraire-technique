@@ -28,6 +28,7 @@ function loadSelectedStepToEditor(aStep) {
     setInputValue("cropStartDate", aStep.getStep().startDate.toISOString().split('T')[0]);
     setInputValue("cropEndDate", aStep.getStep().endDate.toISOString().split('T')[0]);
     setInputValue("cropDescription", aStep.getStep().description);
+    document.getElementById("cropSecondary").checked = aStep.getStep().secondary_crop || false;
 }
 
 function refreshStepsButtonList() {

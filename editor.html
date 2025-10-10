@@ -124,6 +124,16 @@
                                         <input type="color" id="cropColor" class="form-control form-control-color w-100">
                                     </div>
                                 </div>
+                                <div class="row mb-2">
+                                    <div class="col-12">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="cropSecondary">
+                                            <label class="form-check-label" for="cropSecondary">
+                                                Culture secondaire
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="row"><div id="itk-api-comment" class="col text-center text-muted small"></div></div>
                             </form>
                         </div>
@@ -401,6 +411,7 @@
             this.step.description = step.description ?? "";
             this.step.interventions = step.interventions?.map(i => new Intervention(i.day, i.name, i.type, i.description)) || [];
             this.step.attributes = step.attributes?.map(a => new Attribute(a.name, a.value)) || [];
+            this.step.secondary_crop = step.secondary_crop ?? false;
 
             this.step.useDefaultColor = step.useDefaultColor ?? true;
             this.step.useDefaultStartDate = step.useDefaultStartDate ?? true;
@@ -481,6 +492,7 @@
             this.step.startDate = new Date(getInputValue("cropStartDate"));
             this.step.endDate = new Date(getInputValue("cropEndDate"));
             this.step.color = getInputValue("cropColor");
+            this.step.secondary_crop = document.getElementById("cropSecondary").checked;
         }
     }
 
@@ -722,6 +734,7 @@
         $("#cropStartDate").on("change", _.debounce(updateSelectedStepStartDate, 500));
         $("#cropEndDate").on("change", _.debounce(updateSelectedStepEndDate, 500));
         $("#cropColor").on("input", _.debounce(updateSelectedStepColor, 500));
+        $("#cropSecondary").on("change", _.debounce(updateSelectedStep, 500));
     }
 
     function enableTitleEditing() {
