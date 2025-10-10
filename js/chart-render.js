@@ -332,17 +332,22 @@ class RotationRenderer {
             const words = text.split(' ');
             let line = '';
             let lines = [];
-            let height = 0;
-
 
             for (let word of words) {
                 const testLine = line + word + ' ';
-                const testWidth = echarts.format.getTextRect(testLine).width;
+                let testWidth = echarts.format.getTextRect(testLine).width;
                 if (testWidth > maxWidth && line !== '') {
                     lines.push(line);
                     line = word + ' ';
                 } else {
                     line = testLine;
+                }
+
+                // Avoid words that are too long
+                testWidth = echarts.format.getTextRect(line).width;
+                while (testWidth > maxWidth) {
+                    line = line.slice(0, -1);
+                    testWidth = echarts.format.getTextRect(line).width;
                 }
             }
 
@@ -420,13 +425,16 @@ class RotationRenderer {
                 // params.coordSys.height // hauteur du canva
 
                 let height = self.barHeight - 40; // 20 px margin top and bottom
-                let top = y - height / 2;
-                let textMargin = 10;
+                let top = y - height / 2 - 10;
+                let textXMargin = 2;
+                let textYMargin = 10;
 
                 if (secondary_crop) {
-                    height = height / 2;
-                    top = y;
-                    textMargin = 5;
+                    // Move secondary crops a bit down and reduce their size
+                    top = top + height + 5;
+                    height = height / 3;
+                    textXMargin = 5;
+                    textYMargin = 5;
                 }
 
                 const arrowWidth = height / 3;
@@ -447,7 +455,7 @@ class RotationRenderer {
                 // if (itemLabelWidth > itemWidth)
                 //     name = ''; // Hide the label as we won't have the room to show it
 
-                name = wrapText(echarts, name, itemWidth - textMargin * 2, height);
+                name = wrapText(echarts, name, itemWidth - arrowWidth, height);
 
                 // See this for clip regions : https://stackoverflow.com/questions/71735038/setting-border-and-label-in-custom-apache-echarts
                 // https://stackoverflow.com/questions/73653691/how-to-draw-a-custom-triangle-in-renderitem-in-apache-echarts
@@ -469,7 +477,7 @@ class RotationRenderer {
                             },
                         },
                         textConfig: {
-                            position: [arrowWidth + textMargin, textMargin]
+                            position: [arrowWidth + textXMargin, textYMargin]
                         },
                         textContent: {
                             style: {
