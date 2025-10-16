@@ -14,36 +14,46 @@ div.mainITKContainer {
     }
 
     .bottom-transcript {
-        display    : block;
-        font-family: Segoe UI;
+        display: none;
+    }
+
+    &.withTranscript {
+        .bottom-transcript {
+            display    : block;
+            font-family: Segoe UI;
+        }
     }
 
     @container myparent (min-width: 800px) {
-        .left-transcript {
-            display: block;
-        }
+        &.withTranscript {
+            .left-transcript {
+                display: block;
+            }
 
-        .chart-div {
-            width: 50%;
-        }
+            .chart-div {
+                width: 50%;
+            }
 
-        .bottom-transcript {
-            display: none;
+            .bottom-transcript {
+                display: none;
+            }            
         }
     }
 
     @container myparent (min-width: 1200px) {
-        .left-transcript {
-            display: block;
-            width  : 40%;
-        }
+        &.withTranscript {
+            .left-transcript {
+                display: block;
+                width  : 40%;
+            }
 
-        .chart-div {
-            width: 60%;
-        }
+            .chart-div {
+                width: 60%;
+            }
 
-        .bottom-transcript {
-            display: none;
+            .bottom-transcript {
+                display: none;
+            }            
         }
     }
 

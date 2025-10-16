@@ -29,20 +29,12 @@ class RotationRenderer {
 
         this.itk_container = $("#" + divID).css({ 'width': '100%' });
 
-        if (this.data.options.show_transcript) {
-            if (this.itk_container.find('.mainITKContainer').length == 0) {
-                this.itk_container.append(`<div class="row mainITKContainer">
-                    <div class="col-auto left-transcript"><div class="transcript"></div></div>
-                    <div class="col col-auto chart-div"><div class="charts"></div></div>
-                    <div class="col col-12 bottom-transcript"><div class="transcript"></div></div>
-                </div>`);
-            }
-        } else {
-            if (this.itk_container.find('.mainITKContainer').length == 0) {
-                this.itk_container.append(`<div class="row mainITKContainer">
-                    <div class="col col-12 chart-div"><div class="charts"></div></div>
-                </div>`);
-            }
+        if (this.itk_container.find('.mainITKContainer').length == 0) {
+            this.itk_container.append(`<div class="row mainITKContainer ` + (this.data.options.show_transcript ? 'withTranscript' : '') + `">
+                <div class="col-auto left-transcript"><div class="transcript"></div></div>
+                <div class="col col-auto chart-div"><div class="charts"></div></div>
+                <div class="col col-12 bottom-transcript"><div class="transcript"></div></div>
+            </div>`);
         }
     }
 
@@ -681,7 +673,7 @@ class RotationRenderer {
                     if (days >= 0)
                         intDate += ' (J+' + (days == 0 ? '0' : days) + ')';
                     else
-                        intDate += ' (J-' + days + ')';
+                        intDate += ' (J' + days + ')';
 
                     let title = intervention.name;
 
@@ -936,7 +928,7 @@ class RotationRenderer {
                     if (days >= 0)
                         dateString += ' (J+' + (days == 0 ? '0' : days) + ')';
                     else
-                        dateString += ' (J-' + days + ')';
+                        dateString += ' (J' + days + ')';
 
                     return params.marker + params.name + ' - ' + dateString + '<br>' + params.data.description;
                 }
@@ -950,7 +942,15 @@ class RotationRenderer {
                 "borderWidth": 1
             },
             "feature": {
-                "myTool1": {
+                "myToolShowTranscription": {
+                    "show": true,
+                    "title": 'Transcription',
+                    "icon": 'path://m5.57814,0c-3.07871,0 -5.57814,2.49943 -5.57814,5.57813l0,7.14003c0,3.07871 2.49943,5.57814 5.57814,5.57814l7.14002,0c3.07871,0 5.57814,-2.49943 5.57814,-5.57814l0,-7.14003c0,-3.07871 -2.49943,-5.57813 -5.57814,-5.57813l-7.14002,0zm0,1.33875l7.14002,0c2.3602,0 4.23939,1.87918 4.23939,4.23938l0,7.14003c0,2.3602 -1.87919,4.23939 -4.23939,4.23939l-7.14002,0c-2.3602,0 -4.23939,-1.87919 -4.23939,-4.23939l0,-7.14003c0,-2.3602 1.87919,-4.23938 4.23939,-4.23938l0,0zm-1.33875,3.57c-0.36969,0 -0.66938,0.29968 -0.66938,0.66938c0,0.36967 0.29969,0.66938 0.66938,0.66938l9.81752,0c0.36969,0 0.66938,-0.2997 0.66938,-0.66938c0,-0.3697 -0.29969,-0.66938 -0.66938,-0.66938l-9.81752,0zm0,3.57001c-0.36969,0 -0.66938,0.29969 -0.66938,0.66939c0,0.36967 0.29969,0.66938 0.66938,0.66938l9.81752,0c0.36969,0 0.66938,-0.2997 0.66938,-0.66938c0,-0.3697 -0.29969,-0.66939 -0.66938,-0.66939l-9.81752,0zm0,3.57002c-0.36969,0 -0.66938,0.29968 -0.66938,0.66938c0,0.36967 0.29969,0.66938 0.66938,0.66938l9.81752,0c0.36969,0 0.66938,-0.2997 0.66938,-0.66938c0,-0.3697 -0.29969,-0.66938 -0.66938,-0.66938l-9.81752,0z',
+                    onclick: function () {
+                        self.toggleTranscription();
+                    }
+                },          
+                "myToolShowAsDonut": {
                     "show": true,
                     "title": 'Rotation',
                     "icon": 'path://M18.15,12.99c-.06-.07-.14-.13-.23-.17l-.38-.15c.33-.93.51-1.92.51-2.96,0-3-1.49-5.65-3.77-7.26l-3.03,2.72c1.72.79,2.91,2.53,2.91,4.54,0,.54-.09,1.07-.25,1.56l-.44-.17c-.3-.12-.64.03-.76.33-.04.1-.05.21-.03.31l.79,4.82c.06.32.36.53.68.47.1-.02.19-.06.27-.13l3.66-3.1c.25-.21.28-.58.07-.82ZM6.94,5.24c.46-.23.97-.39,1.5-.47l.13.59c.07.32.38.52.69.45.1-.02.2-.07.28-.14l3.59-3.31c.23-.22.24-.59.02-.83-.07-.07-.16-.13-.26-.16L8.3.02c-.31-.09-.63.09-.73.39-.03.09-.03.19-.01.29l.06.27c-1.12.2-2.16.6-3.1,1.17l2.41,3.09ZM5.88,5.96l-2.39-3.06c-.98.82-1.79,1.84-2.34,3.01l3.62,1.44c.29-.53.66-1,1.11-1.39ZM4.17,9.72c0-.41.05-.81.14-1.19l-3.63-1.44c-.18.57-.3,1.16-.35,1.77l3.84,1.1c0-.08,0-.16,0-.24ZM9.17,14.72c-1.59,0-3-.74-3.92-1.9l.42-.38c.24-.22.26-.59.04-.83-.07-.08-.16-.14-.26-.17l-4.66-1.47c-.31-.09-.64.08-.73.39-.03.1-.03.2,0,.3l1.12,4.66c.07.31.39.51.7.43.09-.02.18-.07.25-.13l.23-.21c1.63,1.94,4.07,3.18,6.8,3.18,1.3,0,2.54-.28,3.66-.79l-.8-3.99c-.81.56-1.79.9-2.86.9Z',
@@ -959,7 +959,7 @@ class RotationRenderer {
                         self.renderChart();
                     }
                 },
-                "myTool2": {
+                "myToolShowAsFrise": {
                     "show": true,
                     "title": 'Frise',
                     "icon": 'path://M4.63,0H0v10.01h4.97c.07,0,.13-.05.19-.14l2.61-4.14c.17-.28.23-.89.12-1.35-.03-.15-.08-.27-.13-.35L5.16.12c-.05-.08-.11-.12-.17-.12h-.37ZM11.9,4.38c-.03-.15-.08-.27-.13-.35L9.17.12c-.05-.08-.11-.12-.17-.12h-.37s-2.26,0-2.26,0v.03s.06.05.08.09l2.6,3.9c.06.08.1.21.13.35.1.47.05,1.07-.12,1.35l-2.61,4.14s-.05.07-.08.09v.04h2.6c.07,0,.13-.05.19-.14l2.61-4.14c.17-.28.23-.89.12-1.35ZM18.28,4.38c-.03-.15-.08-.27-.13-.35L15.55.12c-.05-.08-.11-.12-.17-.12h-.37s-4.63,0-4.63,0v.03s.06.05.08.09l2.6,3.9c.06.08.1.21.13.35.1.47.05,1.07-.12,1.35l-2.61,4.14s-.05.07-.08.09v.04h4.97c.07,0,.13-.05.19-.14l2.61-4.14c.17-.28.23-.89.12-1.35Z',
@@ -996,6 +996,11 @@ class RotationRenderer {
         let moisDiff = date2.getMonth() - date1.getMonth();
 
         return anneeDiff * 12 + moisDiff;
+    }
+
+    toggleTranscription() {
+        this.itk_container.find('.mainITKContainer').toggleClass('withTranscript');
+        this.chart.resize();
     }
 }
 
