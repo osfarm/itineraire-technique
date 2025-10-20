@@ -39,16 +39,34 @@ class RotationRenderer {
     }
 
     fixRotationData(rotationData) {
+        if (!rotationData || typeof rotationData !== 'object') return rotationData;
+        
         if (rotationData.options == undefined)
             rotationData.options = {};
 
         if (rotationData.options?.view == undefined || rotationData?.options?.view == '')
             rotationData.options.view = 'horizontal';
 
+        // Safety check for steps array
+        if (!rotationData.steps || !Array.isArray(rotationData.steps)) {
+            rotationData.steps = [];
+            return rotationData;
+        }
+
         // Map rotationData items to make sure that the startDate and endDate are proper Date objects
         rotationData.steps.map((item) => {
+            if (!item) return item;
+            
             item.startDate = new Date(item.startDate);
             item.endDate = new Date(item.endDate);
+
+            // Safety check for invalid dates
+            if (isNaN(item.startDate.getTime())) {
+                item.startDate = new Date();
+            }
+            if (isNaN(item.endDate.getTime()) || item.endDate <= item.startDate) {
+                item.endDate = new Date(item.startDate.getTime() + (30 * 24 * 60 * 60 * 1000)); // Default to 30 days later
+            }
 
             // Add a duration in months
             item.duration = Math.round((item.endDate - item.startDate) / (30 * 1000 * 60 * 60 * 24));
@@ -340,9 +358,14 @@ class RotationRenderer {
 
                 // Avoid words that are too long
                 testWidth = echarts.format.getTextRect(line).width;
-                while (testWidth > maxWidth) {
+                let trimCount = 0;
+                const maxTrimCount = line.length; // Prevent infinite loop
+                
+                while (testWidth > maxWidth && line.length > 0 && trimCount < maxTrimCount) {
                     line = line.slice(0, -1);
+                    if (line.length === 0) break; // Safety check
                     testWidth = echarts.format.getTextRect(line).width;
+                    trimCount++;
                 }
             }
 
@@ -376,101 +399,221 @@ class RotationRenderer {
         let maxXPositions = new Map();
 
         function renderItem(params, api) {
+            // Safety checks to prevent crashes
+            if (!params || !api) return null;
+            
+            try {
+                var categoryIndex = api.value(0);
+                var start = api.coord([api.value(1), categoryIndex]);
+                var end = api.coord([api.value(2), categoryIndex]);
+                var name = api.value(3);
+                var type = api.value(4);
+                let secondary_crop = api.value(5);
+                let bHasSecondaryCrops = api.value(6);
 
-            var categoryIndex = api.value(0);
-            var start = api.coord([api.value(1), categoryIndex]);
-            var end = api.coord([api.value(2), categoryIndex]);
-            var name = api.value(3);
-            var type = api.value(4);
-            let secondary_crop = api.value(5);
-            let bHasSecondaryCrops = api.value(6);
+                // Safety check for invalid coordinates
+                if (!start || !end || start.length < 2 || end.length < 2) return null;
+                if (isNaN(start[0]) || isNaN(start[1]) || isNaN(end[0]) || isNaN(end[1])) return null;
 
-            const x = start[0];
-            let y = start[1];
+                const x = start[0];
+                let y = start[1];
 
-            const style = api.style();
-            style.opacity = 0.5;
+                const style = api.style();
+                style.opacity = 0.5;
 
-            if (params.context.rendered == undefined) {
-                // Start of a new rendering round
-                maxXPositions = new Map();
+                if (params.context.rendered == undefined) {
+                    // Start of a new rendering round
+                    maxXPositions = new Map();
 
-                for (let catIndex = 0; catIndex < 3; catIndex++) {
-                    for (let track = 0; track < 3; track++) {
-                        maxXPositions.set('track_left_' + catIndex + '_' + track, params.coordSys.width);
+                    for (let catIndex = 0; catIndex < 3; catIndex++) {
+                        for (let track = 0; track < 3; track++) {
+                            maxXPositions.set('track_left_' + catIndex + '_' + track, params.coordSys.width);
+                        }
                     }
                 }
-            }
 
-            params.context.rendered = true;
+                params.context.rendered = true;
 
-            // Remove the default emphasis style
-            api.styleEmphasis({});
+                // Remove the default emphasis style
+                api.styleEmphasis({});
 
-            if (type == 'rotation_item') {
+                if (type == 'rotation_item') {
 
-                // start[0] // abscisse gauche de l'élément (après zoom)
-                // start[1] // ordonnée gauche de l'élément
-                // end[0] // abscisse droite de l'élément (après zoom)
-                // end[1] // ordonnée droite de l'élément
-                // height // Hauteur de l'élément
+                    // start[0] // abscisse gauche de l'élément (après zoom)
+                    // start[1] // ordonnée gauche de l'élément
+                    // end[0] // abscisse droite de l'élément (après zoom)
+                    // end[1] // ordonnée droite de l'élément
+                    // height // Hauteur de l'élément
 
-                // params.coordSys.x // début du canva
-                // params.coordSys.y // début du canva
-                // params.coordSys.width, // largeur du canva
-                // params.coordSys.height // hauteur du canva
+                    // params.coordSys.x // début du canva
+                    // params.coordSys.y // début du canva
+                    // params.coordSys.width, // largeur du canva
+                    // params.coordSys.height // hauteur du canva
 
-                let height = self.barHeight - 20; // 20 px margin top and bottom
-                let top = y - height / 2;
-                let textXMargin = 2;
-                let textYMargin = 10;
+                    let height = self.barHeight - 20; // 20 px margin top and bottom
+                    let top = y - height / 2;
+                    let textXMargin = 2;
+                    let textYMargin = 10;
 
-                if (bHasSecondaryCrops) {
-                    height = self.barHeight - 40; // 20 px margin top and bottom
-                    top = y - height / 2 - 15;
-                    textXMargin = 2;
-                    textYMargin = 10;
+                    if (bHasSecondaryCrops) {
+                        height = self.barHeight - 40; // 20 px margin top and bottom
+                        top = y - height / 2 - 15;
+                        textXMargin = 2;
+                        textYMargin = 10;
+                    }
+
+                    if (secondary_crop) {
+                        // Move secondary crops a bit down and reduce their size
+                        top = top + height + 5;
+                        height = height / 3;
+                        textXMargin = 5;
+                        textYMargin = 5;
+                    }
+
+                    const arrowWidth = height / 3;
+                    const border = 3;
+
+                    var points = [
+                        [x, top],
+                        [end[0] - border, top],
+                        [end[0] + arrowWidth - border, top + height / 2],
+                        [end[0] - border, top + height],
+                        [x, top + height],
+                        [x + arrowWidth, top + height / 2],
+                    ];
+
+                    //const itemLabelWidth = echarts.format.getTextRect(name).width + textMargin * 2;
+                    const itemWidth = end[0] - x;
+
+                    // if (itemLabelWidth > itemWidth)
+                    //     name = ''; // Hide the label as we won't have the room to show it
+
+                    name = wrapText(echarts, name, itemWidth - arrowWidth, height);
+
+                    // See this for clip regions : https://stackoverflow.com/questions/71735038/setting-border-and-label-in-custom-apache-echarts
+                    // https://stackoverflow.com/questions/73653691/how-to-draw-a-custom-triangle-in-renderitem-in-apache-echarts
+
+                    return (
+                        {
+                            type: 'polygon',
+                            transition: ['shape'],
+                            shape: {
+                                points: points
+                            },
+                            style: style,
+                            emphasis: {
+                                style: {
+                                    shadowBlur: 4,
+                                    shadowOffsetX: 1,
+                                    shadowOffsetY: 2,
+                                    shadowColor: 'rgba(0, 0, 0, 0.2)'
+                                },
+                            },
+                            textConfig: {
+                                position: [arrowWidth + textXMargin, textYMargin]
+                            },
+                            textContent: {
+                                style: {
+                                    text: name,
+                                    fill: '#000',
+                                    width: 80,
+                                    fontWeight: 'bold'
+                                }
+                            }
+                        }
+                    );
                 }
 
-                if (secondary_crop) {
-                    // Move secondary crops a bit down and reduce their size
-                    top = top + height + 5;
-                    height = height / 3;
-                    textXMargin = 5;
-                    textYMargin = 5;
-                }
+                if (type == 'intervention_bottom' || type == 'intervention_top') {
 
-                const arrowWidth = height / 3;
-                const border = 3;
+                    const height = 20;
+                    const margin = 10;
+                    const textMargin = 5;
 
-                var points = [
-                    [x, top],
-                    [end[0] - border, top],
-                    [end[0] + arrowWidth - border, top + height / 2],
-                    [end[0] - border, top + height],
-                    [x, top + height],
-                    [x + arrowWidth, top + height / 2],
-                ];
+                    // Maintain a list of max x for each row. If the max x is further right than the label we try to push,
+                    // use another row. If for all rows the space is taken, just drop this item
 
-                //const itemLabelWidth = echarts.format.getTextRect(name).width + textMargin * 2;
-                const itemWidth = end[0] - x;
+                    let trackToUse = null;
+                    const itemLabelWidth = echarts.format.getTextRect(name).width + textMargin * 2;
 
-                // if (itemLabelWidth > itemWidth)
-                //     name = ''; // Hide the label as we won't have the room to show it
+                    for (let track = 0; track < 3; track++) {
+                        if (!maxXPositions.has('track_right_' + categoryIndex + '_' + track)) {
+                            // Situation where the track is empty
+                            trackToUse = track;
+                            break;
+                        }
 
-                name = wrapText(echarts, name, itemWidth - arrowWidth, height);
+                        let trackLeft = maxXPositions.get('track_left_' + categoryIndex + '_' + track);
+                        if (trackLeft > (x + itemLabelWidth)) {
+                            // Situation where the drawing has started right of the current element
+                            trackToUse = track;
+                            break;
+                        }
 
-                // See this for clip regions : https://stackoverflow.com/questions/71735038/setting-border-and-label-in-custom-apache-echarts
-                // https://stackoverflow.com/questions/73653691/how-to-draw-a-custom-triangle-in-renderitem-in-apache-echarts
+                        let trackRight = maxXPositions.get('track_right_' + categoryIndex + '_' + track);
+                        if (trackRight < x) {
+                            // Situation where the last painted element is sufficiently far on the left
+                            trackToUse = track;
+                            break;
+                        }
+                    }
 
-                return (
-                    {
+                    if (trackToUse == null)
+                        return null;
+
+                    let currentRight = maxXPositions.get('track_right_' + categoryIndex + '_' + trackToUse);
+                    if (currentRight == undefined || currentRight < x + itemLabelWidth)
+                        maxXPositions.set('track_right_' + categoryIndex + '_' + trackToUse, x + itemLabelWidth);
+
+                    let currentLeft = maxXPositions.get('track_left_' + categoryIndex + '_' + trackToUse);
+                    if (currentLeft > x)
+                        maxXPositions.set('track_left_' + categoryIndex + '_' + trackToUse, x);
+
+                    // A nicer solution could be to draw large items in a reduced format until there is enough space for
+                    // drawing them fully. Unfortunately that would require a two pass drawing which does not exist with Echarts ?
+
+                    const arrowWidth = 3;
+
+                    let arrowTop = y + 55;
+                    let arrowBottom = y - 55;
+
+                    y = margin + y + trackToUse * (height + margin) - (self.barHeight / 2);
+
+                    var points = [];
+                    var textPosition = [];
+
+                    if (type == 'intervention_top') {
+                        textPosition = [textMargin, textMargin];
+                        points = [
+                            [x, y],
+                            [x + itemLabelWidth, y],
+                            [x + itemLabelWidth, y + height],
+                            [x + arrowWidth, y + height],
+                            [x, arrowTop]
+                        ];
+                    }
+                    else {
+                        textPosition = [textMargin, textMargin + y - arrowBottom];
+                        points = [
+                            [x, arrowBottom],
+                            [x + arrowWidth, y],
+                            [x + itemLabelWidth, y],
+                            [x + itemLabelWidth, y + height],
+                            [x, y + height]
+                        ];
+                    }
+
+                    return ({
                         type: 'polygon',
                         transition: ['shape'],
                         shape: {
                             points: points
                         },
-                        style: style,
+                        style: api.style({
+                            fill: style.fill,
+                            stroke: style.fill,
+                            textFill: '#000',
+                        }),
                         emphasis: {
                             style: {
                                 shadowBlur: 4,
@@ -480,130 +623,21 @@ class RotationRenderer {
                             },
                         },
                         textConfig: {
-                            position: [arrowWidth + textXMargin, textYMargin]
+                            position: textPosition
                         },
                         textContent: {
                             style: {
                                 text: name,
                                 fill: '#000',
-                                width: 80,
-                                fontWeight: 'bold'
                             }
                         }
                     }
-                );
-            }
+                    );
 
-            if (type == 'intervention_bottom' || type == 'intervention_top') {
-
-                const height = 20;
-                const margin = 10;
-                const textMargin = 5;
-
-                // Maintain a list of max x for each row. If the max x is further right than the label we try to push,
-                // use another row. If for all rows the space is taken, just drop this item
-
-                let trackToUse = null;
-                const itemLabelWidth = echarts.format.getTextRect(name).width + textMargin * 2;
-
-                for (let track = 0; track < 3; track++) {
-                    if (!maxXPositions.has('track_right_' + categoryIndex + '_' + track)) {
-                        // Situation where the track is empty
-                        trackToUse = track;
-                        break;
-                    }
-
-                    let trackLeft = maxXPositions.get('track_left_' + categoryIndex + '_' + track);
-                    if (trackLeft > (x + itemLabelWidth)) {
-                        // Situation where the drawing has started right of the current element
-                        trackToUse = track;
-                        break;
-                    }
-
-                    let trackRight = maxXPositions.get('track_right_' + categoryIndex + '_' + track);
-                    if (trackRight < x) {
-                        // Situation where the last painted element is sufficiently far on the left
-                        trackToUse = track;
-                        break;
-                    }
                 }
-
-                if (trackToUse == null)
-                    return null;
-
-                let currentRight = maxXPositions.get('track_right_' + categoryIndex + '_' + trackToUse);
-                if (currentRight == undefined || currentRight < x + itemLabelWidth)
-                    maxXPositions.set('track_right_' + categoryIndex + '_' + trackToUse, x + itemLabelWidth);
-
-                let currentLeft = maxXPositions.get('track_left_' + categoryIndex + '_' + trackToUse);
-                if (currentLeft > x)
-                    maxXPositions.set('track_left_' + categoryIndex + '_' + trackToUse, x);
-
-                // A nicer solution could be to draw large items in a reduced format until there is enough space for
-                // drawing them fully. Unfortunately that would require a two pass drawing which does not exist with Echarts ?
-
-                const arrowWidth = 3;
-
-                let arrowTop = y + 55;
-                let arrowBottom = y - 55;
-
-                y = margin + y + trackToUse * (height + margin) - (self.barHeight / 2);
-
-                var points = [];
-                var textPosition = [];
-
-                if (type == 'intervention_top') {
-                    textPosition = [textMargin, textMargin];
-                    points = [
-                        [x, y],
-                        [x + itemLabelWidth, y],
-                        [x + itemLabelWidth, y + height],
-                        [x + arrowWidth, y + height],
-                        [x, arrowTop]
-                    ];
-                }
-                else {
-                    textPosition = [textMargin, textMargin + y - arrowBottom];
-                    points = [
-                        [x, arrowBottom],
-                        [x + arrowWidth, y],
-                        [x + itemLabelWidth, y],
-                        [x + itemLabelWidth, y + height],
-                        [x, y + height]
-                    ];
-                }
-
-                return ({
-                    type: 'polygon',
-                    transition: ['shape'],
-                    shape: {
-                        points: points
-                    },
-                    style: api.style({
-                        fill: style.fill,
-                        stroke: style.fill,
-                        textFill: '#000',
-                    }),
-                    emphasis: {
-                        style: {
-                            shadowBlur: 4,
-                            shadowOffsetX: 1,
-                            shadowOffsetY: 2,
-                            shadowColor: 'rgba(0, 0, 0, 0.2)'
-                        },
-                    },
-                    textConfig: {
-                        position: textPosition
-                    },
-                    textContent: {
-                        style: {
-                            text: name,
-                            fill: '#000',
-                        }
-                    }
-                }
-                );
-
+            } catch (error) {
+                console.error('Error in renderItem:', error);
+                return null;
             }
         }
 
@@ -823,8 +857,29 @@ class RotationRenderer {
         ];
 
         let monthsPerYear = new Map();
+        
+        // Safety check to prevent infinite loops
+        if (!steps || steps.length === 0) {
+            series.push(months);
+            return series;
+        }
+        
         let startMonth = new Date(steps.at(0).startDate.valueOf());
-        while (startMonth < steps.at(-1).endDate) {
+        let endDate = steps.at(-1).endDate;
+        
+        // Safety check for valid dates and reasonable duration (max 20 years)
+        if (isNaN(startMonth.getTime()) || 
+            isNaN(endDate.getTime()) || 
+            startMonth >= endDate || 
+            (endDate - startMonth) > (20 * 365 * 24 * 60 * 60 * 1000)) {
+            series.push(months);
+            return series;
+        }
+        
+        let loopCount = 0;
+        const maxLoops = 240; // Max 20 years * 12 months
+        
+        while (startMonth < endDate && loopCount < maxLoops) {
             const monthName = startMonth.toLocaleDateString(undefined, { month: 'short' });
             const year = startMonth.getFullYear();
 
@@ -843,6 +898,7 @@ class RotationRenderer {
 
             // increment the current month
             startMonth.setMonth(startMonth.getMonth() + 1);
+            loopCount++;
         }
 
         series.push(months);
