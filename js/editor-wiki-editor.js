@@ -103,5 +103,12 @@ class WikiEditor {
 
         const editData = await editResp.json();
         console.log(editData);
+
+        if (editData.edit && editData.edit.result === 'Success') { 
+            return Promise.resolve();
+        } else {
+            return Promise.reject(editData);
+        }
     }
+
 }
