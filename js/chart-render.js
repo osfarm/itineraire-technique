@@ -274,11 +274,14 @@ class RotationRenderer {
         let maxDate = null;
 
         steps.forEach((item) => {
-            if (!minDate || minDate > item.startDate.valueOf())
-                minDate = item.startDate.valueOf();
+            const stepStart = item.startDate.valueOf() - 86400000 * 30; // Subtract some space for the start of the arrow
+            const stepEnd = item.endDate.valueOf() + 86400000 * 50; // Add some space for the end of the arrow
 
-            if (!maxDate || maxDate < item.endDate.valueOf())
-                maxDate = item.endDate.valueOf() + 86400000 * 30; // Add some space for the end of the arrow
+            if (!minDate || minDate > stepStart)
+                minDate = stepStart;
+
+            if (!maxDate || maxDate < stepEnd)
+                maxDate = stepEnd;
         });
 
         return { min: minDate, max: maxDate };
