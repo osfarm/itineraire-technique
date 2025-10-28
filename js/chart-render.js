@@ -313,7 +313,6 @@ class RotationRenderer {
             emphasis: {
                 scale: false
             },
-            symbolSize: 10,
             areaStyle: {
                 color: {
                     type: 'linear',
@@ -325,15 +324,15 @@ class RotationRenderer {
                     colorStops: [
                         {
                             offset: 0,
-                            color: '#e9a040ff'
+                            color: '#e9a0405b'
                         },
                         {
                             offset: 0.5,
-                            color: 'rgba(88,160,253,0.7)'
+                            color: '#58a0fd5b'
                         },
                         {
                             offset: 1,
-                            color: '#2a28a3ff'
+                            color: '#2a28a35b'
                         }
                     ]
                 }
@@ -371,18 +370,33 @@ class RotationRenderer {
         for (let i = start; i <= end; i += 1000 * 60 * 60 * 24 * 30) { // Increment by 1 month
             const month = new Date(i).getMonth();
             const historicData = historicTemps[month];
-            data.push([i, historicData.precipitations_mm / 5]);
+            data.push([i, historicData.precipitations_mm / 5, historicData.precipitations_mm, historicData.temperature_moyenne_C]);
         }
 
         return {
             type: 'bar',
             yAxisIndex: 1,
             showSymbol: false,
+            tooltip: {
+                formatter: function (params) {
+                    console.log(params);
+                    const month = new Date(params.data[0]).getMonth();
+                    const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+                        "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+                    const monthName = monthNames[month];    
+
+                    const mm = params.data[2];
+                    const temp = params.data[3];
+                    return monthName + ' : ' + temp + ' °C / ' + mm + ' mm';
+                },
+                position: 'top',
+                show: true
+            },            
             emphasis: {
                 scale: false
             },
             itemStyle: {
-                color: '#3b629c5e'
+                color: '#3b629c2c'
             },
             data: data,
             z: 0
@@ -1110,8 +1124,8 @@ class RotationRenderer {
                     let start = params.data.startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
                     let end = params.data.endDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
                     let duration = params.data.duration + ' mois';
-                    if (params.data.duration > 20)
-                        duration = (Math.round(params.data.duration / 1.2) / 10 + ' années').replace('.', ',');
+                    if (params.data.duration >= 24)
+                        duration = Math.floor(params.data.duration / 12) + ' ans' + ((params.data.duration % 12) > 0 ? ' et ' + (params.data.duration % 12) + ' mois' : '');
 
                     return params.marker + ' <b>' + params.name + '</b><div class="step_dates"><b>' + duration + '</b> (' + start + ' ➜ ' + end + ')</div><br style="clear:both">' + params.data.description.replace('’', '\'');
                 }
