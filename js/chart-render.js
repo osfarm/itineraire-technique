@@ -994,7 +994,7 @@ class RotationRenderer {
                     if (params.data.duration > 20)
                         duration = (Math.round(params.data.duration / 1.2)/10 + ' années').replace('.', ',');
 
-                    return params.marker + ' <b>' + params.name + '</b><div class="step_dates"><b>' + duration + '</b> (' + start + ' ➜ ' + end + ')</div><br style="clear:both">' + params.data.description;
+                    return params.marker + ' <b>' + params.name + '</b><div class="step_dates"><b>' + duration + '</b> (' + start + ' ➜ ' + end + ')</div><br style="clear:both">' + params.data.description.replace('’', '\'');
                 }
                 else {
                     let interventionDate = params.data.interventionDate;
@@ -1006,7 +1006,7 @@ class RotationRenderer {
                     else
                         dateString += ' (J' + days + ')';
 
-                    return params.marker + ' <b>'+ params.name + '</b> - ' + dateString + '<br>' + params.data.description;
+                    return params.marker + ' <b>'+ params.name + '</b> - ' + dateString + '<br>' + params.data.description.replace('’', '\'');;
                 }
             }
         };
