@@ -297,6 +297,15 @@ class RotationRenderer {
             if (item.name == Number(item.name))
                 item.name = "Etape " + item.name; // Force the item name to be a string
 
+            let description = self.getHTMLFormatedDescription(item.description);
+            if (item.interventions?.length > 0 || item.attributes?.length > 0) {
+                description += '<br/>';
+                item.attributes?.forEach(attr => {
+                    description += `<br><b>${attr.name} :</b> ${attr.value}`;
+                });
+            }
+            
+
             data.push({
                 name: item.name,
                 divId: 'Step_' + index,
@@ -304,7 +313,7 @@ class RotationRenderer {
                 startDate: new Date(item.startDate.valueOf()), // Date de début
                 endDate: new Date(item.endDate.valueOf()), // Date de fin
                 duration: item.duration,
-                description: self.getHTMLFormatedDescription(item.description),
+                description: description,
                 value: [
                     1, // Parcelle (index de la série)
                     item.startDate.valueOf(), // Date de début
@@ -971,13 +980,21 @@ class RotationRenderer {
 
         option.tooltip = {
             extraCssText: "text-wrap: wrap;",
+            position: function (pos, params, el, elRect, size) {
+                    var obj = { top: 10 };
+                    obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 30;
+                    return obj;
+               },
             className: "rotation-tooltip",
             formatter: function (params) {
                 if (params.data.type == 'rotation_item') {
                     let start = params.data.startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
                     let end = params.data.endDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
+                    let duration = params.data.duration + ' mois';
+                    if (params.data.duration > 20)
+                        duration = (Math.round(params.data.duration / 1.2)/10 + ' années').replace('.', ',');
 
-                    return params.marker + params.name + ' : ' + params.data.duration + ' mois (' + start + ' ➜ ' + end + ')<br>' + params.data.description;
+                    return params.marker + ' <b>' + params.name + '</b><div class="step_dates"><b>' + duration + '</b> (' + start + ' ➜ ' + end + ')</div><br style="clear:both">' + params.data.description;
                 }
                 else {
                     let interventionDate = params.data.interventionDate;
@@ -989,13 +1006,13 @@ class RotationRenderer {
                     else
                         dateString += ' (J' + days + ')';
 
-                    return params.marker + params.name + ' - ' + dateString + '<br>' + params.data.description;
+                    return params.marker + ' <b>'+ params.name + '</b> - ' + dateString + '<br>' + params.data.description;
                 }
             }
         };
 
         option.toolbox = {
-            "itemSize": 25,
+            "itemSize": 20,
             "iconStyle": {
                 "borderColor": "#AAA",
                 "borderWidth": 1
@@ -1043,8 +1060,6 @@ class RotationRenderer {
 
         // If a line has a column in it, split the line in two and add bold to the first part:
         description = description.replace(/^([^:\n]+):/gm, "<b>$1:</b>");
-        description = description.replace(/\n([^:\n]+):/gm, "\n<b>$1:</b>");
-
         description = description.replace(/\n/g, '<br/>');
 
         return description;

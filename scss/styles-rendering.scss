@@ -81,7 +81,7 @@ div.mainITKContainer {
             div.step_dates {
                 font-size       : 11px;
                 background-color: #cdcccc;
-                color           : #ffffff;
+                color           : #000000;
                 margin          : 5px;
                 padding         : 2px 5px;
                 border-radius   : 5px;
@@ -169,5 +169,16 @@ div.mainITKContainer {
 }
 
 .rotation-tooltip {
-    max-width: 400px;
+    max-width : 400px;
+    text-align: left;
+
+    div.step_dates {
+        font-size       : 9px;
+        background-color: #cdcccc;
+        color           : #000000;
+        margin          : 5px;
+        padding         : 0px 5px;
+        border-radius   : 5px;
+        float: right;
+    }
 }
