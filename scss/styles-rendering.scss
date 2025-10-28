@@ -36,11 +36,11 @@ div.mainITKContainer {
 
             .bottom-transcript {
                 display: none;
-            }            
+            }
         }
     }
 
-    @container myparent (min-width: 1200px) {
+    @container myparent (min-width: 1000px) {
         &.withTranscript {
             .left-transcript {
                 display: block;
@@ -53,7 +53,7 @@ div.mainITKContainer {
 
             .bottom-transcript {
                 display: none;
-            }            
+            }
         }
     }
 
@@ -73,6 +73,7 @@ div.mainITKContainer {
 
         div.step-header {
             h4 {
+                font-size    : 20px;
                 margin-bottom: 0;
                 margin-top   : 0;
             }
