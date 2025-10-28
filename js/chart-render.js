@@ -160,7 +160,7 @@ class RotationRenderer {
                 self.noFocusUpdate = false;
             }, 1500);
 
-            element[0].scrollIntoView({ block: "start" });
+            element[0].scrollIntoView({ block: "start", block: "nearest" });
 
             self.getVisibleTranscriptDiv().find('.' + params.data.divId).closest('.rotation_item').addClass("show-all");
 
