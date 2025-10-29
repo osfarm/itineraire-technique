@@ -273,8 +273,10 @@ class RotationRenderer {
             option.series = self.getStepsSeries(self.data.steps);
         }
 
-        option.series.push(self.getTemperatureSeries(minMaxDates.min, minMaxDates.max));
-        option.series.push(self.getPrecipitationSeries(minMaxDates.min, minMaxDates.max));
+        if (self.data.options.show_climate_diagram) {
+            option.series.push(self.getTemperatureSeries(minMaxDates.min, minMaxDates.max));
+            option.series.push(self.getPrecipitationSeries(minMaxDates.min, minMaxDates.max));
+        }
 
         return option;
     }
@@ -283,27 +285,16 @@ class RotationRenderer {
      * Returns a series configuration to display temperature data between start and end dates.
      */
     getTemperatureSeries(start, end) {
-        // Simulated temperature data for demonstration purposes
-        const historicTemps = [
-            { "mois": "1", "temperature_moyenne_C": 7.5, "precipitations_mm": 82.0 },
-            { "mois": "2", "temperature_moyenne_C": 7.3, "precipitations_mm": 60.9 },
-            { "mois": "3", "temperature_moyenne_C": 8.9, "precipitations_mm": 54.3 },
-            { "mois": "4", "temperature_moyenne_C": 10.8, "precipitations_mm": 50.4 },
-            { "mois": "5", "temperature_moyenne_C": 13.4, "precipitations_mm": 52.2 },
-            { "mois": "6", "temperature_moyenne_C": 16.4, "precipitations_mm": 32.4 },
-            { "mois": "7", "temperature_moyenne_C": 17.8, "precipitations_mm": 38.3 },
-            { "mois": "8", "temperature_moyenne_C": 18.0, "precipitations_mm": 33.5 },
-            { "mois": "9", "temperature_moyenne_C": 16.7, "precipitations_mm": 56.3 },
-            { "mois": "10", "temperature_moyenne_C": 14.5, "precipitations_mm": 77.7 },
-            { "mois": "11", "temperature_moyenne_C": 11.0, "precipitations_mm": 78.4 },
-            { "mois": "12", "temperature_moyenne_C": 8.3, "precipitations_mm": 85.0 }
-        ];
+        if (!this.data.options.climate_data || 
+            !this.data.options.climate_data.temperatures ||
+            this.data.options.climate_data.temperatures.length != 12) {
+            return null;
+        }
 
         const data = [];
         for (let i = start; i <= end; i += 1000 * 60 * 60 * 24 * 30) { // Increment by 1 month
             const month = new Date(i).getMonth();
-            const historicData = historicTemps[month];
-            data.push([i, historicData.temperature_moyenne_C]);
+            data.push([i, this.data.options.climate_data.temperatures[month]]);
         }
 
         return {
@@ -350,27 +341,20 @@ class RotationRenderer {
      * Returns a series configuration to display temperature data between start and end dates.
      */
     getPrecipitationSeries(start, end) {
-        // Simulated temperature data for demonstration purposes
-        const historicTemps = [
-            { "mois": "1", "temperature_moyenne_C": 7.5, "precipitations_mm": 82.0 },
-            { "mois": "2", "temperature_moyenne_C": 7.3, "precipitations_mm": 60.9 },
-            { "mois": "3", "temperature_moyenne_C": 8.9, "precipitations_mm": 54.3 },
-            { "mois": "4", "temperature_moyenne_C": 10.8, "precipitations_mm": 50.4 },
-            { "mois": "5", "temperature_moyenne_C": 13.4, "precipitations_mm": 52.2 },
-            { "mois": "6", "temperature_moyenne_C": 16.4, "precipitations_mm": 32.4 },
-            { "mois": "7", "temperature_moyenne_C": 17.8, "precipitations_mm": 38.3 },
-            { "mois": "8", "temperature_moyenne_C": 18.0, "precipitations_mm": 33.5 },
-            { "mois": "9", "temperature_moyenne_C": 16.7, "precipitations_mm": 56.3 },
-            { "mois": "10", "temperature_moyenne_C": 14.5, "precipitations_mm": 77.7 },
-            { "mois": "11", "temperature_moyenne_C": 11.0, "precipitations_mm": 78.4 },
-            { "mois": "12", "temperature_moyenne_C": 8.3, "precipitations_mm": 85.0 }
-        ];
+        if (!this.data.options.climate_data || 
+            !this.data.options.climate_data.temperatures ||
+            this.data.options.climate_data.temperatures.length != 12 ||
+            !this.data.options.climate_data.precipitations ||
+            this.data.options.climate_data.precipitations.length != 12) {
+            return null;
+        }
 
         const data = [];
         for (let i = start; i <= end; i += 1000 * 60 * 60 * 24 * 30) { // Increment by 1 month
             const month = new Date(i).getMonth();
-            const historicData = historicTemps[month];
-            data.push([i, historicData.precipitations_mm / 5, historicData.precipitations_mm, historicData.temperature_moyenne_C]);
+            const temp = this.data.options.climate_data.temperatures[month];
+            const precip = this.data.options.climate_data.precipitations[month];
+            data.push([i, precip / 5, precip, temp]);
         }
 
         return {
@@ -1112,6 +1096,8 @@ class RotationRenderer {
         }
 
         option.tooltip = {
+            transitionDuration: 0,
+            hideDelay: 1000,
             extraCssText: "text-wrap: wrap;",
             position: function (pos, params, el, elRect, size) {
                 var obj = { top: 10 };
