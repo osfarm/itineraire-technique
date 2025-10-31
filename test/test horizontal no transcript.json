@@ -1,324 +1,448 @@
 {
-    "title": "Itinéraire technique de ma ferme",
-    "options": {
-        "view" : "horizontal",
-        "show_transcript": false,
-        "title_top_interventions": "Contrôle adventices",
-        "title_bottom_interventions": "Autres interventions",
-        "title_steps": "Étapes de la rotation dans la parcelle"
-    },
-    "steps": [
-        {
-            "name": "Betterave",
-            "color": "#ff96b0",
-            "description": "Tête de rotation",
-            "attributes": [
-                {
-                    "name": "Pré-semis",
-                    "value": "Possibilité d'un couvert multi-espèces en aout n-1"
-                },
-                {
-                    "name": "Travail du sol",
-                    "value": "déchaumage pour niveler le terrain et un binage en Juin à 1cm"
-                },
-                {
-                    "name": "Type de semoir",
-                    "value": "trois passages de strip-till"
-                },
-                {
-                    "name": "Date de semis",
-                    "value": "22/03"
-                },
-                {
-                    "name": "Densité de semis",
-                    "value": "125mil graines/ha"
-                },
-                {
-                    "name": "Plantes compagnes",
-                    "value": "avoine/orge fermière, 20kg/ha"
-                }
-            ],
-            "interventions": [
-                {
-                    "day": 0,
-                    "name": "Semis",
-                    "type": "intervention_bottom",
-                    "description": "Semis des betteraves à J + 5"
-                }
-            ],
-            "startDate": "2022-03-15",
-            "endDate": "2022-11-01"
-        },
-        {
-            "name": "Blé tendre",
-            "color": "#edcc7d",
-            "duration": 11,
-            "attributes": [
-                {
-                    "name": "Pré-semis",
-                    "value": "désinfection du grain au vinaigre (1L/100kg)"
-                },
-                {
-                    "name": "Travail du sol",
-                    "value": "aucun, semis direct pur"
-                },
-                {
-                    "name": "Type de semoir",
-                    "value": "semoir à dents"
-                },
-                {
-                    "name": "Date de semis",
-                    "value": "11/10"
-                },
-                {
-                    "name": "Densité de semis",
-                    "value": "125kg/ha"
-                },
-                {
-                    "name": "Plantes compagnes",
-                    "value": "orge fermière, 20kg/ha (implantation semoir à disque)"
-                }
-            ],
-            "startDate": "2022-11-15",
-            "endDate": "2023-10-15"
-        },
-        {
-            "name": "Colza",
-            "color": "#ebe733",
-            "duration": 12,
-            "description": "Travail du sol: aucun, semis direct pur, fissuration après récolte, avant le blé",
-            "attributes": [
-                {
-                    "name": "Type de semoir",
-                    "value": "semoir à dents"
-                },
-                {
-                    "name": "Date de semis",
-                    "value": "26/08"
-                },
-                {
-                    "name": "Densité de semis",
-                    "value": "2kg/ha"
-                },
-                {
-                    "name": "Plantes compagnes",
-                    "value": "feverole fermière, 60 pieds au m2"
-                }
-            ],
-            "interventions": [
-                {
-                    "day": -20,
-                    "name": "Labour",
-                    "type": "intervention_bottom",
-                    "description": ""
-                },
-                {
-                    "day": -15,
-                    "name": "Travail superficiel",
-                    "type": "intervention_bottom",
-                    "description": ""
-                },
-                {
-                    "day": -10,
-                    "name": "Fertilisation",
-                    "type": "intervention_bottom",
-                    "description": "Fertilisation - tsp_45 (180 kg)"
-                },
-                {
-                    "day": -10,
-                    "name": "Fertilisation",
-                    "type": "intervention_bottom",
-                    "description": "Fertilisation - potassium_chloride (125 kg)"
-                },
-                {
-                    "day": -5,
-                    "name": "Pulverisation",
-                    "type": "intervention_top",
-                    "description": "intervention_top - Proplus (0,4 l)"
-                },
-                {
-                    "day": 0,
-                    "name": "Semis",
-                    "type": "intervention_bottom",
-                    "description": "Semence - Capello (2 kg)"
-                },
-                {
-                    "day": 0,
-                    "name": "Semis",
-                    "type": "intervention_top",
-                    "description": "intervention_top - Anti-limaces (4 kg)"
-                },
-                {
-                    "day": 30,
-                    "name": "Pulverisation",
-                    "type": "intervention_top",
-                    "description": "intervention_top - Sweet Home (0,3 l)"
-                },
-                {
-                    "day": 120,
-                    "name": "Fertilisation",
-                    "type": "intervention_bottom",
-                    "description": "Fertilisation - ammonitrate_33 (178 kg)"
-                },
-                {
-                    "day": 150,
-                    "name": "Fertilisation",
-                    "type": "intervention_bottom",
-                    "description": "Fertilisation - ammonium_sulphate (90 kg)",
-                    "important": true
-                },
-                {
-                    "day": 165,
-                    "name": "Pulverisation",
-                    "type": "intervention_top",
-                    "description": "intervention_top - Boravi Wg (1 kg)"
-                },
-                {
-                    "day": 180,
-                    "name": "Fertilisation",
-                    "type": "intervention_bottom",
-                    "description": "Fertilisation - ammonitrate_33 (178 kg)"
-                },
-                {
-                    "day": 210,
-                    "name": "Pulverisation",
-                    "type": "intervention_top",
-                    "description": "intervention_top - Elifor (0,5 l)"
-                },
-                {
-                    "day": 225,
-                    "name": "Pulverisation",
-                    "type": "intervention_top",
-                    "description": "intervention_top - Karakas (0,05 l)"
-                },
-                {
-                    "day": 240,
-                    "name": "Pulverisation",
-                    "type": "intervention_top",
-                    "description": "intervention_top - Sunorg Pro (0,4 l)"
-                },
-                {
-                    "day": 255,
-                    "name": "Pulverisation",
-                    "type": "intervention_top",
-                    "description": "intervention_top - Boravi Wg (1 kg)"
-                },
-                {
-                    "day": 300,
-                    "name": "Récolte",
-                    "type": "intervention_bottom",
-                    "description": "Récolte - Rendement (30 q)"
-                },
-                {
-                    "day": 300,
-                    "name": "Transport",
-                    "type": "intervention_bottom",
-                    "description": ""
-                }
-            ],
-            "startDate": "2023-10-01",
-            "endDate": "2024-10-01"
-        },
-        {
-            "name": "Repousses",
-            "color": "#fff2cc",
-            "duration": 1,
-            "description": "",
-            "startDate": "2024-10-01",
-            "endDate": "2024-11-01"
-        },
-        {
-            "name": "Blé tendre",
-            "color": "#edcc7d",
-            "duration": 11,
-            "description": "",
-            "startDate": "2024-11-01",
-            "endDate": "2025-10-01"
-        },
-        {
-            "name": "Couvert",
-            "color": "#93c47d",
-            "duration": 6,
-            "description": "Couvert d'interculture longue pour casser le cycle des graminées",
-            "attributes": [
-                {
-                    "name": "Composition",
-                    "value": "trefle facscelie vesce, feverple,pois, lupin tournessol, avoine"
-                },
-                {
-                    "name": "Destruction",
-                    "value": "rouleau faca + gel"
-                },
-                {
-                    "name": "Densité",
-                    "value": "250 pieds/m²"
-                }
-            ],
-            "startDate": "2025-10-01",
-            "endDate": "2026-04-01"
-        },
-        {
-            "name": "Lin textile",
-            "color": "#efefef",
-            "duration": 7,
-            "attributes": [
-                {
-                    "name": "Semis",
-                    "value": "Mars"
-                },
-                {
-                    "name": "Type de semoir",
-                    "value": "semoir à disques"
-                },
-                {
-                    "name": "Note",
-                    "value": "Très sensible à la compaction donc éloigné le plus possible de la récolte de betterave"
-                },
-                {
-                    "name": "Autre",
-                    "value": "Apport de BRF après lin, environ 10t/ha"
-                }
-            ],
-            "startDate": "2026-04-01",
-            "endDate": "2026-11-01"
-        },
-        {
-            "name": "Blé tendre",
-            "color": "#edcc7d",
-            "duration": 11,
-            "description": "",
-            "startDate": "2026-11-01",
-            "endDate": "2027-10-01"
-        },
-        {
-            "name": "Couvert",
-            "color": "#93c47d",
-            "duration": 4,
-            "description": "Couvert d'interculture court",
-            "attributes": [
-                {
-                    "name": "Date de semis",
-                    "value": "28/09 ou plus tôt"
-                },
-                {
-                    "name": "Composition",
-                    "value": "avoine/pois/feverole/vesce/fascelie/radis/lupin/tournessol"
-                },
-                {
-                    "name": "Densité",
-                    "value": "85 kg/ha"
-                },
-                {
-                    "name": "Destruction",
-                    "value": "26/01"
-                },
-                {
-                    "name": "Reliquats azotés",
-                    "value": "apporteront entre 20 et 40 u d'azote mobilisable"
-                }
-            ],
-            "startDate": "2027-10-01",
-            "endDate": "2028-02-25"
-        }
-    ]
+	"title": "Une rotation de test",
+	"options": {
+		"view": "horizontal",
+		"show_transcript": false,
+		"title_top_interventions": "Cultures principales",
+		"title_bottom_interventions": "Couverts et CIVE",
+		"title_steps": "Rotation",
+		"region": "France",
+		"show_climate_diagram": true,
+		"climate_data": {
+			"temperatures": [7.5, 7.3, 8.9, 10.8, 13.4, 16.4, 17.8, 18.0, 16.7, 14.5, 11.0, 8.3],
+			"precipitations": [82, 60, 54, 50, 52, 32, 38, 33, 56, 77, 78, 85]
+		}
+	},
+	"steps": [
+		{
+			"startDate": "2026-03-01T00:00:00.000Z",
+			"id": "643172d1-dc20-4289-b346-3c68daa3ace0",
+			"name": "Orge + Lupin",
+			"color": "#d2b48c",
+			"endDate": "2026-07-20T00:00:00.000Z",
+			"description": "Lupin (350 kg/ha) + Orge (50 kg/ha) dans la ligne de semis après un labour\nRendement orge : 14,25 qx/ha\nRendement lupin : 10,25 qx/ha\n\nLe couvert luzerne/trèfle est semé à la volée avec le combiné.\n\nPas de desherbage en dehors du labour.\n\nAprès moisson, les pailles sont laissées au sol pour restitution de MO.\n\nLupin vendu pour l'alimentation animale ou la production de steaks végétaux",
+			"interventions": [
+				{
+					"id": "a19ccf22-4478-44f0-b81b-da6df534875f",
+					"day": "-5",
+					"name": "Labour",
+					"type": "intervention_top",
+					"description": ""
+				},
+				{
+					"id": "d500f562-5e3f-4713-95fd-97a5d4800e77",
+					"day": "141",
+					"name": "Fauche, andainage puis récolte",
+					"type": "intervention_top",
+					"description": "Récolte avec broyage des pailles une semaine après la fauche. Les pailles sont laissées au sol."
+				},
+				{
+					"id": "6a1260ae-3a38-4c3c-80df-03641d380ad8",
+					"day": "0",
+					"name": "Digestat solide",
+					"type": "intervention_top",
+					"description": "Epandage de digestat solide 7T/ha en Fevrier dans le couvert de phacélie "
+				}
+			],
+			"attributes": [
+				{
+					"id": "0c99eef1-d1ae-4036-8c59-f5ebc079ff50",
+					"name": "Travail du sol",
+					"value": "Labour"
+				},
+				{
+					"id": "43ea0119-7c51-450a-9f75-2258d5c5c5cb",
+					"name": "Type de semoir",
+					"value": "Combiné "
+				}
+			],
+			"secondary_crop": false,
+			"useDefaultColor": false,
+			"useDefaultStartDate": false,
+			"useDefaultEndDate": false,
+			"duration": 5
+		},
+		{
+			"startDate": "2026-07-20T00:00:00.000Z",
+			"id": "629cee3c-adc1-4369-abb6-6b59e2700403",
+			"name": "Luzerne + trèfle violet et blanc",
+			"color": "#2d9f6e",
+			"endDate": "2028-10-15T00:00:00.000Z",
+			"description": "Semis à la volée avec le combiné :\n* Luzerne à 25kg/ha\n* Trèfle violet à 3,5kg/ha\n* Trèfle blanc à 1,5kg/ha\n\nRendement luzerne : 12 tMS/ha\n\nPremière coupe pour la métha, les trois coupes suivantes pour deshyouest, la 5ème, pour un voisin bio en enrubannage",
+			"interventions": [
+				{
+					"id": "0bc21d1a-39f2-4998-85b4-cd0b2d8fbc70",
+					"day": "818",
+					"name": "Destruction au combiné au moment d'implanter la CIVE",
+					"type": "intervention_bottom",
+					"description": ""
+				},
+				{
+					"id": "34582b28-570c-4dbf-abc2-431e70af84b5",
+					"day": "299",
+					"name": "Digestat",
+					"type": "intervention_bottom",
+					"description": "Epandage de digestat 20m³/ha"
+				},
+				{
+					"id": "1e4dfb92-c8b7-4f57-b025-aeb137e6071b",
+					"day": "238",
+					"name": "Engrais potassique",
+					"type": "intervention_bottom",
+					"description": "Epandage de 200kg/ha de chlorure de potassium"
+				},
+				{
+					"id": "06db4688-f1bb-4fb3-852b-11cd26a07a26",
+					"day": "-141",
+					"name": "Semis associé",
+					"type": "intervention_bottom",
+					"description": "Semis associé de la luzerne à la volée"
+				},
+				{
+					"id": "95a56654-720c-48d0-b0b0-a91656269b5b",
+					"day": "665",
+					"name": "Digestat",
+					"type": "intervention_bottom",
+					"description": "Epandage de digestat 20m³/ha"
+				},
+				{
+					"id": "d22502cb-dbed-4b1e-be27-a22be58d3350",
+					"day": "604",
+					"name": "Engrais potassique",
+					"type": "intervention_bottom",
+					"description": "Epandage de 200kg/ha de chlorure de potassium"
+				}
+			],
+			"attributes": [
+				{
+					"id": "0d43317d-83ed-43b3-8539-6e4fe1f9a35a",
+					"name": "Rendement",
+					"value": "12TMS/ha au total sur les 3 ans"
+				}
+			],
+			"secondary_crop": false,
+			"useDefaultColor": false,
+			"useDefaultStartDate": false,
+			"useDefaultEndDate": false,
+			"duration": 27
+		},
+		{
+			"startDate": "2028-10-15T00:00:00.000Z",
+			"id": "41d05d65-573b-4537-a7a8-67237c3f717f",
+			"name": "CIVE (Triticale)",
+			"color": "#d2b48c",
+			"endDate": "2029-04-15T00:00:00.000Z",
+			"description": "Semis à 100kg/ha, au combiné :\n* Cultivateur à l'avant\n* A l'arrière, fissurateur à 15cm de profondeur\n* Herse rotative\n* Ligne de semis\n",
+			"interventions": [
+				{
+					"id": "8ba599cc-7baf-4631-ba35-3d5738ae88f9",
+					"day": "182",
+					"name": "Ensilage",
+					"type": "intervention_bottom",
+					"description": ""
+				},
+				{
+					"id": "77ffacaa-06ae-47de-95bb-44e9244130cb",
+					"day": "123",
+					"name": "Digestat liquide",
+					"type": "intervention_bottom",
+					"description": "Epandage de digestat liquide, 20m³/ha en février, si possible au sans tonne"
+				}
+			],
+			"attributes": [],
+			"secondary_crop": true,
+			"useDefaultColor": false,
+			"useDefaultStartDate": false,
+			"useDefaultEndDate": false,
+			"duration": 6
+		},
+		{
+			"startDate": "2029-05-10T00:00:00.000Z",
+			"id": "152ab61e-6144-4329-a526-4f84ccbb1403",
+			"name": "Quinoa",
+			"color": "#d9c9b6",
+			"endDate": "2029-09-15T00:00:00.000Z",
+			"description": "Rendement : 1,2 t/ha\n\nLabour avant le semis, éventuellement un vibro ou rouleau si le sol est séchant.\n\nSemis à 10kg/ha (au combiné) en monograine en 50cm d'écartement",
+			"interventions": [
+				{
+					"id": "914dd600-a144-4ff9-ae9a-31f7bcadff0a",
+					"day": "-5",
+					"name": "Labour",
+					"type": "intervention_top",
+					"description": ""
+				},
+				{
+					"id": "678fd84d-d8d3-438a-90de-e3ec8d5ba103",
+					"day": "0",
+					"name": "Digestat liquide",
+					"type": "intervention_top",
+					"description": "Epandage de digestat à l’enfouisseur - 20m3/ha"
+				},
+				{
+					"id": "6d9f1d60-1dd2-4d2e-821c-d83fc6992bc1",
+					"day": "15",
+					"name": "Binage x 2",
+					"type": "intervention_top",
+					"description": "Binage et semis du trèfle à la volée avec le deuxième"
+				}
+			],
+			"attributes": [],
+			"secondary_crop": false,
+			"useDefaultColor": false,
+			"useDefaultStartDate": false,
+			"useDefaultEndDate": false,
+			"duration": 4
+		},
+		{
+			"startDate": "2029-06-01T00:00:00.000Z",
+			"id": "280b19da-2b5b-4f9a-8c40-14e5c6e0a67e",
+			"name": "Trèfle blanc",
+			"color": "#d6d6d6",
+			"endDate": "2029-11-15T00:00:00.000Z",
+			"description": "Semis à la volé lors du dernier binage du quinoa",
+			"interventions": [],
+			"attributes": [
+				{
+					"id": "7b539f34-6e87-43dd-93af-33fb64714622",
+					"name": "Pré-semis",
+					"value": ""
+				},
+				{
+					"id": "5d9c75e4-b644-4c6e-be43-dc744b47177d",
+					"name": "Travail du sol",
+					"value": ""
+				},
+				{
+					"id": "84381b4c-1eee-49e1-8436-07a0185dc932",
+					"name": "Type de semoir",
+					"value": " "
+				},
+				{
+					"id": "d56a1730-7946-45d8-9808-c12d11056978",
+					"name": "Date des semis",
+					"value": ""
+				}
+			],
+			"secondary_crop": true,
+			"useDefaultColor": false,
+			"useDefaultStartDate": false,
+			"useDefaultEndDate": false,
+			"duration": 6
+		},
+		{
+			"startDate": "2029-11-15T00:00:00.000Z",
+			"id": "f7555748-66a9-456e-a6d8-b0d513bdcebf",
+			"name": "Blé + féverole",
+			"color": "#d2b48c",
+			"endDate": "2030-07-15T00:00:00.000Z",
+			"description": "Rendement blé : 36 qx/ha\nRendement féverole : 10 qx/ha\n\nSemis du blé féverole en novembre en labour et combiné herse-semis avec une volonté d’implanter au moins 450grains m2 en blé",
+			"interventions": [
+				{
+					"id": "eb4e67da-cc91-463c-bfed-1f645b221e14",
+					"day": "-5",
+					"name": "Labour",
+					"type": "intervention_top",
+					"description": ""
+				},
+				{
+					"id": "74135ecd-fb8d-48b2-842b-82a73918b911",
+					"day": "97",
+					"name": "Digestat liquide",
+					"type": "intervention_top",
+					"description": "Epandage de digestat liquide, 25m3/ha, février ou mars au pendillard, si possible au sans tonne."
+				},
+				{
+					"id": "eeefe0b8-3df8-41f7-808b-f3bf3b21ba66",
+					"day": "120",
+					"name": "Herse étrille",
+					"type": "intervention_top",
+					"description": "2 à 3 passage de herse étrille début de printemps, dont 1 fois en double passage rapprochés.\n"
+				},
+				{
+					"id": "897dce25-1861-41ea-ad1c-94b392a23819",
+					"day": "151",
+					"name": "Herse étrille",
+					"type": "intervention_top",
+					"description": "2 à 3 passage de herse étrille début de printemps, dont 1 fois en double passage rapprochés."
+				},
+				{
+					"id": "63960469-ba64-4bac-946e-a91713e4abaa",
+					"day": "242",
+					"name": "Moisson en mode fauchage andainage",
+					"type": "intervention_top",
+					"description": "Moisson en mode fauchage andainage et caisson de récupération de menue paille sur la moissonneuse, la paille est utilisé pour les animaux"
+				}
+			],
+			"attributes": [],
+			"secondary_crop": false,
+			"useDefaultColor": false,
+			"useDefaultStartDate": false,
+			"useDefaultEndDate": false,
+			"duration": 8
+		},
+		{
+			"startDate": "2030-08-15T00:00:00.000Z",
+			"id": "96e96402-cfd8-4258-9eb6-6a95931401c9",
+			"name": "Colza + sarrasin",
+			"color": "#ffd700",
+			"endDate": "2031-06-15T00:00:00.000Z",
+			"description": "Rendement colza : 31 qx/ha\n\nSemis associé avec du colza (1,5kg) + sarazin (12kg/ha) et repousse de feverole du précédent \nFauchage du colza vers le 15 juin et récolte 10jours plus tard (30 qtx / ha → huile et tourteaux).",
+			"interventions": [
+				{
+					"id": "89278701-996c-4bb6-8f55-b7241e496b5a",
+					"day": "-5",
+					"name": "Déchaumage",
+					"type": "intervention_top",
+					"description": ""
+				},
+				{
+					"id": "3f0f4eb5-81e4-45d3-90d3-b90178023ae8",
+					"day": "0",
+					"name": "Epandage digestat",
+					"type": "intervention_top",
+					"description": "Epandage digestat solide et liquide"
+				},
+				{
+					"id": "58098fe1-cadc-4373-9596-f665ab4eeef5",
+					"day": "0",
+					"name": "Labour",
+					"type": "intervention_top",
+					"description": ""
+				},
+				{
+					"id": "39cc86a2-3bba-4c00-a660-b12f621740ef",
+					"day": "304",
+					"name": "Fauchage andainage",
+					"type": "intervention_top",
+					"description": "Fauchage du colza vers le 15 juin et récolte 10jours plus tard"
+				}
+			],
+			"attributes": [
+				{
+					"id": "bfb2d89b-78a3-4e95-941c-d0247701df72",
+					"name": "Préparation du sol",
+					"value": "Rouleau, combiné de semis, rouleau "
+				},
+				{
+					"id": "3e64f52f-5966-4d51-8c5f-77dd6d719be1",
+					"name": "Rendements",
+					"value": "Dans les 30 qtx / ha → huile et tourteaux"
+				}
+			],
+			"secondary_crop": false,
+			"useDefaultColor": false,
+			"useDefaultStartDate": false,
+			"useDefaultEndDate": false,
+			"duration": 10
+		},
+		{
+			"startDate": "2031-06-15T00:00:00.000Z",
+			"id": "747689c2-629d-4c32-8644-7f4e85f98249",
+			"name": "Ray-grass italien + trèfle",
+			"color": "#4caf50",
+			"endDate": "2032-04-15T00:00:00.000Z",
+			"description": "Semis rapide de RGI/Trèfle (avec repousses de colza) 2 broyages sur fin été et automne pour apporter de la matière verte au sol",
+			"interventions": [
+				{
+					"id": "29ead1e6-9a41-4d04-8d61-f94a010bdc20",
+					"day": "76",
+					"name": "Broyages x 2",
+					"type": "intervention_bottom",
+					"description": "2 broyages sur fin été et automne pour apporter de la matière verte au sol"
+				},
+				{
+					"id": "3fffb7f4-e689-4f25-b361-5b0f6051b055",
+					"day": "291",
+					"name": "Enrubannage",
+					"type": "intervention_bottom",
+					"description": "Enrubannage de la dérobé RGI/trèfle début avril"
+				}
+			],
+			"attributes": [],
+			"secondary_crop": true,
+			"useDefaultColor": false,
+			"useDefaultStartDate": false,
+			"useDefaultEndDate": false,
+			"duration": 10
+		},
+		{
+			"startDate": "2032-05-10T00:00:00.000Z",
+			"id": "e97af74c-23a8-4b28-bd11-03c281610950",
+			"name": "Maïs",
+			"color": "#ffd700",
+			"endDate": "2032-09-15T00:00:00.000Z",
+			"description": "Rendement : 65 qx/ha\n\nEpandage digestat liquide 35m3/ha à l’enfouisseur, labour et semis maïs au combiné en 50cm vers le 10 mai.\n\nNormalement un mois après le semis, en 50cm l'interrang est recouvert.",
+			"interventions": [
+				{
+					"id": "369f45b4-1dcb-4d12-952b-5c78f6defd75",
+					"day": "-5",
+					"name": "Digestat liquide",
+					"type": "intervention_top",
+					"description": "Epandage digestat liquide 35m³/ha à l’enfouisseur"
+				},
+				{
+					"id": "f2d625e1-7209-4f16-8c84-2f582141d139",
+					"day": "0",
+					"name": "Labour",
+					"type": "intervention_top",
+					"description": ""
+				},
+				{
+					"id": "471f0cb0-1825-46b9-b41e-b200bd3619d8",
+					"day": "5",
+					"name": "Herse étrille",
+					"type": "intervention_top",
+					"description": ""
+				},
+				{
+					"id": "e5cc4204-a7cf-499e-bc93-66a19a074b3d",
+					"day": "14",
+					"name": "Houe rotative",
+					"type": "intervention_top",
+					"description": "Houe rotative 7 à 10 jours après la herse étrille,\n"
+				},
+				{
+					"id": "1bdac4b9-00b8-4705-907e-90d59e64488d",
+					"day": "21",
+					"name": "Binage",
+					"type": "intervention_top",
+					"description": ""
+				},
+				{
+					"id": "2d82070a-1d26-45c0-b44e-b797e8b1d4a1",
+					"day": "28",
+					"name": "Binage",
+					"type": "intervention_top",
+					"description": ""
+				}
+			],
+			"attributes": [
+				{
+					"id": "375adb43-520d-4021-8c20-9cc13fc6e23d",
+					"name": "Récolte",
+					"value": "Récolte en maïs épis pour des éleveur Bio, en octobre pour laisser la matière organique au sol."
+				}
+			],
+			"secondary_crop": false,
+			"useDefaultColor": false,
+			"useDefaultStartDate": false,
+			"useDefaultEndDate": false,
+			"duration": 4
+		},
+		{
+			"startDate": "2032-09-15T00:00:00.000Z",
+			"id": "c3e83e9e-6258-45f6-887a-52378375635b",
+			"name": "Phacélie ",
+			"color": "#a7c6ed",
+			"endDate": "2033-05-15T00:00:00.000Z",
+			"description": "Semis rapide d'un couvert de phacélie à 10/12kg/ha",
+			"interventions": [],
+			"attributes": [],
+			"secondary_crop": true,
+			"useDefaultColor": false,
+			"useDefaultStartDate": false,
+			"useDefaultEndDate": false,
+			"duration": 8
+		}
+	]
 }

@@ -12,23 +12,15 @@ function exportToJsonFile(data, fileName = 'export-itk.json') {
 }
 
 function importFromJsonFile() {
-    if (crops.steps && crops.steps.length > 0) {
-        showConfirmationModal(() => {
-            openFileInput();
-        });
-    } else {
+    showConfirmationModal(() => {
         openFileInput();
-    }
+    });
 }
 
 function importFromTestJson() {
-    if (crops.steps && crops.steps.length > 0) {
-        showConfirmationModal(() => {
-            importTestJSON();
-        });
-    } else {
+    showConfirmationModal(() => {
         importTestJSON();
-    }
+    });
 }
 
 function importTestJSON() {
@@ -53,25 +45,21 @@ function importTestJSON() {
 }
 
 function wipe() {
-    let crops = {
-        "title": DEFAULT_TITLE,
-        "options": {
-            "view": "horizontal",
-            "show_transcript": true,
-            "title_top_interventions": "Contrôle adventices",
-            "title_bottom_interventions": "Autres interventions",
-            "title_steps": "Étapes de la rotation dans la parcelle",
-        },
-        "steps": []
-    };
+    showConfirmationModal(() => {
+        let crops = {
+            "title": DEFAULT_TITLE,
+            "options": {
+                "view": "horizontal",
+                "show_transcript": true,
+                "title_top_interventions": "Contrôle adventices",
+                "title_bottom_interventions": "Autres interventions",
+                "title_steps": "Étapes de la rotation dans la parcelle",
+            },
+            "steps": []
+        };
 
-    if (crops.steps && crops.steps.length > 0) {
-        showConfirmationModal(() => {
-            reloadCropsFromJson(crops);
-        });
-    } else {
         reloadCropsFromJson(crops);
-    }
+    });
 }
 
 function openFileInput() {
@@ -110,6 +98,10 @@ function showJsonErrorModal(errorMessage) {
 }
 
 function showConfirmationModal(onConfirm) {
+
+    if (crops?.steps.length === 0)
+        return true;
+
     const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
     const confirmButton = document.getElementById('confirmImport');
 

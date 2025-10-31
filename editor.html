@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 
 <head>
     <meta charset="utf-8">
@@ -35,23 +35,46 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-auto text-left main-header file-icons mb-2">
-                <button type="button" onclick="importFromJsonFile()" class="btn btn-outline-primary primary-button"
-                    id="importFromJsonButton"><i class="fa fa-upload" aria-hidden="true"></i> Charger (JSON)</button>
-                <button type="button" onclick="importFromTestJson()" class="btn btn-outline-primary primary-button"
-                    id="importFromExampleJsonButton"><i class="fa fa-upload" aria-hidden="true"></i> Charger un
-                    exemple</button>
-                <button type="button" onclick="exportToJsonFile(crops)"
-                    class="btn btn-outline-primary primary-button" id="exportToJsonButton"><i
-                        class="fa fa-download" aria-hidden="true"></i> Exporter</button>
-                <button type="button" onclick="wipe(crops)" class="btn btn-outline-primary primary-button"
-                    id="exportToJsonButton"><i class="fa fa-trash" aria-hidden="true"></i> Tout effacer</button>
+                <div id="WikiButtons" class="d-none">
+                    <div class="btn-group me-2" role="group">
+                        <button type="button" class="btn btn-outline-primary primary-button" onclick="loadFromWiki()"><i class="fa fa-upload" aria-hidden="true"></i> Charger une rotation</a></button>
+                        <button type="button" class="btn btn-outline-primary primary-button dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="visually-hidden">Autres options de chargement</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="importFromTestJson()"><i class="fa fa-lightbulb-o" aria-hidden="true"></i> Charger un exemple</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="importFromJsonFile()"><i class="fa fa-upload" aria-hidden="true"></i> Importer (JSON)</a></li>
+                        </ul>
+                    </div><div class="btn-group me-2" role="group">
+                        <button type="button" onclick="saveToWiki()" class="btn btn-outline-primary primary-button"><i class="fa fa-download" aria-hidden="true"></i> Enregistrer dans le wiki</button>
+                        <button type="button" class="btn btn-outline-primary primary-button dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="visually-hidden">Autres options de chargement</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="exportToJsonFile()"><i class="fa fa-download" aria-hidden="true"></i> Exporter</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div id="NonWikiButtons" class="">
+                    <div class="btn-group me-2" role="group">
+                        <button type="button" class="btn btn-outline-primary primary-button" onclick="importFromJsonFile()"><i class="fa fa-upload" aria-hidden="true"></i> Charger une rotation</a></button>
+                        <button type="button" class="btn btn-outline-primary primary-button dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="visually-hidden">Autres options de chargement</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="importFromTestJson()"><i class="fa fa-lightbulb-o" aria-hidden="true"></i> Charger un exemple</a></li>
+                        </ul>
+                    </div><button type="button" onclick="exportToJsonFile()" class="btn btn-outline-primary primary-button me-2"><i class="fa fa-download" aria-hidden="true"></i> Exporter (JSON)</button>
+                </div> 
+
+                <button type="button" onclick="wipe(crops)" class="btn btn-outline-primary primary-button"><i class="fa fa-trash" aria-hidden="true"></i> Tout effacer</button>
             </div>
             <div class="col text-center main-header mb-2">
                 <h1 id="title" contenteditable="true" style="width: 100%">Itinéraire technique</h1>
             </div>
             <div class="col-auto text-right main-header file-icons mb-2">
                 <button type="button" class="btn btn-outline-primary primary-button"
-                    id="exportToJsonButton" data-bs-toggle="modal" data-bs-target="#modalParams"><i class="fa fa-cog" aria-hidden="true"></i> Réglages</button>
+                     data-bs-toggle="modal" data-bs-target="#modalParams"><i class="fa fa-cog" aria-hidden="true"></i> Réglages</button>
             </div>            
         </div>
         <div class="row">
@@ -225,6 +248,29 @@
         </div>
     </div>
 
+    <!-- Wiki Files Modal -->
+    <div class="modal fade" id="wikiFilesModal" tabindex="-1" aria-labelledby="wikiFilesModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="wikiFilesModalLabel">Charger depuis le wiki</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="wikiFilesStatus" class="mb-3">
+                        <i class="fa fa-spinner fa-spin"></i> Chargement de vos fichiers...
+                    </div>
+                    <div id="wikiFilesList" class="list-group">
+                        <!-- Files will be populated here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal -->
     <div class="modal fade" id="modalParams" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -235,33 +281,88 @@
             </div>
             <div class="modal-body">
                 <form>
-                    <div class="mb-3">
-                        <label for="regionInput" class="form-label">Région</label>
-                        <input type="text" class="form-control" id="regionInput" value="France">
+                    <!-- Tabs navigation -->
+                    <ul class="nav nav-tabs" id="paramsTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#generalTab" type="button" role="tab" aria-controls="generalTab" aria-selected="true">Réglages généraux</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="context-tab" data-bs-toggle="tab" data-bs-target="#contextTab" type="button" role="tab" aria-controls="contextTab" aria-selected="false">Contexte de la parcelle</button>
+                        </li>
+                    </ul>
+
+                    <!-- Tabs content -->
+                    <div class="tab-content pt-3" id="paramsTabsContent">
+                        <!-- General settings -->
+                        <div class="tab-pane fade show active" id="generalTab" role="tabpanel" aria-labelledby="general-tab">
+                            <div class="mb-3">
+                                <label for="viewSelect" class="form-label">Affichage par défaut</label>
+                                <select class="form-select" id="viewSelect">
+                                    <option value="horizontal">En frise</option>
+                                    <option value="vertical">En donut</option>
+                                </select>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="showTranscriptCheckbox" checked>
+                                <label class="form-check-label" for="showTranscriptCheckbox">Afficher la transcription textuelle</label>
+                            </div>
+                            <div class="mb-3">
+                                <label for="topInterventionsTitle" class="form-label">Titre des interventions du haut</label>
+                                <input type="text" class="form-control" id="topInterventionsTitle" value="Contrôle adventices">
+                            </div>
+                            <div class="mb-3">
+                                <label for="bottomInterventionsTitle" class="form-label">Titre des interventions du bas</label>
+                                <input type="text" class="form-control" id="bottomInterventionsTitle" value="Autres interventions">
+                            </div>
+                            <div class="mb-3">
+                                <label for="stepsTitle" class="form-label">Titre des étapes de la rotation</label>
+                                <input type="text" class="form-control" id="stepsTitle" value="Étapes de la rotation dans la parcelle">
+                            </div>
+                        </div>
+
+                        <!-- Plot context -->
+                        <div class="tab-pane fade" id="contextTab" role="tabpanel" aria-labelledby="context-tab">
+                            <div class="mb-3">
+                                <label for="regionInput" class="form-label">Région</label>
+                                <input type="text" class="form-control" id="regionInput" value="France">
+                            </div>
+                            <div class="mb-3">
+                                <label for="addressInput" class="form-label">Adresse</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="addressInput" placeholder="Adresse de la parcelle">
+                                    <button class="btn btn-outline-primary" type="button" id="searchLocationBtn">
+                                        <i class="fa fa-search"></i> Rechercher
+                                    </button>
+                                </div>
+                                <div id="locationSearchStatus" class="form-text"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="latitudeInput" class="form-label">Latitude</label>
+                                    <input type="text" class="form-control" id="latitudeInput" placeholder="Ex: 48.8566">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="longitudeInput" class="form-label">Longitude</label>
+                                    <input type="text" class="form-control" id="longitudeInput" placeholder="Ex: 2.3522">
+                                </div>
+                            </div>
+                            <div id="googleMapsLink" class="mb-3" style="display: none;">
+                                <a href="#" target="_blank" class="small text-primary">
+                                    <i class="fa fa-map-marker"></i> Voir sur Google Maps
+                                </a>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="ombroCheck">
+                                <label class="form-check-label" for="ombroCheck">Intégrer un diagramme ombrothermique</label>
+                            </div>
+                            <div class="mb-3">
+                                <label for="ombroData" class="form-label">De janvier à décembre, séparé par des espaces<br>(ligne 1: températures en °C, ligne 2: précipitations en mm)</label>
+                                <textarea class="form-control" id="ombroData" rows="2" placeholder="7.5  7.3  8.9  10.8  13.4  16.4  17.8  18.0  16.7  14.5  11.0  8.3&#10;82 60 54 50 52 32 38 33 56 77 78 85"></textarea>
+                                <div class="form-text">Entrez deux lignes séparées par un retour à la ligne</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="viewSelect" class="form-label">Affichage par défaut</label>
-                        <select class="form-select" id="viewSelect">
-                            <option value="horizontal">En frise</option>
-                            <option value="vertical">En donut</option>
-                        </select>
-                    </div>
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="showTranscriptCheckbox" checked>
-                        <label class="form-check-label" for="showTranscriptCheckbox">Afficher la transcription textuelle</label>
-                    </div>
-                    <div class="mb-3">
-                        <label for="topInterventionsTitle" class="form-label">Titre des interventions du haut</label>
-                        <input type="text" class="form-control" id="topInterventionsTitle" value="Contrôle adventices">
-                    </div>
-                    <div class="mb-3">
-                        <label for="bottomInterventionsTitle" class="form-label">Titre des interventions du bas</label>
-                        <input type="text" class="form-control" id="bottomInterventionsTitle" value="Autres interventions">
-                    </div>
-                    <div class="mb-3">
-                        <label for="stepsTitle" class="form-label">Titre des étapes de la rotation</label>
-                        <input type="text" class="form-control" id="stepsTitle" value="Étapes de la rotation dans la parcelle">
-                    </div>
+
                 </form>
             </div>
             <div class="modal-footer">
@@ -293,6 +394,7 @@
     };
 
     let selectedStep; // an instance of Crop
+    let we; // WikiEditor instance
 
     initializeOptions();
 
@@ -379,6 +481,111 @@
             $("#bottomInterventionsTitle").val(crops.options.title_bottom_interventions);
             $("#stepsTitle").val(crops.options.title_steps);
             $("#regionInput").val(crops.options.region ?? "France");
+            $("#addressInput").val(crops.options.address ?? "");
+            $("#latitudeInput").val(crops.options.latitude ?? "");
+            $("#longitudeInput").val(crops.options.longitude ?? "");
+            
+            // Load ombrothermic data from climate_data if present
+            let hasClimateData = crops.options.climate_data && 
+                                 crops.options.climate_data.temperatures && 
+                                 crops.options.climate_data.precipitations;
+            
+            // Check the checkbox if show_climate_diagram is explicitly true OR if climate_data exists
+            let showDiagram = crops.options.show_climate_diagram === true;
+            $("#ombroCheck").prop("checked", showDiagram);
+            
+            if (hasClimateData) {
+                let tempLine = crops.options.climate_data.temperatures.join(' ');
+                let precipLine = crops.options.climate_data.precipitations.join(' ');
+                $("#ombroData").val(tempLine + '\n' + precipLine);
+            } else {
+                $("#ombroData").val("");
+            }
+            
+            // Enable/disable textarea based on checkbox state
+            $("#ombroData").prop("disabled", !showDiagram);
+        });
+        
+        // Add event listener to toggle textarea when checkbox changes
+        $("#ombroCheck").on("change", function() {
+            $("#ombroData").prop("disabled", !this.checked);
+        });
+        
+        // Update Google Maps link when coordinates change
+        function updateGoogleMapsLink() {
+            const lat = $("#latitudeInput").val().trim();
+            const lon = $("#longitudeInput").val().trim();
+            
+            if (lat && lon && !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lon))) {
+                const mapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+                $("#googleMapsLink a").attr("href", mapsUrl);
+                $("#googleMapsLink").show();
+            } else {
+                $("#googleMapsLink").hide();
+            }
+        }
+        
+        // Attach listeners to lat/long inputs
+        $("#latitudeInput, #longitudeInput").on("input change", updateGoogleMapsLink);
+        
+        // Update link when modal opens
+        $('#modalParams').on('shown.bs.modal', function() {
+            updateGoogleMapsLink();
+        });
+        
+        // Location search button handler
+        $("#searchLocationBtn").on("click", function() {
+            const address = $("#addressInput").val().trim();
+            
+            if (!address) {
+                $("#locationSearchStatus").html('<span class="text-warning">Veuillez entrer une adresse</span>');
+                return;
+            }
+            
+            // Show loading state
+            $("#searchLocationBtn").prop("disabled", true);
+            $("#locationSearchStatus").html('<i class="fa fa-spinner fa-spin"></i> Recherche en cours...');
+            
+            $.ajax({
+                url: "https://itk-info.tripleperformance.fr/api/location",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ address: address }),
+                success: function(data) {
+                    console.log("Location data received:", data);
+                    
+                    // Populate latitude and longitude
+                    if (data.latitude && data.longitude) {
+                        $("#latitudeInput").val(data.latitude);
+                        $("#longitudeInput").val(data.longitude);
+                        updateGoogleMapsLink();
+                    }
+                    
+                    // Populate climate data if available
+                    if (data.monthly_temperatures && data.monthly_rainfall) {
+                        let tempLine = data.monthly_temperatures.join(' ');
+                        let precipLine = data.monthly_rainfall.join(' ');
+                        $("#ombroData").val(tempLine + '\n' + precipLine);
+                        $("#ombroCheck").prop("checked", true);
+                        $("#ombroData").prop("disabled", false);
+                    }
+                    
+                    // Show success message
+                    let message = '<span class="text-success">✓ Coordonnées trouvées';
+                    if (data.source_explanation) {
+                        message += ' — ' + data.source_explanation;
+                    }
+                    message += '</span>';
+                    $("#locationSearchStatus").html(message);
+                },
+                error: function(err) {
+                    console.error("Location search error:", err);
+                    $("#locationSearchStatus").html('<span class="text-danger">Erreur lors de la recherche</span>');
+                },
+                complete: function() {
+                    $("#searchLocationBtn").prop("disabled", false);
+                }
+            });
         });
 
         $("#paramsModalSaveButton").click(function () {
@@ -388,6 +595,37 @@
             crops.options.title_bottom_interventions = $("#bottomInterventionsTitle").val();
             crops.options.title_steps = $("#stepsTitle").val();
             crops.options.region = $("#regionInput").val();
+            crops.options.address = $("#addressInput").val().trim();
+            crops.options.latitude = $("#latitudeInput").val().trim();
+            crops.options.longitude = $("#longitudeInput").val().trim();
+            
+            // Convert ombrothermic data to climate_data object
+            let ombroEnabled = $("#ombroCheck").prop("checked");
+            
+            if (ombroEnabled) {
+                crops.options.show_climate_diagram = true;
+                
+                let ombroText = $("#ombroData").val().trim();
+                let lines = ombroText.split('\n');
+                
+                if (lines.length >= 2) {
+                    let temperatures = lines[0].trim().split(/\s+/).map(v => parseFloat(v)).filter(v => !isNaN(v));
+                    let precipitations = lines[1].trim().split(/\s+/).map(v => parseFloat(v)).filter(v => !isNaN(v));
+                    
+                    if (temperatures.length > 0 && precipitations.length > 0) {
+                        crops.options.climate_data = {
+                            temperatures: temperatures,
+                            precipitations: precipitations
+                        };
+                    } else {
+                        delete crops.options.climate_data;
+                    }
+                } else {
+                    delete crops.options.climate_data;
+                }
+            } else {
+                crops.options.show_climate_diagram = false;
+            }
 
             // Close the modal:
             let modal = bootstrap.Modal.getInstance(document.getElementById('modalParams'));
@@ -395,8 +633,41 @@
 
             refreshAllTables();
         });
+    }
 
-        let we = new WikiEditor();
+    // On page load, create WikiEditor instance
+    $(document).ready(function() {
+
+        // If we are in a wiki (the domain contains "tripleperformance.ag or tripleperformance.fr" then show the Wiki buttons
+        if (window.location.hostname.includes("tripleperformance.ag") || window.location.hostname.includes("tripleperformance.fr")) {
+            document.getElementById("WikiButtons").classList.remove("d-none");
+            document.getElementById("NonWikiButtons").classList.add("d-none");
+
+            we = new WikiEditor();
+            we.loadPageFromURL();
+        } else {
+            document.getElementById("WikiButtons").classList.add("d-none");
+            document.getElementById("NonWikiButtons").classList.remove("d-none");
+        }
+    });
+
+    // Global wrapper function for loadFromWiki
+    function loadFromWiki() {
+        if (typeof we !== 'undefined') {
+            showConfirmationModal(() => {
+                we.loadFromWiki();
+            });
+        } else {
+            console.error('WikiEditor instance not available');
+        }
+    }
+    
+    function saveToWiki() {
+        if (typeof we !== 'undefined') {
+            we.saveToWiki();
+        } else {
+            console.error('WikiEditor instance not available');
+        }
     }
 
     class StepModel {

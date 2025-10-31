@@ -40,7 +40,7 @@ class RotationRenderer {
 
     fixRotationData(rotationData) {
         if (!rotationData || typeof rotationData !== 'object') return rotationData;
-        
+
         if (rotationData.options == undefined)
             rotationData.options = {};
 
@@ -56,7 +56,7 @@ class RotationRenderer {
         // Map rotationData items to make sure that the startDate and endDate are proper Date objects
         rotationData.steps.map((item) => {
             if (!item) return item;
-            
+
             item.startDate = new Date(item.startDate);
             item.endDate = new Date(item.endDate);
 
@@ -211,11 +211,11 @@ class RotationRenderer {
                     filterMode: 'weakFilter',
                     showDataShadow: false,
                     top: self.barHeight * 3 + 100,
-                    labelFormatter: ''
+                    labelFormatter: '',
                 },
                 {
                     type: 'inside',
-                    filterMode: 'weakFilter'
+                    filterMode: 'weakFilter',
                 }
             ],
 
@@ -240,12 +240,19 @@ class RotationRenderer {
                 }
             },
 
-            yAxis: {
-                data: categories,
-                axisLabel: {
-                    width: 100,
+            yAxis: [
+                {
+                    data: categories,
+                    axisLabel: {
+                        width: 100,
+                    }
+                },
+                {
+                    name: 'Température (°C)',
+                    max: 100,
+                    show: false
                 }
-            },
+            ],
 
             series: []
         });
@@ -266,7 +273,118 @@ class RotationRenderer {
             option.series = self.getStepsSeries(self.data.steps);
         }
 
+        if (self.data.options.show_climate_diagram) {
+            option.series.push(self.getTemperatureSeries(minMaxDates.min, minMaxDates.max));
+            option.series.push(self.getPrecipitationSeries(minMaxDates.min, minMaxDates.max));
+        }
+
         return option;
+    }
+
+    /**
+     * Returns a series configuration to display temperature data between start and end dates.
+     */
+    getTemperatureSeries(start, end) {
+        if (!this.data.options.climate_data || 
+            !this.data.options.climate_data.temperatures ||
+            this.data.options.climate_data.temperatures.length != 12) {
+            return null;
+        }
+
+        const data = [];
+        for (let i = start; i <= end; i += 1000 * 60 * 60 * 24 * 30) { // Increment by 1 month
+            const month = new Date(i).getMonth();
+            data.push([i, this.data.options.climate_data.temperatures[month]]);
+        }
+
+        return {
+            type: 'line',
+            yAxisIndex: 1,
+            showSymbol: false,
+            emphasis: {
+                scale: false
+            },
+            areaStyle: {
+                color: {
+                    type: 'linear',
+                    x: 0,
+                    y: 0,
+                    x2: 0,
+                    y2: 1,
+                    global: false,
+                    colorStops: [
+                        {
+                            offset: 0,
+                            color: '#e9a0405b'
+                        },
+                        {
+                            offset: 0.5,
+                            color: '#58a0fd5b'
+                        },
+                        {
+                            offset: 1,
+                            color: '#2a28a35b'
+                        }
+                    ]
+                }
+            },
+            lineStyle: {
+                color: '#cccccc42'
+            },
+
+            data: data,
+            z: -1
+        };
+    }
+
+    /**
+     * Returns a series configuration to display temperature data between start and end dates.
+     */
+    getPrecipitationSeries(start, end) {
+        if (!this.data.options.climate_data || 
+            !this.data.options.climate_data.temperatures ||
+            this.data.options.climate_data.temperatures.length != 12 ||
+            !this.data.options.climate_data.precipitations ||
+            this.data.options.climate_data.precipitations.length != 12) {
+            return null;
+        }
+
+        const data = [];
+        for (let i = start; i <= end; i += 1000 * 60 * 60 * 24 * 30) { // Increment by 1 month
+            const month = new Date(i).getMonth();
+            const temp = this.data.options.climate_data.temperatures[month];
+            const precip = this.data.options.climate_data.precipitations[month];
+            data.push([i, precip / 5, precip, temp]);
+        }
+
+        return {
+            type: 'bar',
+            yAxisIndex: 1,
+            showSymbol: false,
+            tooltip: {
+                formatter: function (params) {
+                    console.log(params);
+                    const month = new Date(params.data[0]).getMonth();
+                    const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+                        "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+                    const monthName = monthNames[month];    
+
+                    const mm = params.data[2];
+                    const temp = params.data[3];
+                    return monthName + ' : ' + temp + ' °C / ' + mm + ' mm';
+                },
+                position: 'top',
+                show: true
+            },            
+            emphasis: {
+                scale: false
+            },
+            itemStyle: {
+                color: '#3b629c2c'
+            },
+            data: data,
+            z: 0
+        };
     }
 
     getMinMaxDates(steps) {
@@ -304,7 +422,7 @@ class RotationRenderer {
                     description += `<br><b>${attr.name} :</b> ${attr.value}`;
                 });
             }
-            
+
 
             data.push({
                 name: item.name,
@@ -372,7 +490,7 @@ class RotationRenderer {
                 testWidth = echarts.format.getTextRect(line).width;
                 let trimCount = 0;
                 const maxTrimCount = line.length; // Prevent infinite loop
-                
+
                 while (testWidth > maxWidth && line.length > 0 && trimCount < maxTrimCount) {
                     line = line.slice(0, -1);
                     if (line.length === 0) break; // Safety check
@@ -392,19 +510,18 @@ class RotationRenderer {
                     return;
 
                 let test = wrapped + l;
-                if (echarts.format.getTextRect(test).height > maxHeight)
-                {
+                if (echarts.format.getTextRect(test).height > maxHeight) {
                     wrappedText = true;
                     return;
                 }
 
                 wrapped += l + "\n";
             });
-            
+
             if (wrappedText) {
                 return wrapped.trim() + '...';
             }
-            
+
             return lines.join("\n");
         }
 
@@ -413,7 +530,7 @@ class RotationRenderer {
         function renderItem(params, api) {
             // Safety checks to prevent crashes
             if (!params || !api) return null;
-            
+
             try {
                 var categoryIndex = api.value(0);
                 var start = api.coord([api.value(1), categoryIndex]);
@@ -869,28 +986,28 @@ class RotationRenderer {
         ];
 
         let monthsPerYear = new Map();
-        
+
         // Safety check to prevent infinite loops
         if (!steps || steps.length === 0) {
             series.push(months);
             return series;
         }
-        
+
         let startMonth = new Date(steps.at(0).startDate.valueOf());
         let endDate = steps.at(-1).endDate;
-        
+
         // Safety check for valid dates and reasonable duration (max 20 years)
-        if (isNaN(startMonth.getTime()) || 
-            isNaN(endDate.getTime()) || 
-            startMonth >= endDate || 
+        if (isNaN(startMonth.getTime()) ||
+            isNaN(endDate.getTime()) ||
+            startMonth >= endDate ||
             (endDate - startMonth) > (20 * 365 * 24 * 60 * 60 * 1000)) {
             series.push(months);
             return series;
         }
-        
+
         let loopCount = 0;
         const maxLoops = 240; // Max 20 years * 12 months
-        
+
         while (startMonth < endDate && loopCount < maxLoops) {
             const monthName = startMonth.toLocaleDateString(undefined, { month: 'short' });
             const year = startMonth.getFullYear();
@@ -979,20 +1096,22 @@ class RotationRenderer {
         }
 
         option.tooltip = {
+            transitionDuration: 0,
+            hideDelay: 1000,
             extraCssText: "text-wrap: wrap;",
             position: function (pos, params, el, elRect, size) {
-                    var obj = { top: 10 };
-                    obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 30;
-                    return obj;
-               },
+                var obj = { top: 10 };
+                obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 30;
+                return obj;
+            },
             className: "rotation-tooltip",
             formatter: function (params) {
                 if (params.data.type == 'rotation_item') {
                     let start = params.data.startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
                     let end = params.data.endDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
                     let duration = params.data.duration + ' mois';
-                    if (params.data.duration > 20)
-                        duration = (Math.round(params.data.duration / 1.2)/10 + ' années').replace('.', ',');
+                    if (params.data.duration >= 24)
+                        duration = Math.floor(params.data.duration / 12) + ' ans' + ((params.data.duration % 12) > 0 ? ' et ' + (params.data.duration % 12) + ' mois' : '');
 
                     return params.marker + ' <b>' + params.name + '</b><div class="step_dates"><b>' + duration + '</b> (' + start + ' ➜ ' + end + ')</div><br style="clear:both">' + params.data.description.replace('’', '\'');
                 }
@@ -1006,7 +1125,7 @@ class RotationRenderer {
                     else
                         dateString += ' (J' + days + ')';
 
-                    return params.marker + ' <b>'+ params.name + '</b> - ' + dateString + '<br>' + params.data.description.replace('’', '\'');;
+                    return params.marker + ' <b>' + params.name + '</b> - ' + dateString + '<br>' + params.data.description.replace('’', '\'');;
                 }
             }
         };
@@ -1025,7 +1144,7 @@ class RotationRenderer {
                     onclick: function () {
                         self.toggleTranscription();
                     }
-                },          
+                },
                 "myToolShowAsDonut": {
                     "show": true,
                     "title": 'Rotation',

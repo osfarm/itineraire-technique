@@ -6,7 +6,12 @@
 		"title_top_interventions": "Cultures principales",
 		"title_bottom_interventions": "Couverts et CIVE",
 		"title_steps": "Rotation",
-		"region": "France"
+		"region": "France",
+		"show_climate_diagram": true,
+		"climate_data": {
+			"temperatures": [7.5, 7.3, 8.9, 10.8, 13.4, 16.4, 17.8, 18.0, 16.7, 14.5, 11.0, 8.3],
+			"precipitations": [82, 60, 54, 50, 52, 32, 38, 33, 56, 77, 78, 85]
+		}
 	},
 	"steps": [
 		{

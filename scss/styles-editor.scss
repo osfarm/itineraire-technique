@@ -4,12 +4,16 @@ $button-text-color: white;
 $header-height: 3rem;
 
 .main-header {
-    background-color: green;
+    background-color: #6fa76f;
     color: white;
     height: $header-height;
 
     display: flex;
     align-items: center;
+
+    .btn.show, .btn:first-child:active, :not(.btn-check)+.btn:active {
+        background-color: #026602;
+    }
 }
 
 .editor-view {
@@ -36,11 +40,15 @@ $header-height: 3rem;
 }
 
 .welcome-view {
-    background-color: rgb(169, 233, 169);
-    color: green;
+    background-color: #6fa76f;
+    color: white;
     padding: 1rem;
     margin-top: 1rem;
     border-radius: 1rem;
+
+    #cropsContainer {
+        color: green;
+    }
 }
 
 .card-white {
@@ -88,7 +96,6 @@ $header-height: 3rem;
     }
 }
 
-
 .close-step-times {
     background: none;
     border: none;
@@ -112,5 +119,11 @@ $header-height: 3rem;
 .form-control {
     &.text-right {
         text-align: right;
+    }
+}
+
+.modal {
+    .form-label {
+        font-weight: 600;
     }
 }
