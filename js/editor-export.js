@@ -100,7 +100,7 @@ function showJsonErrorModal(errorMessage) {
 function showConfirmationModal(onConfirm) {
 
     if (crops?.steps.length === 0)
-        return true;
+        return onConfirm();
 
     const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
     const confirmButton = document.getElementById('confirmImport');
