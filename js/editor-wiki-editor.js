@@ -53,7 +53,6 @@ class WikiEditor {
                     const jsonErrorModal = new bootstrap.Modal(document.getElementById('jsonErrorModal'));
                     jsonErrorModal.show();
                 }
-
             }
         });
     
@@ -66,17 +65,13 @@ class WikiEditor {
         const self = this;
 
         if (!self.pageTitle) {
-            alert("Aucun titre de page spécifié pour l'enregistrement.");
+            self.showSaveAsModal();
             return;
         }
         
         // If a page title is provided, save to that page
         self.savePageToWiki(self.pageTitle, JSON.stringify(crops, null, 2))
-            .then(() => {
-
-                // TODO : Also set a few semantic properties on the page, including the chart type, the geolocation, etc.
-
-
+            .then(async () => {
                 alert("Itinéraire technique enregistré avec succès !");
             })
             .catch(err => {
@@ -138,6 +133,25 @@ class WikiEditor {
             // Encode the username for the URL
             const encodedUsername = 'User:' + username;
             const query = encodeURIComponent(`[[Page author::${encodedUsername}]][[~*.json]]`);
+            const url = `/api.php?action=ask&query=${query}|sort=Modification date|order=desc&format=json`;
+            
+            const response = await fetch(url, {
+                credentials: 'include'
+            });
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error("Error fetching wiki files:", error);
+            throw error;
+        }
+    }
+
+
+    async getWikiUserPages(username) {
+        try {
+            // Encode the username for the URL
+            const encodedUsername = 'User:' + username;
+            const query = encodeURIComponent(`[[Page author::${encodedUsername}]][[A un type de page::+]]`);
             const url = `/api.php?action=ask&query=${query}|sort=Modification date|order=desc&format=json`;
             
             const response = await fetch(url, {
@@ -220,4 +234,121 @@ class WikiEditor {
         }
     }
 
+    /**
+     * Show the Save As modal and handle the save as functionality
+     */
+    async showSaveAsModal() {
+        const self = this;
+        
+        try {
+            // Get user info to check if logged in
+            const userInfo = await this.getWikiUserInfo();
+            
+            if (!userInfo.id || userInfo.id === 0) {
+                alert('Vous devez être connecté au wiki pour utiliser cette fonctionnalité.');
+                return;
+            }
+
+            // Get user's existing pages
+            const pagesData = await this.getWikiUserPages(userInfo.name);
+            
+            // Show the modal
+            const modal = new bootstrap.Modal(document.getElementById('saveAsModal'));
+            modal.show();
+            
+            // Populate the select with user's pages
+            const pageSelect = $('#saveAsPageSelect');
+            pageSelect.empty();
+            pageSelect.append('<option value="">Sélectionner une page...</option>');
+            
+            if (pagesData.query?.results) {
+                for (const [pageTitle, pageData] of Object.entries(pagesData.query.results)) {
+                    const displayTitle = pageData.displaytitle || pageTitle;
+                    pageSelect.append(`<option value="${pageTitle}">${displayTitle}</option>`);
+                }
+            }
+            
+            // Set default filename from title if it's been changed
+            const filenameInput = $('#saveAsFilename');
+            const currentTitle = crops.title || '';
+            if (crops.defaultTitle === false) {
+                filenameInput.val(currentTitle);
+            } else {
+                filenameInput.val('');
+            }
+            
+        } catch (error) {
+            console.error("Error showing save as modal:", error);
+            alert('Erreur lors du chargement des données utilisateur.');
+        }
+    }
+
+    /**
+     * Build the URL for saving based on the save as modal selections
+     */
+    buildSaveAsUrl() {
+        const useExistingPage = $('#saveAsUseExistingPage').prop('checked');
+        const selectedPage = $('#saveAsPageSelect').val();
+        const filename = $('#saveAsFilename').val().trim();
+        
+        if (!filename) {
+            alert('Veuillez saisir un nom de fichier.');
+            return null;
+        }
+        
+        let subpageName;
+        
+        if (useExistingPage && selectedPage) {
+            subpageName = selectedPage;
+        } else {
+            subpageName = 'Non classified';
+        }
+        
+        // Build the final URL: subpagename/filename.json
+        const finalUrl = `${subpageName}/${filename}.json`;
+
+        if (crops.defaultTitle !== false) {
+            crops.title = filename;
+        }
+
+        return finalUrl;
+    }
+
+    /**
+     * Handle the save as operation
+     */
+    async saveAs() {
+        const url = this.buildSaveAsUrl();
+        
+        if (!url) {
+            return; // Error already handled in buildSaveAsUrl
+        }
+        
+        const self = this;
+        const oldPageTitle = self.pageTitle;
+
+        try {
+            // Set the new page title
+            self.pageTitle = url;
+
+            // Save to the wiki first
+            await self.savePageToWiki(self.pageTitle, JSON.stringify(crops, null, 2));
+            
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('saveAsModal'));
+            modal.hide();
+            
+            alert(`Itinéraire technique enregistré avec succès sous "${url}"`);
+            
+            // Only navigate after successful save
+            const newEditorUrl = `editor.html?wiki=${encodeURIComponent(self.pageTitle)}`;
+            window.location.href = newEditorUrl;
+            
+        } catch (error) {
+            // Restore the old page title if save failed
+            self.pageTitle = oldPageTitle;
+            console.error("Error saving as new file:", error);
+            alert('Erreur lors de l\'enregistrement du fichier.');
+        }
+    }
 }
