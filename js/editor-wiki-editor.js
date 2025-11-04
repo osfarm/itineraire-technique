@@ -36,6 +36,14 @@ class WikiEditor {
                         sm.setAsEdited();
                     });
                     reloadCropsFromJson(content);
+
+                    let codeSnippet = `{{Graphique Triple Performance \n| title=${content.title} \n| json=${self.pageTitle} \n| type=Rotation }}`;
+                    $('#code-snippet').val(codeSnippet).on('focus', function() {
+                        $(this).select();
+                    });
+                    $('#codeSnippetDiv').removeClass('d-none');
+                    
+
                 } catch (e) {
                     console.error("Erreur lors de l'analyse du JSON de la page :", e);
                     $('#jsonErrorMessage').text("Le contenu de la page n'est pas un JSON valide.");

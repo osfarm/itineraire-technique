@@ -1,17 +1,19 @@
-$button-color: green;
+$button-color      : green;
 $button-hover-color: rgb(2, 102, 2);
-$button-text-color: white;
-$header-height: 3rem;
+$button-text-color : white;
+$header-height     : 3rem;
 
 .main-header {
     background-color: #6fa76f;
-    color: white;
-    height: $header-height;
+    color           : white;
+    height          : $header-height;
 
-    display: flex;
+    display    : flex;
     align-items: center;
 
-    .btn.show, .btn:first-child:active, :not(.btn-check)+.btn:active {
+    .btn.show,
+    .btn:first-child:active,
+    :not(.btn-check)+.btn:active {
         background-color: #026602;
     }
 }
@@ -26,11 +28,11 @@ $header-height: 3rem;
 // Add a button in the rotation to edit right from the transcript
 .rotation_item {
     .step-edit {
-        color: #878787;
-        cursor: pointer;
-        display:none;
-        margin-left: 10px;
-        font-size: 70%;
+        color         : #878787;
+        cursor        : pointer;
+        display       : none;
+        margin-left   : 10px;
+        font-size     : 70%;
         vertical-align: super;
     }
 
@@ -41,10 +43,10 @@ $header-height: 3rem;
 
 .welcome-view {
     background-color: #6fa76f;
-    color: white;
-    padding: 1rem;
-    margin-top: 1rem;
-    border-radius: 1rem;
+    color           : white;
+    padding         : 1rem;
+    margin-top      : 1rem;
+    border-radius   : 1rem;
 
     #cropsContainer {
         color: green;
@@ -53,22 +55,22 @@ $header-height: 3rem;
 
 .card-white {
     background-color: white;
-    padding: 1rem;
-    border-radius: 1rem;
+    padding         : 1rem;
+    border-radius   : 1rem;
 }
 
 .card-holder {
     background-color: whitesmoke;
-    padding: 1rem;
-    border-radius: 1rem;
-    margin: auto
+    padding         : 1rem;
+    border-radius   : 1rem;
+    margin          : auto
 }
 
 .editable-row {
     background-color: #f7f7f7;
-    min-height: 3rem;
+    min-height      : 3rem;
 
-    display: flex;
+    display    : flex;
     align-items: center;
 
     border-radius: 0.5rem;
@@ -77,7 +79,7 @@ $header-height: 3rem;
         visibility: hidden;
     }
 
-    &:hover > .edit-buttons {
+    &:hover>.edit-buttons {
         visibility: visible;
     }
 }
@@ -87,9 +89,9 @@ $header-height: 3rem;
 }
 
 .primary-button {
-    color: $button-text-color;
+    color           : $button-text-color;
     background-color: $button-color;
-    border: $button-color;
+    border          : $button-color;
 
     &:hover {
         background-color: $button-hover-color;
@@ -98,9 +100,9 @@ $header-height: 3rem;
 
 .close-step-times {
     background: none;
-    border: none;
-    color: #878787;
-    font-size: 120%;
+    border    : none;
+    color     : #878787;
+    font-size : 120%;
 
     &:hover {
         color: #494949;
@@ -108,12 +110,12 @@ $header-height: 3rem;
 }
 
 #cropsContainer .drag-handle {
-    color: #CCC;
-    font-weight: normal;
-    font-size: 86%;
-    margin-right: 10px;
+    color         : #CCC;
+    font-weight   : normal;
+    font-size     : 86%;
+    margin-right  : 10px;
     vertical-align: middle;
-    cursor: grab;
+    cursor        : grab;
 }
 
 .form-control {
@@ -126,4 +128,12 @@ $header-height: 3rem;
     .form-label {
         font-weight: 600;
     }
+}
+
+#code-snippet {
+    font-family     : monospace;
+    font-size       : 13px;
+    text-align      : left;
+    border          : 1px inset;
+    background-color: #f1f1f1;
 }
