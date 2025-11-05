@@ -13,11 +13,6 @@ function createAndSelectEmptyCrop() {
     crop.setDurationInMonths(2)
     crops.steps.push(crop.getStep());
 
-    crop.addAttribute("Pré-semis", "");
-    crop.addAttribute("Travail du sol", "");
-    crop.addAttribute("Type de semoir", " ");
-    crop.addAttribute("Date des semis", "");
-
     //select last created crop to be editable
     selectedStep = crop;
 }
