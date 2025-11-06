@@ -159,7 +159,7 @@ class WikiEditor {
         try {
             // Encode the username for the URL
             const encodedUsername = 'User:' + username;
-            const query = encodeURIComponent(`[[Page author::${encodedUsername}]][[A un type de page::+]]`);
+            const query = encodeURIComponent(`[[Page author::${encodedUsername}]]`);
             const url = `/api.php?action=ask&query=${query}|sort=Modification date|order=desc&format=json`;
             
             const response = await fetch(url, {
@@ -309,7 +309,7 @@ class WikiEditor {
         if (useExistingPage && selectedPage) {
             subpageName = selectedPage;
         } else {
-            subpageName = 'Non classified';
+            subpageName = 'Itinéraires techniques non classés';
         }
         
         // Build the final URL: subpagename/filename.json

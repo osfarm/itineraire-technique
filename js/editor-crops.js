@@ -65,10 +65,8 @@ function createCropRow(crop) {
     return rowDiv;
 }
 
-
 function SelectStep(crop) {
     selectedStep = crop;
     loadSelectedStepToEditor(selectedStep);
     displayCropDetailView();
-    refreshAllTables();
 }

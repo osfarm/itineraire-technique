@@ -78,7 +78,6 @@ class RotationRenderer {
     }
 
     render() {
-
         let self = this;
 
         // Initialize the echarts instance based on the prepared dom
@@ -276,6 +275,11 @@ class RotationRenderer {
         if (self.data.options.show_climate_diagram) {
             option.series.push(self.getTemperatureSeries(minMaxDates.min, minMaxDates.max));
             option.series.push(self.getPrecipitationSeries(minMaxDates.min, minMaxDates.max));
+        }
+
+        if (this.data.options?.climate_data?.temperatures.length == 12 &&
+            this.data.options?.climate_data?.precipitations.length == 12) {
+            option.toolbox.feature.myToolShowClimate.show = true;
         }
 
         return option;
@@ -1139,10 +1143,18 @@ class RotationRenderer {
             "feature": {
                 "myToolShowTranscription": {
                     "show": true,
-                    "title": 'Transcription',
+                    "title": 'Afficher la transcription',
                     "icon": 'path://m5.57814,0c-3.07871,0 -5.57814,2.49943 -5.57814,5.57813l0,7.14003c0,3.07871 2.49943,5.57814 5.57814,5.57814l7.14002,0c3.07871,0 5.57814,-2.49943 5.57814,-5.57814l0,-7.14003c0,-3.07871 -2.49943,-5.57813 -5.57814,-5.57813l-7.14002,0zm0,1.33875l7.14002,0c2.3602,0 4.23939,1.87918 4.23939,4.23938l0,7.14003c0,2.3602 -1.87919,4.23939 -4.23939,4.23939l-7.14002,0c-2.3602,0 -4.23939,-1.87919 -4.23939,-4.23939l0,-7.14003c0,-2.3602 1.87919,-4.23938 4.23939,-4.23938l0,0zm-1.33875,3.57c-0.36969,0 -0.66938,0.29968 -0.66938,0.66938c0,0.36967 0.29969,0.66938 0.66938,0.66938l9.81752,0c0.36969,0 0.66938,-0.2997 0.66938,-0.66938c0,-0.3697 -0.29969,-0.66938 -0.66938,-0.66938l-9.81752,0zm0,3.57001c-0.36969,0 -0.66938,0.29969 -0.66938,0.66939c0,0.36967 0.29969,0.66938 0.66938,0.66938l9.81752,0c0.36969,0 0.66938,-0.2997 0.66938,-0.66938c0,-0.3697 -0.29969,-0.66939 -0.66938,-0.66939l-9.81752,0zm0,3.57002c-0.36969,0 -0.66938,0.29968 -0.66938,0.66938c0,0.36967 0.29969,0.66938 0.66938,0.66938l9.81752,0c0.36969,0 0.66938,-0.2997 0.66938,-0.66938c0,-0.3697 -0.29969,-0.66938 -0.66938,-0.66938l-9.81752,0z',
                     onclick: function () {
                         self.toggleTranscription();
+                    }
+                },
+                'myToolShowClimate': {
+                    'icon': 'path://M18.009 16.932c-1-4-4.8877-7.8876-8.0023-7.8876-3.1146 0-4.5035 1.2325-7.9977 7.8876M19.5893 21H.4107M14.7321 1V17.4286h3.5715V1H16.386ZM8.1964 4.9286v12.5h3.5715v-12.5H8.1964Zm-6.5 3.5357v8.9643H5.2679V8.4643H1.6964Z',
+                    'title': 'Afficher le diagramme ombrothermique',
+                    "show": false,
+                    onclick: function () {
+                        self.showClimateDiagram();
                     }
                 },
                 "myToolShowAsDonut": {
@@ -1194,6 +1206,20 @@ class RotationRenderer {
     toggleTranscription() {
         this.itk_container.find('.mainITKContainer').toggleClass('withTranscript');
         this.chart.resize();
+    }
+
+    showClimateDiagram() {
+        let self = this;
+        
+        // Show the climate diagram series
+        self.data.options.show_climate_diagram = !self.data.options.show_climate_diagram;
+        
+        let option;
+
+        option = this.getStepsOption();
+
+        self.chart.clear();
+        self.chart.setOption(option, false);
     }
 }
 
