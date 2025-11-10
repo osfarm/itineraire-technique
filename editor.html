@@ -946,7 +946,7 @@
         return latestEndDate;
     }
 
-    function addEditAndRemoveButtons(rowDiv, deleteId, editFunction, deleteFunction) {
+    function addEditAndRemoveButtons(rowDiv, deleteId, editFunction, deleteFunction, duplicateFunction) {
         rowDiv = $(rowDiv);
 
         let actionContainer = $('<div class="col-auto edit-buttons"></div>');
@@ -959,6 +959,11 @@
         actionContainer.append($('<button class="edit-button btn btn-outline-primary float-end me-1"><i class="fa fa-pencil"></i></button>').click(function (event) {
             event.stopPropagation(); // Prevent other onclick events from triggering
             editFunction();
+        }));
+
+        actionContainer.append($('<button class="btn btn-outline-secondary float-end me-1"><i class="fa fa-copy"></i></button>').click(function (event) {
+            event.stopPropagation(); // Prevent other onclick events from triggering
+            duplicateFunction(deleteId);
         }));
 
         rowDiv.append(actionContainer);
