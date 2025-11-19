@@ -52,7 +52,7 @@
                         </button>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="#" onclick="showSaveAsModal()"><i class="fa fa-save" aria-hidden="true"></i> Enregistrer sous</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="exportToJsonFile()"><i class="fa fa-download" aria-hidden="true"></i> Exporter</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="doExportToJsonFile()"><i class="fa fa-download" aria-hidden="true"></i> Exporter</a></li>
                         </ul>
                     </div>
                 </div>
@@ -65,7 +65,7 @@
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="#" onclick="importFromTestJson()"><i class="fa fa-lightbulb-o" aria-hidden="true"></i> Charger un exemple</a></li>
                         </ul>
-                    </div><button type="button" onclick="exportToJsonFile()" class="btn btn-outline-primary primary-button me-2"><i class="fa fa-download" aria-hidden="true"></i> Exporter (JSON)</button>
+                    </div><button type="button" onclick="doExportToJsonFile()" class="btn btn-outline-primary primary-button me-2"><i class="fa fa-download" aria-hidden="true"></i> Exporter (JSON)</button>
                 </div> 
 
                 <button type="button" onclick="wipe(crops)" class="btn btn-outline-primary primary-button"><i class="fa fa-trash" aria-hidden="true"></i> Tout effacer</button>
@@ -1089,4 +1089,8 @@
         });
     }
 
+    function doExportToJsonFile() {
+        let jsonName = crops.title.replace(/\s+/g, '-').toLowerCase() + ".json";
+        exportToJsonFile(crops, jsonName);
+    }
 </script>
