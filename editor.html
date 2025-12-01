@@ -946,27 +946,34 @@
         return latestEndDate;
     }
 
-    function addEditAndRemoveButtons(rowDiv, deleteId, editFunction, deleteFunction, duplicateFunction) {
+    function addEditAndRemoveButtons(rowDiv, deleteId, editFunction, deleteFunction, duplicateFunction, style="btn-group") {
         rowDiv = $(rowDiv);
 
-        let actionContainer = $('<div class="col-auto edit-buttons"></div>');
+        let actionContainer = $(`<div class="col-auto edit-buttons m-1 ${style}" role="group"></div>`);
 
-        actionContainer.append($('<button class="btn btn-outline-danger float-end"><i class="fa fa-trash"></i></button>').click(function (event) {
-            event.stopPropagation(); // Prevent other onclick events from triggering
-            deleteFunction(deleteId);
-        }));
+        rowDiv.append(actionContainer);
 
-        actionContainer.append($('<button class="edit-button btn btn-outline-primary float-end me-1"><i class="fa fa-pencil"></i></button>').click(function (event) {
+        actionContainer.append($('<button class="edit-button btn btn-outline-primary p-2"><i class="fa fa-pencil"></i></button>').click(function(event) {
             event.stopPropagation(); // Prevent other onclick events from triggering
             editFunction();
         }));
 
-        actionContainer.append($('<button class="btn btn-outline-secondary float-end me-1"><i class="fa fa-copy"></i></button>').click(function (event) {
+        rowDiv.find('.col').click(function(event) {
             event.stopPropagation(); // Prevent other onclick events from triggering
-            duplicateFunction(deleteId);
-        }));
+            editFunction();
+        });
 
-        rowDiv.append(actionContainer);
+        if (duplicateFunction != null) {
+            actionContainer.append($('<button class="btn btn-outline-secondary p-2"><i class="fa fa-copy"></i></button>').click(function (event) {
+                event.stopPropagation(); // Prevent other onclick events from triggering
+                duplicateFunction(deleteId);
+            }));
+        }
+
+        actionContainer.append($('<button class="btn btn-outline-danger p-2"><i class="fa fa-trash"></i></button>').click(function (event) {
+            event.stopPropagation(); // Prevent other onclick events from triggering
+            deleteFunction(deleteId);
+        }));
     }
 
     function getAndCleanElement(elementId) {

@@ -43,7 +43,10 @@ function createAttributeRow(attribute) {
         function(id) {
             selectedStep.removeAttribute(id);
             refreshAllTables();
-        });
+        },
+        null,        
+        'btn-group-vertical'
+    );
 
     return rowDiv;
 }

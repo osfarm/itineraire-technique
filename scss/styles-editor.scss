@@ -109,13 +109,19 @@ $header-height     : 3rem;
     }
 }
 
-#cropsContainer .drag-handle {
-    color         : #CCC;
-    font-weight   : normal;
-    font-size     : 86%;
-    margin-right  : 10px;
-    vertical-align: middle;
-    cursor        : grab;
+#cropsContainer{
+    .drag-handle {
+        color         : #CCC;
+        font-weight   : normal;
+        font-size     : 86%;
+        margin-right  : 10px;
+        vertical-align: middle;
+        cursor        : grab;
+    }
+
+    div.col {
+        cursor: pointer;
+    }
 }
 
 .form-control {
@@ -136,4 +142,8 @@ $header-height     : 3rem;
     text-align      : left;
     border          : 1px inset;
     background-color: #f1f1f1;
+}
+
+#attributeName, #interventionName {
+    font-weight: bold;
 }

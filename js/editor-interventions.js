@@ -21,6 +21,9 @@ function refreshInterventionsTable() {
     let interventionsBottomContainer = getAndCleanElement("interventionsBottomContainer");
 
     if (selectedStep && selectedStep.getStep().interventions) {
+        // Sort all interventions by day
+        selectedStep.getStep().interventions = selectedStep.getStep().interventions.sort((a, b) => a.day - b.day);        
+        
         selectedStep.getStep().interventions.forEach((intervention) => {
             const rowDiv = createInterventionRow(intervention);
 
@@ -29,7 +32,6 @@ function refreshInterventionsTable() {
             } else {
                 interventionsBottomContainer.appendChild(rowDiv);
             }
-
         });
     }
 }
@@ -49,17 +51,35 @@ function createInterventionRow(intervention) {
         },
         function(id) {
             selectedStep.removeIntervention(id);
-            refreshAllTables();
-        }
+            refreshInterventionsTable();
+            renderChart();
+        },
+        function(id) {
+            duplicateIntervention(id);
+            refreshInterventionsTable();
+            renderChart();
+        },
+        'btn-group-vertical'
     );
 
     return rowDiv;
 }
 
 function createInterventionNameAndValueColumn(intervention) {
+    let absoluteDate = "";
+    if (selectedStep && selectedStep.getStep().startDate) {
+        const stepStartDate = new Date(selectedStep.getStep().startDate);
+        const interventionDate = new Date(stepStartDate);
+        interventionDate.setDate(stepStartDate.getDate() + parseInt(intervention.day));
+        absoluteDate = interventionDate.toLocaleDateString('fr-FR', {
+            month: "short",
+            day: "numeric",
+        });
+    }
+    
     let nameValueDiv = document.createElement("div");
     nameValueDiv.className = "col";
-    nameValueDiv.innerHTML = `<strong>${intervention.name}</strong></br> ${intervention.description}`;
+    nameValueDiv.innerHTML = `<strong>${intervention.name}</strong> (${absoluteDate})</br> ${intervention.description}`;
 
     return nameValueDiv;
 }
@@ -174,4 +194,24 @@ function updateRelativeDayFromAbsolute() {
         
         $("#interventionDay").val(dayDiff);
     }
+}
+
+function duplicateIntervention(interventionId) {
+    if (!selectedStep) return;
+
+    // Find the intervention to duplicate
+    let originalIntervention = selectedStep.getStep().interventions.find(interv => interv.id === interventionId);
+    if (!originalIntervention) return;
+
+    // Create a copy of the intervention
+    let newIntervention = {
+        id: crypto.randomUUID(),
+        day: Number(originalIntervention.day) + 15, // Offset by 15 days to avoid overlap
+        name: originalIntervention.name,
+        type: originalIntervention.type,
+        description: originalIntervention.description
+    };
+
+    // Add the duplicated intervention to the selected step
+    selectedStep.getStep().interventions.push(newIntervention);
 }

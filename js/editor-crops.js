@@ -130,4 +130,7 @@ function SelectStep(crop) {
     selectedStep = crop;
     loadSelectedStepToEditor(selectedStep);
     displayCropDetailView();
+
+    refreshAttributesTable();
+    refreshInterventionsTable();
 }
