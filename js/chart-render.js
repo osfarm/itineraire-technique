@@ -1104,7 +1104,7 @@ class RotationRenderer {
             hideDelay: 1000,
             extraCssText: "text-wrap: wrap;",
             position: function (pos, params, el, elRect, size) {
-                var obj = { top: 10 };
+                var obj = { top: 50 };
                 obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 30;
                 return obj;
             },
