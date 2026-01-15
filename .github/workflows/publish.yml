@@ -1,5 +1,10 @@
 name: Publish to npmjs
 
+permissions:
+  contents: read
+  id-token: write
+  packages: write
+
 on:
   push:
     branches:
@@ -27,6 +32,5 @@ jobs:
         continue-on-error: true
 
       - name: Publish to npmjs
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --provenance --access public
+

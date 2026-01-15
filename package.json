@@ -12,5 +12,8 @@
   },
   "devDependencies": {
     "sass": "^1.85.1"
-  }
+  },
+  "publishConfig": {
+    "access": "public"
+  }  
 }
