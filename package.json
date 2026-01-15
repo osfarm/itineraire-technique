@@ -15,5 +15,22 @@
   },
   "publishConfig": {
     "access": "public"
-  }  
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/osfarm/itineraire-technique"
+  },
+  "homepage": "https://www.osfarm.org/itineraire-technique/",
+  "bugs": {
+    "url": "https://github.com/osfarm/itineraire-technique/issues"
+  },
+  "license": "MIT",
+  "keywords": [
+    "agriculture",
+    "echarts",
+    "visualization",
+    "farming",
+    "itineraire-technique",
+    "TIKA"
+  ]
 }
