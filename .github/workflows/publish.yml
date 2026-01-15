@@ -3,7 +3,6 @@ name: Publish to npmjs
 permissions:
   contents: read
   id-token: write
-  packages: write
 
 on:
   push:
@@ -13,7 +12,6 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,7 +19,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org/'
 
       - name: Install dependencies
@@ -32,5 +30,5 @@ jobs:
         continue-on-error: true
 
       - name: Publish to npmjs
-        run: npm publish --provenance --access public
+        run: npm publish
 
