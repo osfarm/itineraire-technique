@@ -24,10 +24,42 @@ Le visualisateur est fourni avec un éditeur qui permet de créer son propre iti
 Ce visualisateur est avant tout conçu pour être utilisé sur [Triple Performance](https://wiki.tripleperformance.fr/). Vous y trouverez de [nombreux](https://wiki.tripleperformance.fr/wiki/Retours_d%27exp%C3%A9rience) [retours d'expérience](https://wiki.tripleperformance.fr/wiki/Ferme_de_Longueil) documentés avec des données technico-économiques ainsi que les itinéraires techniques associés. Les itinéraires peuvent être créés alors directement dans [Google Spreadsheet](https://wiki.tripleperformance.fr/wiki/Aide:Ins%C3%A9rer_des_graphiques_dans_une_page) grâce à l'[add-on](https://workspace.google.com/marketplace/app/triple_performance/427792115089) spécifiquement conçu pour Google Workspace.
 
 ## Utilisation dans un autre contexte / logiciel
-Il est possible d'utiliser cette librairie très facilement dans n'importe quel outil. Le visualisateur a été conçu pour être très facile à intégrer dans une page HTML, il ne dépend que de briques Javascript (Apache Echarts, JQuery et Bootstrap). N'hésitez pas à nous contacter si vous décidez de l'utiliser et à contribuer si vous faites des évolutions !
- 
 
-Pour utiliser le package, le plus simple est d'utiliser npm :
+Il est possible d'utiliser cette librairie très facilement dans n'importe quel outil. Le visualisateur a été conçu pour être très facile à intégrer dans une page HTML, il ne dépend que de briques Javascript (Apache Echarts, JQuery et Bootstrap). N'hésitez pas à nous contacter si vous décidez de l'utiliser et à contribuer si vous faites des évolutions !
+
+### 🆕 Composants React/Next.js
+
+**Nouveauté version 1.2.0** : Le projet inclut désormais des composants React/Next.js prêts à l'emploi !
+
+```bash
+npm i @osfarm/itineraire-technique
+```
+
+**Utilisation rapide avec React/Next.js :**
+
+```tsx
+import { TikaRenderer } from '@osfarm/itineraire-technique/react';
+
+function MyComponent() {
+  const data = { /* vos données JSON */ };
+  return <TikaRenderer data={data} />;
+}
+```
+
+**📚 [Documentation complète React/Next.js](react/README.md)**
+
+Consultez le guide complet avec :
+- Composants `TikaRenderer` et `TikaEditor`
+- Hooks personnalisés (`useItineraire`, etc.)
+- Types TypeScript
+- Exemples Next.js App Router et Pages Router
+- Configuration et intégration
+
+**🔗 [Exemples d'intégration](examples/)**
+
+### Utilisation vanilla JS/HTML
+ 
+Pour utiliser le package en JavaScript vanilla, le plus simple est d'utiliser npm :
 
 ```
 npm i @osfarm/itineraire-technique
