@@ -10,7 +10,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery-ui@1.14.1/dist/jquery-ui.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-ui@1.14.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-ui@1.14.1/themes/base/all.min.css">
 
     <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.7/underscore-umd-min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
@@ -22,6 +22,7 @@
     <script src="./js/editor-crops.js"></script>
     <script src="./js/editor-export.js"></script>
     <script src="./js/editor-wiki-editor.js"></script>
+    <script src="./js/editor-itinera-editor.js"></script>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" 
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
@@ -48,7 +49,7 @@
                     </div><div class="btn-group me-2" role="group">
                         <button type="button" onclick="saveToWiki()" class="btn btn-outline-primary primary-button"><i class="fa fa-download" aria-hidden="true"></i> Enregistrer dans le wiki</button>
                         <button type="button" class="btn btn-outline-primary primary-button dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                            <span class="visually-hidden">Autres options de chargement</span>
+                            <span class="visually-hidden">Autres options d'enregistrement</span>
                         </button>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="#" onclick="showSaveAsModal()"><i class="fa fa-save" aria-hidden="true"></i> Enregistrer sous</a></li>
@@ -56,6 +57,9 @@
                         </ul>
                     </div>
                 </div>
+                <div id="ItineraButtons" class="d-none">
+                    <button type="button" onclick="saveToItinera()" class="btn btn-outline-primary primary-button"><i class="fa fa-download" aria-hidden="true"></i> Enregistrer dans Itinera</button>
+                </div>                
                 <div id="NonWikiButtons" class="">
                     <div class="btn-group me-2" role="group">
                         <button type="button" class="btn btn-outline-primary primary-button" onclick="importFromJsonFile()"><i class="fa fa-upload" aria-hidden="true"></i> Charger une rotation</a></button>
@@ -68,7 +72,7 @@
                     </div><button type="button" onclick="doExportToJsonFile()" class="btn btn-outline-primary primary-button me-2"><i class="fa fa-download" aria-hidden="true"></i> Exporter (JSON)</button>
                 </div> 
 
-                <button type="button" onclick="wipe(crops)" class="btn btn-outline-primary primary-button"><i class="fa fa-trash" aria-hidden="true"></i> Tout effacer</button>
+                <button type="button" id="wipe-button" onclick="wipe(crops)" class="btn btn-outline-primary primary-button"><i class="fa fa-trash" aria-hidden="true"></i> Tout effacer</button>
             </div>
             <div class="col text-center main-header mb-2">
                 <h1 id="title" contenteditable="true" style="width: 100%">Itinéraire technique</h1>
@@ -245,6 +249,19 @@
                         id="cancelImport">Annuler</button>
                     <button type="button" class="btn btn-primary" id="confirmImport">Continuer</button>
                 </div>
+            </div>
+        </div>
+    </div>
+        
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Itinéra</strong>
+                <small>11 mins ago</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+            Hello, world! This is a toast message.
             </div>
         </div>
     </div>
@@ -702,6 +719,27 @@
                     we.saveAs();
                 }
             });
+        } else if (window.location.hostname.includes("itinera.ag") || window.location.hostname.includes("localhost")) {
+            // If we are in Itinera - the domain is *.itinera.ag
+            document.getElementById("ItineraButtons").classList.remove("d-none");
+            document.getElementById("NonWikiButtons").classList.add("d-none");
+            document.getElementById("wipe-button").classList.add("d-none");
+
+            we = new ItineraEditor();
+            we.loadPageFromURL();
+
+            // Set up Save As modal event listeners
+            $('#saveAsUseExistingPage').on('change', function() {
+                $('#saveAsPageSelect').prop('disabled', !this.checked);
+            });
+
+            $('#saveAsConfirmBtn').on('click', function() {
+                if (we) {
+                    we.saveAs();
+                }
+            });
+
+
         } else {
             document.getElementById("WikiButtons").classList.add("d-none");
             document.getElementById("NonWikiButtons").classList.remove("d-none");
@@ -724,6 +762,14 @@
             we.saveToWiki();
         } else {
             console.error('WikiEditor instance not available');
+        }
+    }
+
+    function saveToItinera() {
+        if (typeof we !== 'undefined') {
+            we.saveToItinera();
+        } else {
+            console.error('Itinera not available');
         }
     }
 

@@ -1,66 +1,17 @@
 {
   "name": "@osfarm/itineraire-technique",
-  "version": "1.2.0",
-  "description": "A visualisation tool to show agricultural technical itineraries based on Echarts - with React/Next.js components",
-  "main": "js/chart-render.js",
-  "types": "react/types.ts",
-  "exports": {
-    ".": {
-      "import": "./js/chart-render.js",
-      "require": "./js/chart-render.js"
-    },
-    "./react": {
-      "import": "./react/index.ts",
-      "require": "./react/index.ts",
-      "types": "./react/types.ts"
-    },
-    "./react/TikaRenderer": {
-      "import": "./react/TikaRenderer.jsx",
-      "require": "./react/TikaRenderer.jsx"
-    },
-    "./react/TikaEditor": {
-      "import": "./react/TikaEditor.jsx",
-      "require": "./react/TikaEditor.jsx"
-    },
-    "./css/*": "./css/*",
-    "./js/*": "./js/*"
-  },
-  "files": [
-    "js",
-    "css",
-    "react",
-    "examples",
-    "test",
-    "images",
-    "*.html",
-    "LICENSE",
-    "README.md"
-  ],
+  "version": "1.1.20",
+  "description": "A visualisation tool to show agricultural technical itineraries based on Echarts",
+  "main": "editor.html",
   "scripts": {
     "build:scss": "sass --style=compressed scss/styles-editor.scss css/styles-editor.css && sass --style=compressed scss/styles-rendering.scss css/styles-rendering.css",
     "dev:scss": "sass scss/styles-editor.scss css/styles-editor.css && sass scss/styles-rendering.scss css/styles-rendering.css",
     "watch:scss": "sass --watch scss/styles-editor.scss:css/styles-editor.css scss/styles-rendering.scss:css/styles-rendering.css",
     "build": "npm run build:scss",
-    "start": "npm run watch:scss",
-    "setup:react": "bash scripts/setup-react.sh || powershell -ExecutionPolicy Bypass -File scripts/setup-react.ps1",
-    "postinstall": "echo '\n✨ Pour utiliser avec React/Next.js, exécutez: npm run setup:react\n'"
-  },
-  "peerDependencies": {
-    "react": ">=16.8.0",
-    "react-dom": ">=16.8.0"
-  },
-  "peerDependenciesMeta": {
-    "react": {
-      "optional": true
-    },
-    "react-dom": {
-      "optional": true
-    }
+    "start": "npm run watch:scss"
   },
   "devDependencies": {
-    "sass": "^1.85.1",
-    "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0"
+    "sass": "^1.85.1"
   },
   "publishConfig": {
     "access": "public"
@@ -80,10 +31,6 @@
     "visualization",
     "farming",
     "itineraire-technique",
-    "TIKA",
-    "react",
-    "nextjs",
-    "technical-itinerary",
-    "crop-rotation"
+    "TIKA"
   ]
 }
