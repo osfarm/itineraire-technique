@@ -1,8 +1,96 @@
 // Encapsulate the wiki editor functionality
-class WikiEditor {
-    constructor() {
+class WikiLoader extends DefaultLoader {
+    constructor(tikaeditorInstance = null) {
+        super(tikaeditorInstance);
+
         // Initialize any properties if needed
         this.pageTitle = null;
+    }
+
+    /**
+     * Setup the Wiki buttons dynamically in the toolbar
+     */
+    setupButtons() {
+        const self = this;
+        const container = '#toolbar-buttons-container';
+        
+        // Create the WikiButtons div structure
+        const wikiButtonsDiv = $(`
+            <div id="WikiButtons" class="">
+                <div class="btn-group me-2" role="group">
+                    <button type="button" class="btn btn-outline-primary primary-button btn-load-wiki">
+                        <i class="fa fa-upload" aria-hidden="true"></i> Charger une rotation
+                    </button>
+                    <button type="button" class="btn btn-outline-primary primary-button dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="visually-hidden">Autres options de chargement</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item btn-import-test" href="#"><i class="fa fa-lightbulb-o" aria-hidden="true"></i> Charger un exemple</a></li>
+                        <li><a class="dropdown-item btn-import-json" href="#"><i class="fa fa-upload" aria-hidden="true"></i> Importer (JSON)</a></li>
+                    </ul>
+                </div>
+                <div class="btn-group me-2" role="group">
+                    <button type="button" class="btn btn-outline-primary primary-button btn-save-wiki">
+                        <i class="fa fa-download" aria-hidden="true"></i> Enregistrer dans le wiki
+                    </button>
+                    <button type="button" class="btn btn-outline-primary primary-button dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="visually-hidden">Autres options d'enregistrement</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item btn-save-as" href="#"><i class="fa fa-save" aria-hidden="true"></i> Enregistrer sous</a></li>
+                        <li><a class="dropdown-item btn-export-json" href="#"><i class="fa fa-download" aria-hidden="true"></i> Exporter</a></li>
+                    </ul>
+                </div>
+            </div>
+        `);
+        
+        // Clear container and append the new buttons
+        $(container).empty().append(wikiButtonsDiv);
+        
+        // Attach event handlers
+        wikiButtonsDiv.find('.btn-load-wiki').on('click', function(e) {
+            e.preventDefault();
+            self.showConfirmationModal(() => {
+                self.loadFromWiki();
+            });
+        });
+        
+        wikiButtonsDiv.find('.btn-save-wiki').on('click', function(e) {
+            e.preventDefault();
+            self.saveToWiki();
+        });
+        
+        wikiButtonsDiv.find('.btn-save-as').on('click', function(e) {
+            e.preventDefault();
+            self.showSaveAsModal();
+        });
+        
+        wikiButtonsDiv.find('.btn-import-test').on('click', function(e) {
+            e.preventDefault();
+            self.importFromTestJson();
+        });
+        
+        wikiButtonsDiv.find('.btn-import-json').on('click', function(e) {
+            e.preventDefault();
+            self.importFromJsonFile();
+        });
+        
+        wikiButtonsDiv.find('.btn-export-json').on('click', function(e) {
+            e.preventDefault();
+            self.doExportToJsonFile();
+        });
+        
+        // Add wipe button
+        this.addWipeButton();
+
+        // Setup Save As modal event listeners
+        $('#saveAsUseExistingPage').on('change', function() {
+            $('#saveAsPageSelect').prop('disabled', !this.checked);
+        });
+
+        $('#saveAsConfirmBtn').off('click').on('click', function() {
+            self.saveAs();
+        });
     }
 
     /**
@@ -35,14 +123,14 @@ class WikiEditor {
                         let sm = new StepModel(step)
                         sm.setAsEdited();
                     });
-                    reloadCropsFromJson(content);
+                    self.tikaeditorInstance.reloadCropsFromJson(content);
 
                     let codeSnippet = `{{Graphique Triple Performance \n| title=${content.title} \n| json=${self.pageTitle} \n| type=Rotation }}`;
                     $('#code-snippet').val(codeSnippet).on('focus', function() {
                         $(this).select();
                     });
-                    $('#codeSnippetDiv').removeClass('d-none');
-                    
+
+                    $('#codeSnippetDiv').show();
 
                 } catch (e) {
                     console.error("Erreur lors de l'analyse du JSON de la page :", e);
@@ -78,7 +166,7 @@ class WikiEditor {
         }
         
         // If a page title is provided, save to that page
-        self.savePageToWiki(self.pageTitle, JSON.stringify(crops, null, 2))
+        self.savePageToWiki(self.pageTitle, JSON.stringify(self.tikaeditorInstance.system, null, 2))
             .then(async () => {
                 alert("Itinéraire technique enregistré avec succès !");
             })
@@ -278,8 +366,8 @@ class WikiEditor {
             
             // Set default filename from title if it's been changed
             const filenameInput = $('#saveAsFilename');
-            const currentTitle = crops.title || '';
-            if (crops.defaultTitle === false) {
+            const currentTitle = self.tikaeditorInstance.system.title || '';
+            if (self.tikaeditorInstance.system.defaultTitle === false) {
                 filenameInput.val(currentTitle);
             } else {
                 filenameInput.val('');
@@ -315,8 +403,8 @@ class WikiEditor {
         // Build the final URL: subpagename/filename.json
         const finalUrl = `${subpageName}/${filename}.json`;
 
-        if (crops.defaultTitle !== false) {
-            crops.title = filename;
+        if (self.tikaeditorInstance.system.defaultTitle !== false) {
+            self.tikaeditorInstance.system.title = filename;
         }
 
         return finalUrl;
@@ -340,7 +428,7 @@ class WikiEditor {
             self.pageTitle = url;
 
             // Save to the wiki first
-            await self.savePageToWiki(self.pageTitle, JSON.stringify(crops, null, 2));
+            await self.savePageToWiki(self.pageTitle, JSON.stringify(self.tikaeditorInstance.system, null, 2));
             
             // Close the modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('saveAsModal'));

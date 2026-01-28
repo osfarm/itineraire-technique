@@ -132,6 +132,19 @@ class RotationRenderer {
         this.currentFocusIndex = null;
         this.noFocusUpdate = false;
 
+        // If some steps have the deprecated attribute field, we add them to the description:
+        self.data.steps.map(item => {
+            if (item.attributes?.length > 0) {
+                item.description += "\n\n";
+                item.attributes?.forEach(attr => {
+                    item.description += `${attr.name} : ${attr.value}\n`;
+                });
+            }
+
+            // remove the attributes field to avoid displaying
+            delete item.attributes;            
+        });
+
         if (self.initialLayout == 'horizontal')
             option = this.getStepsOption();
         else
@@ -425,13 +438,6 @@ class RotationRenderer {
                 item.name = "Etape " + item.name; // Force the item name to be a string
 
             let description = self.getHTMLFormatedDescription(item.description);
-            if (item.interventions?.length > 0 || item.attributes?.length > 0) {
-                description += '<br/>';
-                item.attributes?.forEach(attr => {
-                    description += `<br><b>${attr.name} :</b> ${attr.value}`;
-                });
-            }
-
 
             data.push({
                 name: item.name,
@@ -819,7 +825,7 @@ class RotationRenderer {
         self.data.steps.forEach((item, index) => {
 
             let visibility = 'invisible';
-            if (item.interventions?.length > 0 || item.attributes?.length > 0)
+            if (item.interventions?.length > 0)
                 visibility = "visible";
 
             let collapseButton = '<div class="collapse-button ' + visibility + '"><i class="fa fa-chevron-down" aria-hidden="true"></i></div>';
@@ -834,8 +840,7 @@ class RotationRenderer {
                 + '<div class="step_dates">' + dates + '</div>'
                 + '<h4 class="">' + item.name + '<i class="fa fa-pencil step-edit" aria-hidden="true"></i></h4>'
                 + '</div><p class="step_description clearfix">' + self.getHTMLFormatedDescription(item.description) + '</p>'
-                + '<div class="details">'
-                + (item.attributes?.length > 0 ? item.attributes.map((attribute) => { return '<p><dt>' + attribute.name + '</dt><dd>' + attribute.value + '</dd></p>' }).join('') : '');
+                + '<div class="details">';
 
             if (item.interventions?.length > 0) {
                 html += '<h5>Interventions</h5>';
@@ -1109,7 +1114,7 @@ class RotationRenderer {
             hideDelay: 1000,
             extraCssText: "text-wrap: wrap;",
             position: function (pos, params, el, elRect, size) {
-                var obj = { top: 10 };
+                var obj = { bottom: 10 };
                 obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 30;
                 return obj;
             },

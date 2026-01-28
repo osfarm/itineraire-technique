@@ -16,13 +16,14 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
+    <script src="./js/intervention.js"></script>
+    <script src="./js/step-model.js"></script>
     <script src="./js/chart-render.js"></script>
-    <script src="./js/editor-attributes.js"></script>
     <script src="./js/editor-interventions.js"></script>
-    <script src="./js/editor-crops.js"></script>
-    <script src="./js/editor-export.js"></script>
-    <script src="./js/editor-wiki-editor.js"></script>
-    <script src="./js/editor-itinera-editor.js"></script>
+    <script src="./js/editor-loader-default.js"></script>
+    <script src="./js/editor-loader-wiki.js"></script>
+    <script src="./js/editor-loader-itinera.js"></script>
+    <script src="./js/editor-main.js"></script>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" 
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
@@ -35,44 +36,8 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-auto text-left main-header file-icons mb-2">
-                <div id="WikiButtons" class="d-none">
-                    <div class="btn-group me-2" role="group">
-                        <button type="button" class="btn btn-outline-primary primary-button" onclick="loadFromWiki()"><i class="fa fa-upload" aria-hidden="true"></i> Charger une rotation</a></button>
-                        <button type="button" class="btn btn-outline-primary primary-button dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                            <span class="visually-hidden">Autres options de chargement</span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#" onclick="importFromTestJson()"><i class="fa fa-lightbulb-o" aria-hidden="true"></i> Charger un exemple</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="importFromJsonFile()"><i class="fa fa-upload" aria-hidden="true"></i> Importer (JSON)</a></li>
-                        </ul>
-                    </div><div class="btn-group me-2" role="group">
-                        <button type="button" onclick="saveToWiki()" class="btn btn-outline-primary primary-button"><i class="fa fa-download" aria-hidden="true"></i> Enregistrer dans le wiki</button>
-                        <button type="button" class="btn btn-outline-primary primary-button dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                            <span class="visually-hidden">Autres options d'enregistrement</span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#" onclick="showSaveAsModal()"><i class="fa fa-save" aria-hidden="true"></i> Enregistrer sous</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="doExportToJsonFile()"><i class="fa fa-download" aria-hidden="true"></i> Exporter</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div id="ItineraButtons" class="d-none">
-                    <button type="button" onclick="saveToItinera()" class="btn btn-outline-primary primary-button"><i class="fa fa-download" aria-hidden="true"></i> Enregistrer dans Itinera</button>
-                </div>                
-                <div id="NonWikiButtons" class="">
-                    <div class="btn-group me-2" role="group">
-                        <button type="button" class="btn btn-outline-primary primary-button" onclick="importFromJsonFile()"><i class="fa fa-upload" aria-hidden="true"></i> Charger une rotation</a></button>
-                        <button type="button" class="btn btn-outline-primary primary-button dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                            <span class="visually-hidden">Autres options de chargement</span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#" onclick="importFromTestJson()"><i class="fa fa-lightbulb-o" aria-hidden="true"></i> Charger un exemple</a></li>
-                        </ul>
-                    </div><button type="button" onclick="doExportToJsonFile()" class="btn btn-outline-primary primary-button me-2"><i class="fa fa-download" aria-hidden="true"></i> Exporter (JSON)</button>
-                </div> 
-
-                <button type="button" id="wipe-button" onclick="wipe(crops)" class="btn btn-outline-primary primary-button"><i class="fa fa-trash" aria-hidden="true"></i> Tout effacer</button>
+            <div class="col-auto text-left main-header file-icons mb-2" id="toolbar-buttons-container">
+                <!-- Wiki/Itinera/NonWiki buttons and wipe button will be inserted here dynamically -->
             </div>
             <div class="col text-center main-header mb-2">
                 <h1 id="title" contenteditable="true" style="width: 100%">Itinéraire technique</h1>
@@ -104,7 +69,7 @@
 
                 </div>
 
-                <div class="d-none welcome-view container px-4" id="cropListView">
+                <div class="welcome-view container px-4" id="cropListView" style="display:none;">
                     <div class="row">
                         <div class="col-12">
                             <p>Liste des étapes</p>
@@ -121,8 +86,8 @@
                     </div>
                 </div>
 
-                <div class="d-none" id="cropDetailView">
-                    <div class="row card-holder mb-2">
+                <div id="cropEditorView" style="display:none">
+                    <div id="cropDetailView" class="row card-holder mb-2">
                         <div class="col-12">
                             <button class="float-end close-step-button close-step-times" ><i class="fa fa-times" aria-hidden="true"></i></button>
                             <h4>Étape</h4>
@@ -166,37 +131,9 @@
                             </form>
                         </div>
                     </div>
-                    <div class="row card-holder attributes-view mb-2">
-                        <div class="col-12">
-                            <h5>Attributs</h5>
-                            <div class="row">
-                                <div id="attributesContainer" class="container"></div>
-                            </div>
-                            <button id="newAttributeButton" type="button" onclick="createAttributForm()"
-                                class="btn btn-primary primary-button w-100"><i class="fa fa-plus-square"
-                                    aria-hidden="true"></i> Ajouter</button>
-                            <div id="newAttributeContainer"></div>
-                        </div>
-                    </div>
-                    <div class="row card-holder">
-                        <div class="col-12">
-                            <h5>Interventions</h5>
-                            <div class="row">
-                                <p id="interventionsTopName" class="h6"></p>
-                                <div id="interventionsTopContainer" class="container"></div>
-                            </div>
-                            <hr class="my-2">
-                            <div class="row">
-                                <p id="interventionsBottomName" class="h6"></p>
-                                <div id="interventionsBottomContainer" class="container"></div>
-                            </div>
 
-                            <button id="newInterventionButton" type="button" onclick="createInterventionForm()"
-                                class="btn btn-primary primary-button w-100"><i class="fa fa-plus-square"
-                                    aria-hidden="true"></i> Ajouter</button>
-                            <div id="newInterventionContainer"></div>
-                        </div>
-                    </div>
+                    <!-- Interventions table will be inserted here dynamically by InterventionTable.setupDiv() -->
+
                     <div class="row">
                         <div class="col-12">
                             <button type="button"
@@ -260,9 +197,7 @@
                 <small>11 mins ago</small>
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
-            <div class="toast-body">
-            Hello, world! This is a toast message.
-            </div>
+            <div class="toast-body"></div>
         </div>
     </div>
 
@@ -377,7 +312,7 @@
                                 <label for="stepsTitle" class="form-label">Titre des étapes de la rotation</label>
                                 <input type="text" class="form-control" id="stepsTitle" value="Étapes de la rotation dans la parcelle">
                             </div>
-                            <div class="mb-3 d-none" id="codeSnippetDiv">
+                            <div class="mb-3" id="codeSnippetDiv" style="display:none;">
                                 <label for="code-snippet" class="form-label">Code à insérer dans la page</label>
                                 <textarea readonly class="form-control-plaintext" id="code-snippet" rows="5"></textarea>
                             </div>
@@ -435,715 +370,30 @@
         </div>
     </div>
     </div>  
+<script>
+    // Initialize the TikaEditor
+    let tikaEditor;
+    
+    // Initialize editor when DOM is ready
+    $(document).ready(function() {
+        tikaEditor = new TikaEditor();
+        tikaEditor.initialize();
+    });
+
+    function renderChart() {
+        if (tikaEditor) {
+            tikaEditor.renderChart();
+        }
+    }
+
+    function addNewStepClickEvent() {
+        if (tikaEditor) {
+            tikaEditor.addNewStepClickEvent();
+        }
+    }
+
+</script>
+
 </body>
 
 </html>
-
-<script>
-
-    const DEFAULT_TITLE = "Nouvel itinéraire technique";
-
-    let crops = {
-        "title": DEFAULT_TITLE,
-        "options": {
-            "view": "horizontal",
-            "show_transcript": true,
-            "title_top_interventions": "Contrôle adventices",
-            "title_bottom_interventions": "Autres interventions",
-            "title_steps": "Étapes de la rotation dans la parcelle",
-            "region": "France"
-        },
-        "steps": []
-    };
-
-    let selectedStep; // an instance of Crop
-    let we; // WikiEditor instance
-
-    initializeOptions();
-
-    function initializeOptions() {
-        document.getElementById("title").textContent = crops.title;
-        document.getElementById("interventionsTopName").textContent = crops.options.title_top_interventions;
-        document.getElementById("interventionsBottomName").textContent = crops.options.title_bottom_interventions;
-
-        attachCropInputListeners();
-        enableTitleEditing();
-
-        $('.close-step-button').click(function() {
-            // Set the current step to be fully edited now:
-            selectedStep.setAsEdited();
-
-            displayCropListView();
-        });
-       
-        $(function() {
-            $('#cropForm').on('keydown', function(e) {
-                // Prevent form submit on Enter, but allow Enter in textarea
-                if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
-                    e.preventDefault();
-                    return false;
-                }
-            });
-        });
-
-        // Make cropsContainer sortable
-        $("#cropsContainer").sortable({
-            handle: '.drag-handle',
-            axis: 'y',
-            update: function (event, ui) {
-                // Set new order
-                let movedStepId = ui.item.data('id');
-                let lastStepEnd = null;
-
-                let newOrder = [];
-                $(event.target).children('.step-row').each(function () {
-                    let id = $(this).data('id');
-
-                    let step = crops.steps.find(function (crop) { return crop.id == id });
-
-                    if (movedStepId == id) {
-                        let movedStep = new StepModel(step);
-                        let duration = movedStep.getDurationInDays();
-
-                        if (lastStepEnd != null) { 
-                            lastStepEnd.setDate(lastStepEnd.getDate() + 1);
-
-                            movedStep.setStartDate(lastStepEnd);
-                            movedStep.setDurationInDays(duration);
-                        } else {
-                            // This is the first step in the list, set its start date before the previously first step start date
-                            let nextStep = crops.steps[0];
-                            let newStartDate = new Date(nextStep.startDate.valueOf());
-                            newStartDate.setDate(newStartDate.getDate() - duration);
-                            movedStep.setStartDate(newStartDate);
-                            movedStep.setDurationInDays(duration);
-                        }
-
-                        step = movedStep.getStep();
-                    }
-                    else {
-                        lastStepEnd = new Date(step.endDate.valueOf());
-                    }
-
-                    newOrder.push(step);
-                });
-
-                crops.steps = newOrder;
-
-                refreshAllTables();
-            }
-        });
-
-
-        $('#modalParams').on('show.bs.modal', function (event) {
-
-            // Set the modal form inputs values from crops.options
-            $("#viewSelect").val(crops.options.view);
-            $("#showTranscriptCheckbox").prop("checked", crops.options.show_transcript);
-            $("#topInterventionsTitle").val(crops.options.title_top_interventions);
-            $("#bottomInterventionsTitle").val(crops.options.title_bottom_interventions);
-            $("#stepsTitle").val(crops.options.title_steps);
-            $("#regionInput").val(crops.options.region ?? "France");
-            $("#addressInput").val(crops.options.address ?? "");
-            $("#latitudeInput").val(crops.options.latitude ?? "");
-            $("#longitudeInput").val(crops.options.longitude ?? "");
-            
-            // Load ombrothermic data from climate_data if present
-            let hasClimateData = crops.options.climate_data && 
-                                 crops.options.climate_data.temperatures && 
-                                 crops.options.climate_data.precipitations;
-            
-            // Check the checkbox if show_climate_diagram is explicitly true OR if climate_data exists
-            let showDiagram = crops.options.show_climate_diagram === true;
-            $("#ombroCheck").prop("checked", showDiagram);
-            
-            if (hasClimateData) {
-                let tempLine = crops.options.climate_data.temperatures.join(' ');
-                let precipLine = crops.options.climate_data.precipitations.join(' ');
-                $("#ombroData").val(tempLine + '\n' + precipLine);
-            } else {
-                $("#ombroData").val("");
-            }
-            
-            // Enable/disable textarea based on checkbox state
-            $("#ombroData").prop("disabled", !showDiagram);
-        });
-        
-        // Add event listener to toggle textarea when checkbox changes
-        $("#ombroCheck").on("change", function() {
-            $("#ombroData").prop("disabled", !this.checked);
-        });
-        
-        // Update Google Maps link when coordinates change
-        function updateGoogleMapsLink() {
-            const lat = $("#latitudeInput").val().trim();
-            const lon = $("#longitudeInput").val().trim();
-            
-            if (lat && lon && !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lon))) {
-                const mapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
-                $("#googleMapsLink a").attr("href", mapsUrl);
-                $("#googleMapsLink").show();
-            } else {
-                $("#googleMapsLink").hide();
-            }
-        }
-        
-        // Attach listeners to lat/long inputs
-        $("#latitudeInput, #longitudeInput").on("input change", updateGoogleMapsLink);
-        
-        // Update link when modal opens
-        $('#modalParams').on('shown.bs.modal', function() {
-            updateGoogleMapsLink();
-        });
-        
-        // Location search button handler
-        $("#searchLocationBtn").on("click", function() {
-            const address = $("#addressInput").val().trim();
-            
-            if (!address) {
-                $("#locationSearchStatus").html('<span class="text-warning">Veuillez entrer une adresse</span>');
-                return;
-            }
-            
-            // Show loading state
-            $("#searchLocationBtn").prop("disabled", true);
-            $("#locationSearchStatus").html('<i class="fa fa-spinner fa-spin"></i> Recherche en cours...');
-            
-            $.ajax({
-                url: "https://itk-info.tripleperformance.fr/api/location",
-                method: "POST",
-                contentType: "application/json",
-                data: JSON.stringify({ address: address }),
-                success: function(data) {
-                    console.log("Location data received:", data);
-                    
-                    // Populate latitude and longitude
-                    if (data.latitude && data.longitude) {
-                        $("#latitudeInput").val(data.latitude);
-                        $("#longitudeInput").val(data.longitude);
-                        updateGoogleMapsLink();
-                    }
-                    
-                    // Populate climate data if available
-                    if (data.monthly_temperatures && data.monthly_rainfall) {
-                        let tempLine = data.monthly_temperatures.join(' ');
-                        let precipLine = data.monthly_rainfall.join(' ');
-                        $("#ombroData").val(tempLine + '\n' + precipLine);
-                        $("#ombroCheck").prop("checked", true);
-                        $("#ombroData").prop("disabled", false);
-                    }
-                    
-                    // Show success message
-                    let message = '<span class="text-success">✓ Coordonnées trouvées';
-                    if (data.source_explanation) {
-                        message += ' — ' + data.source_explanation;
-                    }
-                    message += '</span>';
-                    $("#locationSearchStatus").html(message);
-                },
-                error: function(err) {
-                    console.error("Location search error:", err);
-                    $("#locationSearchStatus").html('<span class="text-danger">Erreur lors de la recherche</span>');
-                },
-                complete: function() {
-                    $("#searchLocationBtn").prop("disabled", false);
-                }
-            });
-        });
-
-        $("#paramsModalSaveButton").click(function () {
-            crops.options.view = $("#viewSelect").val();
-            crops.options.show_transcript = $("#showTranscriptCheckbox").prop("checked");
-            crops.options.title_top_interventions = $("#topInterventionsTitle").val();
-            crops.options.title_bottom_interventions = $("#bottomInterventionsTitle").val();
-            crops.options.title_steps = $("#stepsTitle").val();
-            crops.options.region = $("#regionInput").val();
-            crops.options.address = $("#addressInput").val().trim();
-            crops.options.latitude = $("#latitudeInput").val().trim();
-            crops.options.longitude = $("#longitudeInput").val().trim();
-            
-            // Convert ombrothermic data to climate_data object
-            let ombroEnabled = $("#ombroCheck").prop("checked");
-            
-            if (ombroEnabled) {
-                crops.options.show_climate_diagram = true;
-                
-                let ombroText = $("#ombroData").val().trim();
-                let lines = ombroText.split('\n');
-                
-                if (lines.length >= 2) {
-                    let temperatures = lines[0].trim().split(/\s+/).map(v => parseFloat(v)).filter(v => !isNaN(v));
-                    let precipitations = lines[1].trim().split(/\s+/).map(v => parseFloat(v)).filter(v => !isNaN(v));
-                    
-                    if (temperatures.length > 0 && precipitations.length > 0) {
-                        crops.options.climate_data = {
-                            temperatures: temperatures,
-                            precipitations: precipitations
-                        };
-                    } else {
-                        delete crops.options.climate_data;
-                    }
-                } else {
-                    delete crops.options.climate_data;
-                }
-            } else {
-                crops.options.show_climate_diagram = false;
-            }
-
-            // Close the modal:
-            let modal = bootstrap.Modal.getInstance(document.getElementById('modalParams'));
-            modal.hide();
-
-            refreshAllTables();
-        });
-    }
-
-    // On page load, create WikiEditor instance
-    $(document).ready(function() {
-
-        // If we are in a wiki (the domain contains "tripleperformance.ag or tripleperformance.fr" then show the Wiki buttons
-        if (window.location.hostname.includes("tripleperformance.ag") || window.location.hostname.includes("tripleperformance.fr")) {
-            document.getElementById("WikiButtons").classList.remove("d-none");
-            document.getElementById("NonWikiButtons").classList.add("d-none");
-
-            we = new WikiEditor();
-            we.loadPageFromURL();
-
-            // Set up Save As modal event listeners
-            $('#saveAsUseExistingPage').on('change', function() {
-                $('#saveAsPageSelect').prop('disabled', !this.checked);
-            });
-
-            $('#saveAsConfirmBtn').on('click', function() {
-                if (we) {
-                    we.saveAs();
-                }
-            });
-        } else if (window.location.hostname.includes("itinera.ag") || window.location.hostname.includes("localhost")) {
-            // If we are in Itinera - the domain is *.itinera.ag
-            document.getElementById("ItineraButtons").classList.remove("d-none");
-            document.getElementById("NonWikiButtons").classList.add("d-none");
-            document.getElementById("wipe-button").classList.add("d-none");
-
-            we = new ItineraEditor();
-            we.loadPageFromURL();
-
-            // Set up Save As modal event listeners
-            $('#saveAsUseExistingPage').on('change', function() {
-                $('#saveAsPageSelect').prop('disabled', !this.checked);
-            });
-
-            $('#saveAsConfirmBtn').on('click', function() {
-                if (we) {
-                    we.saveAs();
-                }
-            });
-
-
-        } else {
-            document.getElementById("WikiButtons").classList.add("d-none");
-            document.getElementById("NonWikiButtons").classList.remove("d-none");
-        }
-    });
-
-    // Global wrapper function for loadFromWiki
-    function loadFromWiki() {
-        if (typeof we !== 'undefined') {
-            showConfirmationModal(() => {
-                we.loadFromWiki();
-            });
-        } else {
-            console.error('WikiEditor instance not available');
-        }
-    }
-    
-    function saveToWiki() {
-        if (typeof we !== 'undefined') {
-            we.saveToWiki();
-        } else {
-            console.error('WikiEditor instance not available');
-        }
-    }
-
-    function saveToItinera() {
-        if (typeof we !== 'undefined') {
-            we.saveToItinera();
-        } else {
-            console.error('Itinera not available');
-        }
-    }
-
-    function showSaveAsModal() {
-        if (typeof we !== 'undefined') {
-            we.showSaveAsModal();
-        } else {
-            console.error('WikiEditor instance not available');
-        }
-    }
-
-    class StepModel {
-        constructor(step) {
-            this.step = step; // keep a reference to the original object
-
-            this.step.id = step.id ?? crypto.randomUUID();
-            this.step.name = step.name ?? "";
-            this.step.color = step.color ?? "#0db3bf";
-            this.step.startDate = step.startDate ? new Date(step.startDate) : new Date();
-            this.step.endDate = step.endDate ? new Date(step.endDate) : new Date();
-            this.step.description = step.description ?? "";
-            this.step.interventions = step.interventions?.map(i => new Intervention(i.day, i.name, i.type, i.description)) || [];
-            this.step.attributes = step.attributes?.map(a => new Attribute(a.name, a.value)) || [];
-            this.step.secondary_crop = step.secondary_crop ?? false;
-
-            this.step.useDefaultColor = step.useDefaultColor ?? true;
-            this.step.useDefaultStartDate = step.useDefaultStartDate ?? true;
-            this.step.useDefaultEndDate = step.useDefaultEndDate ?? true;
-        }
-
-        setAsEdited() {
-            this.step.useDefaultColor = false;
-            this.step.useDefaultStartDate = false;
-            this.step.useDefaultEndDate = false;
-        }
-
-        getStep() {
-            return this.step;
-        }
-
-        setStartDate(date) {
-            this.step.startDate = new Date(date);
-        }
-
-        setDurationInMonths(durationInMonths) {
-            this.step.endDate = new Date(this.step.startDate);
-            this.step.endDate.setMonth(this.step.startDate.getMonth() + durationInMonths);
-        }
-
-        setDurationInDays(durationInDays) {
-            this.step.endDate = new Date(this.step.startDate);
-            this.step.endDate.setDate(this.step.startDate.getDate() + durationInDays);
-        }
-
-        getDurationInDays() {
-            const diffTime = Math.abs(this.step.endDate - this.step.startDate);
-            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        }
-
-        addIntervention(day, name, type, description) {
-            let intervention = new Intervention(day, name, type, description);
-            this.step.interventions.push(intervention);
-        }
-
-        addAttribute(key, value) {
-            let attribute = new Attribute(key, value);
-            this.step.attributes.push(attribute);
-        }
-
-        updateAttribute(attributeId, key, value) {
-            this.step.attributes = this.step.attributes.map(function (attribute) {
-                if (attribute.id == attributeId) {
-                    attribute.name = key;
-                    attribute.value = value;
-                }
-                return attribute;
-            });
-        }
-
-        removeAttribute(attributeId) {
-            this.step.attributes = this.step.attributes.filter(function (attribute) { return attribute.id != attributeId });
-        }
-
-        updateIntervention(interventionId, day, name, type, description) {
-            let intervention = this.step.interventions.find((it) => it.id == interventionId);
-
-            if (intervention != undefined) {
-                intervention.day = day;
-                intervention.name = name;
-                intervention.type = type;
-                intervention.description = description;
-            }
-        }
-
-        removeIntervention(interventionId) {
-            this.step.interventions = this.step.interventions.filter(function (intervention) { return intervention.id != interventionId });
-        }
-
-        updateFromForm() {
-            this.step.name = getInputValue("cropName");
-            this.step.description = getInputValue("cropDescription");
-            this.step.startDate = new Date(getInputValue("cropStartDate"));
-            this.step.endDate = new Date(getInputValue("cropEndDate"));
-            this.step.color = getInputValue("cropColor");
-            this.step.secondary_crop = document.getElementById("cropSecondary").checked;
-        }
-    }
-
-    class Intervention {
-        constructor(day, name, type, description) {
-            this.id = crypto.randomUUID();
-            this.day = day;
-            this.name = name || "";
-            this.type = type;
-            this.description = description || "";
-        }
-    }
-
-    class Attribute {
-        constructor(name, value) {
-            this.id = crypto.randomUUID();
-            this.name = name || "";
-            this.value = value || "";
-        }
-    }
-    
-    function updateSelectedStepColor() {
-        selectedStep.step.useDefaultColor = false;
-
-        selectedStep.updateFromForm();
-
-        refreshAllTables();
-    }
-
-    function updateSelectedStepStartDate() {
-        selectedStep.step.useDefaultStartDate = false;
-
-        selectedStep.updateFromForm();
-
-        refreshAllTables();
-    }
-
-    
-    function updateSelectedStepEndDate() {
-        selectedStep.step.useDefaultEndDate = false;
-
-        selectedStep.updateFromForm();
-
-        refreshAllTables();
-    }
-
-    function updateSelectedStep() {
-        selectedStep.updateFromForm();
-
-        refreshAllTables();
-    }
-
-    function getInputValue(elementId) {
-        return document.getElementById(elementId).value;
-    }
-
-    function setInputValue(elementId, value) {
-        document.getElementById(elementId).value = value;
-    }
-
-    function refreshAllTables() {
-        refreshStepsButtonList();
-        refreshAttributesTable();
-        refreshInterventionsTable();
-        renderChart();
-    }
-
-    function displayView(viewsToShow, viewsToHide) {
-        viewsToShow.forEach(view => document.querySelector(view).classList.remove("d-none"));
-        viewsToHide.forEach(view => document.querySelector(view).classList.add("d-none"));
-    }
-
-    function displayCropDetailView() {
-        displayView(["#cropDetailView"], ["#welcomeView", "#cropListView"]);
-    }
-
-    function displayCropListView() {
-        displayView(["#cropListView"], ["#welcomeView", "#cropDetailView"]);
-    }
-
-    function renderChart() {
-        let renderer = new RotationRenderer('itk', crops);
-        renderer.render();
-
-        $('.step-edit').click(function (event) {
-            event.stopPropagation();
-            let stepId = renderer.getElementID(event.target.closest('.rotation_item'));;
-            
-            let index = stepId.split('_')[1];
-            selectedStep = new StepModel(crops.steps[index]);
-            // populateCropDetailView(selectedStep);
-            // displayCropDetailView();
-            SelectStep(selectedStep);
-        });
-    }
-
-    function getRotationEndDate() {
-        let latestEndDate = null;
-        crops.steps.forEach(function (crop) {
-            if (latestEndDate == null || crop.endDate > latestEndDate) {
-                latestEndDate = crop.endDate;
-            }
-        });
-
-        // Clone the date to avoid reference issues
-        if (latestEndDate == null)
-            latestEndDate = new Date();
-        else {
-            latestEndDate = new Date(latestEndDate.valueOf());
-
-            // Move to the next day
-            latestEndDate.setDate(latestEndDate.getDate() + 1);
-        }
-
-        return latestEndDate;
-    }
-
-    function addEditAndRemoveButtons(rowDiv, deleteId, editFunction, deleteFunction, duplicateFunction, style="btn-group") {
-        rowDiv = $(rowDiv);
-
-        let actionContainer = $(`<div class="col-auto edit-buttons m-1 ${style}" role="group"></div>`);
-
-        rowDiv.append(actionContainer);
-
-        actionContainer.append($('<button class="edit-button btn btn-outline-primary p-2"><i class="fa fa-pencil"></i></button>').click(function(event) {
-            event.stopPropagation(); // Prevent other onclick events from triggering
-            editFunction();
-        }));
-
-        rowDiv.find('.col').click(function(event) {
-            event.stopPropagation(); // Prevent other onclick events from triggering
-            editFunction();
-        });
-
-        if (duplicateFunction != null) {
-            actionContainer.append($('<button class="btn btn-outline-secondary p-2"><i class="fa fa-copy"></i></button>').click(function (event) {
-                event.stopPropagation(); // Prevent other onclick events from triggering
-                duplicateFunction(deleteId);
-            }));
-        }
-
-        actionContainer.append($('<button class="btn btn-outline-danger p-2"><i class="fa fa-trash"></i></button>').click(function (event) {
-            event.stopPropagation(); // Prevent other onclick events from triggering
-            deleteFunction(deleteId);
-        }));
-    }
-
-    function getAndCleanElement(elementId) {
-        let element = document.getElementById(elementId);
-        element.innerHTML = "";
-        return element;
-    }
-
-    function reloadCropsFromJson(cropsFromJson) {
-        console.log("Données JSON importées :", cropsFromJson);
-
-        crops = cropsFromJson;
-
-        initializeOptions();
-        refreshAllTables();
-        displayCropListView();
-    }
-
-    function getChatGPTInfoFromCropName() {
-
-        if (selectedStep.step.useDefaultColor == false &&
-            selectedStep.step.useDefaultStartDate == false &&
-            selectedStep.step.useDefaultEndDate == false) {
-            // If the user has modified all fields, do not call the API again
-            $('#itk-api-comment').text('');
-            console.log("All fields modified by user, skipping API call");
-            return;
-        }
-
-        let newCropName = $("#cropName").val();
-
-        $('#itk-api-comment').html('<i class="fa fa-spinner fa-spin"></i> ...');
-
-        $.ajax({
-            url: "https://itk-info.tripleperformance.fr/api/culture",
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify({
-                culture: newCropName,
-                region: crops.options.region ?? "France"
-            }),
-            success: function(data) {
-                console.log("Réponse:", data);
-                    
-                if (data.color_hex && selectedStep.step.useDefaultColor) {
-                    setInputValue("cropColor", data.color_hex);
-                    updateSelectedStep();
-                }
-        
-                let startDate = getRotationEndDate();
-                if (data.average_sowing_date && selectedStep.step.useDefaultStartDate) {
-                    // data.average_sowing_date is in MM-DD format, we need to convert it to YYYY-MM-DD
-                    // for the current year
-                    let currentYear = startDate.getFullYear();
-                    startDate = new Date(`${currentYear}-${data.average_sowing_date}`);
-                    // If the start date is before today, it means the crop starts next year
-                    if (startDate < new Date()) {
-                        startDate.setFullYear(startDate.getFullYear() + 1);
-                    }
-                    setInputValue("cropStartDate", startDate.toISOString().split('T')[0]);
-                    updateSelectedStep();
-                }
-
-                if (data.end_of_season && selectedStep.step.useDefaultEndDate) {
-                    // data.end_of_season is in MM-DD format, we need to convert it to YYYY-MM-DD
-                    // for the current year
-                    let currentYear = startDate.getFullYear();
-                    let endDate = new Date(`${currentYear}-${data.end_of_season}`);
-                    // If the end date is before the start date, it means the crop ends the next year
-                    if (endDate < startDate) {
-                        endDate.setFullYear(startDate.getFullYear() + 1);
-                    }
-
-                    setInputValue("cropEndDate", endDate.toISOString().split('T')[0]);
-                    updateSelectedStep();
-                }
-                  
-                if (data.source_explanation) {
-                    $('#itk-api-comment').text(data.source_explanation);
-                } else {
-                    $('#itk-api-comment').text('');
-                }
-
-                // {
-                //     "culture": "Colza",
-                //     "region": "France",
-                //     "average_sowing_date": "08-15",
-                //     "end_of_season": "07-15",
-                //     "color_hex": "#FFD700",
-                //     "confidence": "high",
-                //     "source_explanation": "Colza is typically sown in late summer and harvested in mid-summer in France."
-                // }
-
-            },
-            error: function(err) {
-                console.error("Erreur:", err);
-            }
-        });        
-    }
-
-    function attachCropInputListeners() {
-        $("#cropName").on("input", _.debounce(getChatGPTInfoFromCropName, 1000));
-
-        $("#cropName").on("input", _.debounce(updateSelectedStep, 500));
-        $("#cropDescription").on("input", _.debounce(updateSelectedStep, 500));
-        $("#cropStartDate").on("change", _.debounce(updateSelectedStepStartDate, 500));
-        $("#cropEndDate").on("change", _.debounce(updateSelectedStepEndDate, 500));
-        $("#cropColor").on("input", _.debounce(updateSelectedStepColor, 500));
-        $("#cropSecondary").on("change", _.debounce(updateSelectedStep, 500));
-    }
-
-    function enableTitleEditing() {
-        document.getElementById("title").addEventListener("blur", function () {
-            if (this.textContent.trim() === "") {
-                this.textContent = DEFAULT_TITLE;
-            }
-
-            crops.title = this.textContent;
-            crops.defaultTitle = false;
-        });
-    }
-
-    function doExportToJsonFile() {
-        let jsonName = crops.title.replace(/\s+/g, '-').toLowerCase() + ".json";
-        exportToJsonFile(crops, jsonName);
-    }
-</script>

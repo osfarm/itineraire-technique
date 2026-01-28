@@ -1,8 +1,38 @@
 // Encapsulate the wiki editor functionality
-class ItineraEditor {
-    constructor() {
+class ItineraLoader extends DefaultLoader {
+    constructor(tikaeditorInstance = null) {
+        super(tikaeditorInstance);
+
         // Initialize any properties if needed
         this.systemID = null;
+    }
+
+    /**
+     * Setup the Itinera buttons dynamically in the toolbar
+     */
+    setupButtons() {
+        const self = this;
+        const container = '#toolbar-buttons-container';
+        
+        // Create the ItineraButtons div structure
+        const itineraButtonsDiv = $(`
+            <div id="ItineraButtons" class="">
+                <button type="button" class="btn btn-outline-primary primary-button btn-save-itinera">
+                    <i class="fa fa-download" aria-hidden="true"></i> Enregistrer dans Itinera
+                </button>
+            </div>
+        `);
+        
+        // Clear container and append the new buttons
+        $(container).empty().append(itineraButtonsDiv);
+        
+        // Attach event handler
+        itineraButtonsDiv.find('.btn-save-itinera').on('click', function(e) {
+            e.preventDefault();
+            self.saveToItinera();
+        });
+        
+        // Don't add wipe button in Itinera mode
     }
 
     /**
@@ -36,13 +66,13 @@ class ItineraEditor {
                         sm.setAsEdited();
                     });
                     
-                    reloadCropsFromJson(content);
+                    self.tikaeditorInstance.reloadCropsFromJson(content);
 
                     let codeSnippet = `{{Graphique Triple Performance \n| title=${content.title} \n| json=${self.systemID} \n| type=Rotation }}`;
                     $('#code-snippet').val(codeSnippet).on('focus', function() {
                         $(this).select();
                     });
-                    $('#codeSnippetDiv').removeClass('d-none');
+                    $('#codeSnippetDiv').show();
                     
 
                 } catch (e) {
@@ -77,7 +107,7 @@ class ItineraEditor {
             },
             credentials: 'same-origin',
             body: JSON.stringify({
-                json: crops
+                json: self.tikaeditorInstance.system
             })
         });
 
