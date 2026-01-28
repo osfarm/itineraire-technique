@@ -22,7 +22,11 @@ class TikaEditor {
 
         this.selectedStep = null; // Current step being edited
         this.editorLoader = null; // WikiLoader or ItineraLoader instance
-        this.InterventionTableManager = new InterventionTable(this.system.options.title_top_interventions, this.system.options.title_bottom_interventions);
+        this.InterventionTableManager = new InterventionTable(
+            this.system.options.title_top_interventions,
+            this.system.options.title_bottom_interventions,
+            this
+        );
     }
 
     /**
@@ -378,7 +382,6 @@ class TikaEditor {
      */
     refreshAllTables() {
         this.refreshStepsButtonList();
-        // refreshInterventionsTable();
         this.renderChart();
     }
 
@@ -566,6 +569,10 @@ class TikaEditor {
         this.createAndSelectEmptyCrop();
         this.loadSelectedStepToEditor(this.selectedStep);
         this.showStepEditor();
+
+        this.InterventionTableManager.setupDiv();
+        this.InterventionTableManager.refreshInterventionsTable(this.selectedStep);
+                
         this.refreshAllTables();
     }
 

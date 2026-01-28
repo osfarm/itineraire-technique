@@ -4,10 +4,11 @@
 class InterventionTable {
 
     // Constructor
-    constructor(interventionsTopTitle, interventionsBottomTitle) {
+    constructor(interventionsTopTitle, interventionsBottomTitle, tikaEditorInstance) {
         this.selectedStep = null;
         this.interventionsTopTitle = interventionsTopTitle;
         this.interventionsBottomTitle = interventionsBottomTitle;
+        this.tikaEditorInstance = tikaEditorInstance;
     }
 
     /**
@@ -129,7 +130,7 @@ class InterventionTable {
             function(id) {
                 self.selectedStep.removeIntervention(id);
                 $(`#interventionRow_${id}`).remove();
-                renderChart();
+                self.tikaEditorInstance.renderChart();
             },
             function(id) {
                 const newIntervention = self.duplicateIntervention(id);
@@ -139,7 +140,7 @@ class InterventionTable {
                 } else {
                     $("#interventionsBottomContainer").append(div);
                 }
-                renderChart();
+                self.tikaEditorInstance.renderChart();
             },
             'btn-group-vertical'
         );
@@ -264,7 +265,7 @@ class InterventionTable {
                 formContainer.remove();
             }            
 
-            renderChart();
+            self.tikaEditorInstance.renderChart();
         });
         
         if (row) { //we are editing an intervention
