@@ -6,6 +6,7 @@ class InterventionTable {
     // Constructor
     constructor(interventionsTopTitle, interventionsBottomTitle, tikaEditorInstance) {
         this.selectedStep = null;
+        
         this.interventionsTopTitle = interventionsTopTitle;
         this.interventionsBottomTitle = interventionsBottomTitle;
         this.tikaEditorInstance = tikaEditorInstance;
