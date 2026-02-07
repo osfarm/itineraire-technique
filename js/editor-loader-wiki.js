@@ -142,7 +142,7 @@ class WikiLoader extends DefaultLoader {
 
                 if (data.error.code == "missingtitle") {
                     // The page doesn't exist yet, we can start with a blank rotation
-                    wipe();
+                    self.wipe();
                 } else {
                     console.error("Erreur lors du chargement de la page :", data);
                     $('#jsonErrorMessage').text("Impossible de charger le contenu de la page.");

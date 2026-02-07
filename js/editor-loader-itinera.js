@@ -45,17 +45,39 @@ class ItineraLoader extends DefaultLoader {
 
         const urlParams = new URLSearchParams(window.location.search);
         self.systemID = urlParams.get('itinera');
+        const uuid = urlParams.get('uuid');
 
         if (!self.systemID)
             return; // No page title provided, we are not in wiki edit mode
 
+        // Build API URL with UUID if provided
+        const apiUrl = uuid 
+            ? `/api/systems/${encodeURIComponent(self.systemID)}?uuid=${encodeURIComponent(uuid)}`
+            : `/api/systems/${encodeURIComponent(self.systemID)}`;
+
         // If a page title is provided, load its content from /api/systems/1
-        fetch(`/api/systems/${encodeURIComponent(self.systemID)}`, {
+        fetch(apiUrl, {
             credentials: 'same-origin'
         })
         .then(response => {
             let res = response.json();
             return res;
+        })
+        .then(data => {
+            // Handle redirect response (only if UUID wasn't already in URL)
+            if (!uuid && data.shouldRedirect && data.redirectTo) {
+                // Extract UUID from redirectTo path (format: /project/22/UUID)
+                const pathParts = data.redirectTo.split('/');
+                const redirectUuid = pathParts[pathParts.length - 1];
+                
+                if (redirectUuid) {
+                    // Retry with UUID parameter
+                    return fetch(`/api/systems/${encodeURIComponent(self.systemID)}?uuid=${redirectUuid}`, {
+                        credentials: 'same-origin'
+                    }).then(response => response.json());
+                }
+            }
+            return data;
         })
         .then(data => {
             if (data.json) {
@@ -82,7 +104,7 @@ class ItineraLoader extends DefaultLoader {
                     jsonErrorModal.show();
                 }
             } else {
-                wipe();
+                self.wipe();
             }
         });
     
@@ -110,16 +132,17 @@ class ItineraLoader extends DefaultLoader {
                 json: self.tikaeditorInstance.system
             })
         });
+        const toast = $('#liveToast');
+
+        // Update the time and message
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        toast.find('small').text(`${hours}:${minutes}`);
 
         if (response.ok) {
             // Successfully saved - show a toast
-            const toast = $('#liveToast');
 
-            // Update the time and message
-            const now = new Date();
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            toast.find('small').text(`${hours}:${minutes}`);
             toast.find('.toast-body').text('Sauvegardé dans Itinéra !');
 
             const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toast);
@@ -127,8 +150,11 @@ class ItineraLoader extends DefaultLoader {
             
         } else {
             // Error saving
-            const errorModal = new bootstrap.Modal(document.getElementById('saveErrorModal'));
-            errorModal.show();
+
+            toast.find('.toast-body').text("Erreur lors de la sauvegarde dans Itinéra.\n" + response.statusText);
+
+            const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toast);
+            toastBootstrap.show();
         }
     }
 
