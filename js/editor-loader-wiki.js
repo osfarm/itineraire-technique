@@ -383,6 +383,7 @@ class WikiLoader extends DefaultLoader {
      * Build the URL for saving based on the save as modal selections
      */
     buildSaveAsUrl() {
+        const self = this;
         const useExistingPage = $('#saveAsUseExistingPage').prop('checked');
         const selectedPage = $('#saveAsPageSelect').val();
         const filename = $('#saveAsFilename').val().trim();
