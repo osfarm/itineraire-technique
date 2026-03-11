@@ -312,18 +312,18 @@ class TikaEditor {
         const self = this;
         $(document).ready(function() {
             // If we are in a wiki (the domain contains "tripleperformance.ag or tripleperformance.fr" then show the Wiki buttons
-            if (window.location.hostname.includes("tripleperformance.ag") || window.location.hostname.includes("tripleperformance.fr")) {
-
-                // Hide NonWikiButtons
-                self.editorLoader = new WikiLoader(self);
-                self.editorLoader.setupButtons();
-                self.editorLoader.loadPageFromURL();
-
-            } else if (window.location.hostname.includes("itinera.ag") || 
-                      (window.location.hostname.includes("localhost") && window.location.search.includes("itinera")) ) {
+            if ((window.location.hostname.includes("itinera") || window.location.hostname.includes("localhost")) 
+                && window.location.search.includes("itinera") ) {
 
                 // If we are in Itinera - the domain is *.itinera.ag or localhost with a itinera param
                 self.editorLoader = new ItineraLoader(self);
+                self.editorLoader.setupButtons();
+                self.editorLoader.loadPageFromURL();
+
+            } else if (window.location.hostname.includes("tripleperformance.ag") || window.location.hostname.includes("tripleperformance.fr")) {
+
+                // Hide NonWikiButtons
+                self.editorLoader = new WikiLoader(self);
                 self.editorLoader.setupButtons();
                 self.editorLoader.loadPageFromURL();
 
