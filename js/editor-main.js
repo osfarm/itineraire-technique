@@ -5,7 +5,7 @@
 class TikaEditor {
     constructor() {
         this.DEFAULT_TITLE = "Nouvel itinéraire technique";
-        
+
         // Initialize the crops data structure
         this.system = {
             "title": this.DEFAULT_TITLE,
@@ -48,7 +48,6 @@ class TikaEditor {
         this.enableTitleEditing();
         this.setupCloseStepButtons();
         this.setupCropFormKeydown();
-        this.setupCropsSortable();
         this.setupParamsModal();
     }
 
@@ -101,7 +100,7 @@ class TikaEditor {
                         let movedStep = new StepModel(step);
                         let duration = movedStep.getDurationInDays();
 
-                        if (lastStepEnd != null) { 
+                        if (lastStepEnd != null) {
                             lastStepEnd.setDate(lastStepEnd.getDate() + 1);
 
                             movedStep.setStartDate(lastStepEnd);
@@ -135,7 +134,7 @@ class TikaEditor {
      */
     setupParamsModal() {
         const self = this;
-        
+
         $('#modalParams').on('show.bs.modal', function (event) {
             // Set the modal form inputs values from crops.options
             $("#viewSelect").val(self.system.options.view);
@@ -147,16 +146,16 @@ class TikaEditor {
             $("#addressInput").val(self.system.options.address ?? "");
             $("#latitudeInput").val(self.system.options.latitude ?? "");
             $("#longitudeInput").val(self.system.options.longitude ?? "");
-            
+
             // Load ombrothermic data from climate_data if present
-            let hasClimateData = self.system.options.climate_data && 
-                                 self.system.options.climate_data.temperatures && 
+            let hasClimateData = self.system.options.climate_data &&
+                                 self.system.options.climate_data.temperatures &&
                                  self.system.options.climate_data.precipitations;
-            
+
             // Check the checkbox if show_climate_diagram is explicitly true OR if climate_data exists
             let showDiagram = self.system.options.show_climate_diagram === true;
             $("#ombroCheck").prop("checked", showDiagram);
-            
+
             if (hasClimateData) {
                 let tempLine = self.system.options.climate_data.temperatures.join(' ');
                 let precipLine = self.system.options.climate_data.precipitations.join(' ');
@@ -164,21 +163,21 @@ class TikaEditor {
             } else {
                 $("#ombroData").val("");
             }
-            
+
             // Enable/disable textarea based on checkbox state
             $("#ombroData").prop("disabled", !showDiagram);
         });
-        
+
         // Add event listener to toggle textarea when checkbox changes
         $("#ombroCheck").on("change", function() {
             $("#ombroData").prop("disabled", !this.checked);
         });
-        
+
         // Update Google Maps link when coordinates change
         function updateGoogleMapsLink() {
             const lat = $("#latitudeInput").val().trim();
             const lon = $("#longitudeInput").val().trim();
-            
+
             if (lat && lon && !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lon))) {
                 const mapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
                 $("#googleMapsLink a").attr("href", mapsUrl);
@@ -187,28 +186,28 @@ class TikaEditor {
                 $("#googleMapsLink").hide();
             }
         }
-        
+
         // Attach listeners to lat/long inputs
         $("#latitudeInput, #longitudeInput").on("input change", updateGoogleMapsLink);
-        
+
         // Update link when modal opens
         $('#modalParams').on('shown.bs.modal', function() {
             updateGoogleMapsLink();
         });
-        
+
         // Location search button handler
         $("#searchLocationBtn").on("click", function() {
             const address = $("#addressInput").val().trim();
-            
+
             if (!address) {
                 $("#locationSearchStatus").html('<span class="text-warning">Veuillez entrer une adresse</span>');
                 return;
             }
-            
+
             // Show loading state
             $("#searchLocationBtn").prop("disabled", true);
             $("#locationSearchStatus").html('<i class="fa fa-spinner fa-spin"></i> Recherche en cours...');
-            
+
             $.ajax({
                 url: "https://itk-info.tripleperformance.fr/api/location",
                 method: "POST",
@@ -216,14 +215,14 @@ class TikaEditor {
                 data: JSON.stringify({ address: address }),
                 success: function(data) {
                     console.log("Location data received:", data);
-                    
+
                     // Populate latitude and longitude
                     if (data.latitude && data.longitude) {
                         $("#latitudeInput").val(data.latitude);
                         $("#longitudeInput").val(data.longitude);
                         updateGoogleMapsLink();
                     }
-                    
+
                     // Populate climate data if available
                     if (data.monthly_temperatures && data.monthly_rainfall) {
                         let tempLine = data.monthly_temperatures.join(' ');
@@ -232,7 +231,7 @@ class TikaEditor {
                         $("#ombroCheck").prop("checked", true);
                         $("#ombroData").prop("disabled", false);
                     }
-                    
+
                     // Show success message
                     let message = '<span class="text-success">✓ Coordonnées trouvées';
                     if (data.source_explanation) {
@@ -261,20 +260,20 @@ class TikaEditor {
             self.system.options.address = $("#addressInput").val().trim();
             self.system.options.latitude = $("#latitudeInput").val().trim();
             self.system.options.longitude = $("#longitudeInput").val().trim();
-            
+
             // Convert ombrothermic data to climate_data object
             let ombroEnabled = $("#ombroCheck").prop("checked");
-            
+
             if (ombroEnabled) {
                 self.system.options.show_climate_diagram = true;
-                
+
                 let ombroText = $("#ombroData").val().trim();
                 let lines = ombroText.split('\n');
-                
+
                 if (lines.length >= 2) {
                     let temperatures = lines[0].trim().split(/\s+/).map(v => parseFloat(v)).filter(v => !isNaN(v));
                     let precipitations = lines[1].trim().split(/\s+/).map(v => parseFloat(v)).filter(v => !isNaN(v));
-                    
+
                     if (temperatures.length > 0 && precipitations.length > 0) {
                         self.system.options.climate_data = {
                             temperatures: temperatures,
@@ -312,7 +311,7 @@ class TikaEditor {
         const self = this;
         $(document).ready(function() {
             // If we are in a wiki (the domain contains "tripleperformance.ag or tripleperformance.fr" then show the Wiki buttons
-            if ((window.location.hostname.includes("itinera") || window.location.hostname.includes("localhost")) 
+            if ((window.location.hostname.includes("itinera") || window.location.hostname.includes("localhost"))
                 && window.location.search.includes("itinera") ) {
 
                 // If we are in Itinera - the domain is *.itinera.ag or localhost with a itinera param
@@ -367,6 +366,7 @@ class TikaEditor {
      */
     updateSelectedStep() {
         this.selectedStep.updateFromForm();
+        this.sortStepsByStartDate();
         this.refreshAllTables();
     }
 
@@ -378,9 +378,34 @@ class TikaEditor {
     }
 
     /**
+     * Briefly highlight a step row to signal it has been moved
+     */
+    highlightStepRow(id) {
+        let row = $('#cropsContainer .step-row[data-id="' + id + '"]');
+        if (!row.length) return;
+        row.removeClass('step-shifted');
+        // Force reflow so the animation restarts on repeated clicks
+        void row[0].offsetWidth;
+        row.addClass('step-shifted');
+        row.one('animationend', function () {
+            $(this).removeClass('step-shifted');
+        });
+    }
+
+    /**
+     * Sort steps array by start date (ascending)
+     */
+    sortStepsByStartDate() {
+        this.system.steps.sort(function (a, b) {
+            return new Date(a.startDate) - new Date(b.startDate);
+        });
+    }
+
+    /**
      * Refresh all tables and views
      */
     refreshAllTables() {
+        this.sortStepsByStartDate();
         this.refreshStepsButtonList();
         this.renderChart();
     }
@@ -400,7 +425,7 @@ class TikaEditor {
     hideStepEditor() {
         $('#cropListView').show();
         $('#welcomeView').hide();
-        $('#cropEditorView').hide();        
+        $('#cropEditorView').hide();
     }
 
     /**
@@ -414,7 +439,7 @@ class TikaEditor {
         $('.step-edit').click(function (event) {
             event.stopPropagation();
             let stepId = renderer.getElementID(event.target.closest('.rotation_item'));
-            
+
             let index = stepId.split('_')[1];
             self.selectedStep = new StepModel(self.system.steps[index]);
             self.selectStep(self.selectedStep);
@@ -487,12 +512,12 @@ class TikaEditor {
             }),
             success: function(data) {
                 console.log("Réponse:", data);
-                    
+
                 if (data.color_hex && self.selectedStep.step.useDefaultColor) {
                     self.setInputValue("cropColor", data.color_hex);
                     self.updateSelectedStep();
                 }
-        
+
                 let startDate = self.getRotationEndDate();
                 if (data.average_sowing_date && self.selectedStep.step.useDefaultStartDate) {
                     // data.average_sowing_date is in MM-DD format, we need to convert it to YYYY-MM-DD
@@ -520,7 +545,7 @@ class TikaEditor {
                     self.setInputValue("cropEndDate", endDate.toISOString().split('T')[0]);
                     self.updateSelectedStep();
                 }
-                  
+
                 if (data.source_explanation) {
                     $('#itk-api-comment').text(data.source_explanation);
                 } else {
@@ -530,7 +555,7 @@ class TikaEditor {
             error: function(err) {
                 console.error("Erreur:", err);
             }
-        });        
+        });
     }
 
     /**
@@ -572,7 +597,7 @@ class TikaEditor {
 
         this.InterventionTableManager.setupDiv();
         this.InterventionTableManager.refreshInterventionsTable(this.selectedStep);
-                
+
         this.refreshAllTables();
     }
 
@@ -614,16 +639,28 @@ class TikaEditor {
             const rowDiv = this.createCropRow(crop);
             cropsContainer.append(rowDiv);
         });
-        
-        cropsContainer.sortable("refresh");
     }
 
-    addEditAndRemoveButtons(rowDiv, deleteId, editFunction, deleteFunction, duplicateFunction, style="btn-group") {
+    addEditAndRemoveButtons(rowDiv, deleteId, editFunction, deleteFunction, duplicateFunction, shiftYearUpFunction, shiftYearDownFunction, style="btn-group") {
         rowDiv = $(rowDiv);
 
         let actionContainer = $(`<div class="col-auto edit-buttons m-1 ${style}" role="group"></div>`);
 
         rowDiv.append(actionContainer);
+
+        if (shiftYearUpFunction != null) {
+            actionContainer.append($('<button class="btn btn-outline-secondary p-2" title="Reculer d\'un an"><i class="fa fa-arrow-up"></i></button>').click(function (event) {
+                event.stopPropagation();
+                shiftYearUpFunction(deleteId);
+            }));
+        }
+
+        if (shiftYearDownFunction != null) {
+            actionContainer.append($('<button class="btn btn-outline-secondary p-2" title="Avancer d\'un an"><i class="fa fa-arrow-down"></i></button>').click(function (event) {
+                event.stopPropagation();
+                shiftYearDownFunction(deleteId);
+            }));
+        }
 
         actionContainer.append($('<button class="edit-button btn btn-outline-primary p-2"><i class="fa fa-pencil"></i></button>').click(function(event) {
             event.stopPropagation();
@@ -657,12 +694,17 @@ class TikaEditor {
 
         let rowDiv = $('<div class="row mb-2 step-row editable-row position-relative" data-id="'+step.getStep().id +'"></div>');
 
-        rowDiv.append($('<div class="col"></div>')
-            .append($('<i class="fa fa-bars drag-handle" aria-hidden="true"></i>'))
-            .append($('<strong>' + step.getStep().name + '</strong>')));
+        let startDate = new Date(step.getStep().startDate);
+        let startDateStr = startDate.toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' });
+        startDateStr = startDateStr.charAt(0).toUpperCase() + startDateStr.slice(1);
 
-        this.addEditAndRemoveButtons(rowDiv, 
-            step.getStep().id, 
+        rowDiv.append($('<div class="col"></div>')
+            .append($('<strong>' + step.getStep().name + '</strong>'))
+            .append($('<br>'))
+            .append($('<small class="text-muted">' + startDateStr + '</small>')));
+
+        this.addEditAndRemoveButtons(rowDiv,
+            step.getStep().id,
             function () {
                 console.log("Selected step:", step.getStep().name);
                 self.selectStep(step);
@@ -674,6 +716,30 @@ class TikaEditor {
             },
             function(id) {
                 self.duplicateStep(id);
+            },
+            function(id) {
+                let s = self.system.steps.find(function (c) { return c.id == id; });
+                if (!s) return;
+                let start = new Date(s.startDate);
+                let end = new Date(s.endDate);
+                start.setFullYear(start.getFullYear() - 1);
+                end.setFullYear(end.getFullYear() - 1);
+                s.startDate = start;
+                s.endDate = end;
+                self.refreshAllTables();
+                self.highlightStepRow(id);
+            },
+            function(id) {
+                let s = self.system.steps.find(function (c) { return c.id == id; });
+                if (!s) return;
+                let start = new Date(s.startDate);
+                let end = new Date(s.endDate);
+                start.setFullYear(start.getFullYear() + 1);
+                end.setFullYear(end.getFullYear() + 1);
+                s.startDate = start;
+                s.endDate = end;
+                self.refreshAllTables();
+                self.highlightStepRow(id);
             });
 
         rowDiv.click();
@@ -730,7 +796,7 @@ class TikaEditor {
 
         // Create a StepModel instance to ensure proper initialization
         let stepModel = new StepModel(newStep);
-        
+
         // Add the duplicated step to the rotation
         this.system.steps.push(stepModel.getStep());
 

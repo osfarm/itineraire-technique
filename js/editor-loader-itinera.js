@@ -13,7 +13,7 @@ class ItineraLoader extends DefaultLoader {
     setupButtons() {
         const self = this;
         const container = '#toolbar-buttons-container';
-        
+
         // Create the ItineraButtons div structure
         const itineraButtonsDiv = $(`
             <div id="ItineraButtons" class="">
@@ -22,25 +22,25 @@ class ItineraLoader extends DefaultLoader {
                 </button>
             </div>
         `);
-        
+
         // Clear container and append the new buttons
         $(container).empty().append(itineraButtonsDiv);
-        
+
         // Attach event handler
         itineraButtonsDiv.find('.btn-save-itinera').on('click', function(e) {
             e.preventDefault();
             self.saveToItinera();
         });
-        
+
         // Don't add wipe button in Itinera mode
     }
 
     /**
      * When the page loads, get the URL paremeter with the target page title we want to edit:
-     * @returns 
+     * @returns
      */
     loadPageFromURL() {
-        
+
         const self = this;
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -51,7 +51,7 @@ class ItineraLoader extends DefaultLoader {
             return; // No page title provided, we are not in wiki edit mode
 
         // Build API URL with UUID if provided
-        const apiUrl = uuid 
+        const apiUrl = uuid
             ? `/api/systems/${encodeURIComponent(self.systemID)}?uuid=${encodeURIComponent(uuid)}`
             : `/api/systems/${encodeURIComponent(self.systemID)}`;
 
@@ -69,7 +69,7 @@ class ItineraLoader extends DefaultLoader {
                 // Extract UUID from redirectTo path (format: /project/22/UUID)
                 const pathParts = data.redirectTo.split('/');
                 const redirectUuid = pathParts[pathParts.length - 1];
-                
+
                 if (redirectUuid) {
                     // Retry with UUID parameter
                     return fetch(`/api/systems/${encodeURIComponent(self.systemID)}?uuid=${redirectUuid}`, {
@@ -87,15 +87,16 @@ class ItineraLoader extends DefaultLoader {
                         let sm = new StepModel(step)
                         sm.setAsEdited();
                     });
-                    
+
                     self.tikaeditorInstance.reloadCropsFromJson(content);
+                    self.markClean();
 
                     let codeSnippet = `{{Graphique Triple Performance \n| title=${content.title} \n| json=${self.systemID} \n| type=Rotation }}`;
                     $('#code-snippet').val(codeSnippet).on('focus', function() {
                         $(this).select();
                     });
                     $('#codeSnippetDiv').show();
-                    
+
 
                 } catch (e) {
                     console.error("Erreur lors de l'analyse du JSON de la page :", e);
@@ -107,7 +108,7 @@ class ItineraLoader extends DefaultLoader {
                 self.wipe();
             }
         });
-    
+
     }
 
     /**
@@ -120,7 +121,7 @@ class ItineraLoader extends DefaultLoader {
             // Error ?
             return;
         }
-        
+
         // Proceed to save
         const response = await fetch(`/api/systems/${encodeURIComponent(self.systemID)}`, {
             method: 'PATCH',
@@ -142,12 +143,13 @@ class ItineraLoader extends DefaultLoader {
 
         if (response.ok) {
             // Successfully saved - show a toast
+            self.markClean();
 
             toast.find('.toast-body').text('Sauvegardé dans Itinéra !');
 
             const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toast);
             toastBootstrap.show();
-            
+
         } else {
             // Error saving
 

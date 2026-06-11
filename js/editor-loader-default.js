@@ -5,6 +5,31 @@
 class DefaultLoader {
     constructor(tikaeditorInstance = null) {
         this.tikaeditorInstance = tikaeditorInstance;
+        this.hasUnsavedChanges = false;
+
+        // Warn the user before leaving the page if there are unsaved changes
+        const self = this;
+        window.addEventListener('beforeunload', function(e) {
+            if (self.hasUnsavedChanges) {
+                e.preventDefault();
+            }
+        });
+
+        // Mark dirty on any data mutation
+        if (tikaeditorInstance) {
+            const originalRefresh = tikaeditorInstance.refreshAllTables.bind(tikaeditorInstance);
+            tikaeditorInstance.refreshAllTables = function() {
+                self.hasUnsavedChanges = true;
+                return originalRefresh();
+            };
+        }
+    }
+
+    /**
+     * Mark the editor as having no unsaved changes
+     */
+    markClean() {
+        this.hasUnsavedChanges = false;
     }
 
     /**
@@ -15,7 +40,7 @@ class DefaultLoader {
     setupButtons() {
         const self = this;
         const container = '#toolbar-buttons-container';
-        
+
         // Create the NonWikiButtons div structure for standalone mode
         const nonWikiButtonsDiv = $(`
             <div id="NonWikiButtons" class="">
@@ -35,26 +60,26 @@ class DefaultLoader {
                 </button>
             </div>
         `);
-        
+
         // Clear container and append the new buttons
         $(container).empty().append(nonWikiButtonsDiv);
-        
+
         // Attach event handlers
         nonWikiButtonsDiv.find('.btn-import-json').on('click', function(e) {
             e.preventDefault();
             self.importFromJsonFile();
         });
-        
+
         nonWikiButtonsDiv.find('.btn-import-test').on('click', function(e) {
             e.preventDefault();
             self.importFromTestJson();
         });
-        
+
         nonWikiButtonsDiv.find('.btn-export-json').on('click', function(e) {
             e.preventDefault();
             self.doExportToJsonFile();
         });
-        
+
         // Add wipe button
         this.addWipeButton();
     }
@@ -65,15 +90,15 @@ class DefaultLoader {
     addWipeButton() {
         const self = this;
         const container = '#toolbar-buttons-container';
-        
+
         const wipeButton = $(`
             <button type="button" id="wipe-button" class="btn btn-outline-primary primary-button">
                 <i class="fa fa-trash" aria-hidden="true"></i> Tout effacer
             </button>
         `);
-        
+
         $(container).append(wipeButton);
-        
+
         wipeButton.on('click', function(e) {
             e.preventDefault();
             self.wipe();
@@ -86,6 +111,7 @@ class DefaultLoader {
     doExportToJsonFile() {
         let jsonName = this.tikaeditorInstance.system.title.replace(/\s+/g, '-').toLowerCase() + ".json";
         this.exportToJsonFile(this.tikaeditorInstance.system, jsonName);
+        this.markClean();
     }
 
     /**
@@ -169,6 +195,7 @@ class DefaultLoader {
             };
 
             self.tikaeditorInstance.reloadCropsFromJson(crops);
+            self.markClean();
         });
     }
 

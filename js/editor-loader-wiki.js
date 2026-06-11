@@ -13,7 +13,7 @@ class WikiLoader extends DefaultLoader {
     setupButtons() {
         const self = this;
         const container = '#toolbar-buttons-container';
-        
+
         // Create the WikiButtons div structure
         const wikiButtonsDiv = $(`
             <div id="WikiButtons" class="">
@@ -43,10 +43,10 @@ class WikiLoader extends DefaultLoader {
                 </div>
             </div>
         `);
-        
+
         // Clear container and append the new buttons
         $(container).empty().append(wikiButtonsDiv);
-        
+
         // Attach event handlers
         wikiButtonsDiv.find('.btn-load-wiki').on('click', function(e) {
             e.preventDefault();
@@ -54,32 +54,32 @@ class WikiLoader extends DefaultLoader {
                 self.loadFromWiki();
             });
         });
-        
+
         wikiButtonsDiv.find('.btn-save-wiki').on('click', function(e) {
             e.preventDefault();
             self.saveToWiki();
         });
-        
+
         wikiButtonsDiv.find('.btn-save-as').on('click', function(e) {
             e.preventDefault();
             self.showSaveAsModal();
         });
-        
+
         wikiButtonsDiv.find('.btn-import-test').on('click', function(e) {
             e.preventDefault();
             self.importFromTestJson();
         });
-        
+
         wikiButtonsDiv.find('.btn-import-json').on('click', function(e) {
             e.preventDefault();
             self.importFromJsonFile();
         });
-        
+
         wikiButtonsDiv.find('.btn-export-json').on('click', function(e) {
             e.preventDefault();
             self.doExportToJsonFile();
         });
-        
+
         // Add wipe button
         this.addWipeButton();
 
@@ -95,10 +95,10 @@ class WikiLoader extends DefaultLoader {
 
     /**
      * When the page loads, get the URL paremeter with the target page title we want to edit:
-     * @returns 
+     * @returns
      */
     loadPageFromURL() {
-        
+
         const self = this;
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -124,6 +124,7 @@ class WikiLoader extends DefaultLoader {
                         sm.setAsEdited();
                     });
                     self.tikaeditorInstance.reloadCropsFromJson(content);
+                    self.markClean();
 
                     let codeSnippet = `{{Graphique Triple Performance \n| title=${content.title} \n| json=${self.pageTitle} \n| type=Rotation }}`;
                     $('#code-snippet').val(codeSnippet).on('focus', function() {
@@ -151,7 +152,7 @@ class WikiLoader extends DefaultLoader {
                 }
             }
         });
-    
+
     }
 
     /**
@@ -164,10 +165,11 @@ class WikiLoader extends DefaultLoader {
             self.showSaveAsModal();
             return;
         }
-        
+
         // If a page title is provided, save to that page
         self.savePageToWiki(self.pageTitle, JSON.stringify(self.tikaeditorInstance.system, null, 2))
             .then(async () => {
+                self.markClean();
                 alert("Itinéraire technique enregistré avec succès !");
             })
             .catch(err => {
@@ -204,7 +206,7 @@ class WikiLoader extends DefaultLoader {
         const editData = await editResp.json();
         console.log(editData);
 
-        if (editData.edit && editData.edit.result === 'Success') { 
+        if (editData.edit && editData.edit.result === 'Success') {
             return Promise.resolve();
         } else {
             return Promise.reject(editData);
@@ -230,7 +232,7 @@ class WikiLoader extends DefaultLoader {
             const encodedUsername = 'User:' + username;
             const query = encodeURIComponent(`[[Page author::${encodedUsername}]][[~*.json]]`);
             const url = `/api.php?action=ask&query=${query}|sort=Modification date|order=desc&format=json`;
-            
+
             const response = await fetch(url, {
                 credentials: 'include'
             });
@@ -249,7 +251,7 @@ class WikiLoader extends DefaultLoader {
             const encodedUsername = 'User:' + username;
             const query = encodeURIComponent(`[[Page author::${encodedUsername}]]`);
             const url = `/api.php?action=ask&query=${query}|sort=Modification date|order=desc&format=json`;
-            
+
             const response = await fetch(url, {
                 credentials: 'include'
             });
@@ -265,40 +267,40 @@ class WikiLoader extends DefaultLoader {
         // Show the modal
         const modal = new bootstrap.Modal(document.getElementById('wikiFilesModal'));
         modal.show();
-        
+
         // Reset the modal content
         $('#wikiFilesStatus').html('<i class="fa fa-spinner fa-spin"></i> Chargement de vos fichiers...');
         $('#wikiFilesList').empty();
-        
+
         try {
             // Get user info
             const userInfo = await this.getWikiUserInfo();
-            
+
             if (!userInfo.id || userInfo.id === 0) {
                 $('#wikiFilesStatus').html('<div class="alert alert-warning">Vous devez être connecté au wiki pour utiliser cette fonctionnalité.</div>');
                 return;
             }
-            
+
             // Get user's JSON files
             const filesData = await this.getWikiUserFiles(userInfo.name);
-            
+
             // Parse the results
             const results = filesData.query?.results;
-            
+
             if (!results || Object.keys(results).length === 0) {
                 $('#wikiFilesStatus').html('<div class="alert alert-info">Aucun fichier JSON trouvé dans vos pages.</div>');
                 return;
             }
-            
+
             // Display the files
             $('#wikiFilesStatus').html(`<p class="text-muted">Connecté en tant que <strong>${userInfo.name}</strong></p>`);
-            
+
             const filesList = $('#wikiFilesList');
-            
+
             for (const [pageTitle, pageData] of Object.entries(results)) {
                 const displayTitle = pageData.displaytitle || pageTitle;
                 const fullUrl = pageData.fullurl || '';
-                
+
                 // if displayTitle is a subpage (contains /), split in two spans:
                 let [parent, child] = displayTitle.includes('/') ? displayTitle.split('/') : [displayTitle];
 
@@ -321,10 +323,10 @@ class WikiLoader extends DefaultLoader {
                         </div>
                     </a>
                 `);
-   
+
                 filesList.append(listItem);
             }
-            
+
         } catch (error) {
             $('#wikiFilesStatus').html(`<div class="alert alert-danger">Erreur lors du chargement des fichiers: ${error.message}</div>`);
         }
@@ -335,11 +337,11 @@ class WikiLoader extends DefaultLoader {
      */
     async showSaveAsModal() {
         const self = this;
-        
+
         try {
             // Get user info to check if logged in
             const userInfo = await this.getWikiUserInfo();
-            
+
             if (!userInfo.id || userInfo.id === 0) {
                 alert('Vous devez être connecté au wiki pour utiliser cette fonctionnalité.');
                 return;
@@ -347,23 +349,23 @@ class WikiLoader extends DefaultLoader {
 
             // Get user's existing pages
             const pagesData = await this.getWikiUserPages(userInfo.name);
-            
+
             // Show the modal
             const modal = new bootstrap.Modal(document.getElementById('saveAsModal'));
             modal.show();
-            
+
             // Populate the select with user's pages
             const pageSelect = $('#saveAsPageSelect');
             pageSelect.empty();
             pageSelect.append('<option value="">Sélectionner une page...</option>');
-            
+
             if (pagesData.query?.results) {
                 for (const [pageTitle, pageData] of Object.entries(pagesData.query.results)) {
                     const displayTitle = pageData.displaytitle || pageTitle;
                     pageSelect.append(`<option value="${pageTitle}">${displayTitle}</option>`);
                 }
             }
-            
+
             // Set default filename from title if it's been changed
             const filenameInput = $('#saveAsFilename');
             const currentTitle = self.tikaeditorInstance.system.title || '';
@@ -372,7 +374,7 @@ class WikiLoader extends DefaultLoader {
             } else {
                 filenameInput.val('');
             }
-            
+
         } catch (error) {
             console.error("Error showing save as modal:", error);
             alert('Erreur lors du chargement des données utilisateur.');
@@ -387,20 +389,20 @@ class WikiLoader extends DefaultLoader {
         const useExistingPage = $('#saveAsUseExistingPage').prop('checked');
         const selectedPage = $('#saveAsPageSelect').val();
         const filename = $('#saveAsFilename').val().trim();
-        
+
         if (!filename) {
             alert('Veuillez saisir un nom de fichier.');
             return null;
         }
-        
+
         let subpageName;
-        
+
         if (useExistingPage && selectedPage) {
             subpageName = selectedPage;
         } else {
             subpageName = 'Itinéraires techniques non classés';
         }
-        
+
         // Build the final URL: subpagename/filename.json
         const finalUrl = `${subpageName}/${filename}.json`;
 
@@ -416,11 +418,11 @@ class WikiLoader extends DefaultLoader {
      */
     async saveAs() {
         const url = this.buildSaveAsUrl();
-        
+
         if (!url) {
             return; // Error already handled in buildSaveAsUrl
         }
-        
+
         const self = this;
         const oldPageTitle = self.pageTitle;
 
@@ -430,17 +432,18 @@ class WikiLoader extends DefaultLoader {
 
             // Save to the wiki first
             await self.savePageToWiki(self.pageTitle, JSON.stringify(self.tikaeditorInstance.system, null, 2));
-            
+            self.markClean();
+
             // Close the modal
             const modal = bootstrap.Modal.getInstance(document.getElementById('saveAsModal'));
             modal.hide();
-            
+
             alert(`Itinéraire technique enregistré avec succès sous "${url}"`);
-            
+
             // Only navigate after successful save
             const newEditorUrl = `editor.html?wiki=${encodeURIComponent(self.pageTitle)}`;
             window.location.href = newEditorUrl;
-            
+
         } catch (error) {
             // Restore the old page title if save failed
             self.pageTitle = oldPageTitle;

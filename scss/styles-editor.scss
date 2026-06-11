@@ -66,6 +66,12 @@ $header-height     : 3rem;
     margin          : auto
 }
 
+@keyframes step-highlight {
+    0%   { box-shadow: 0 0 0 3px #ffc107; }
+    80%  { box-shadow: 0 0 0 3px #ffc107; }
+    100% { box-shadow: 0 0 0 0px transparent; }
+}
+
 .editable-row {
     background-color: #f7f7f7;
     min-height      : 3rem;
@@ -81,6 +87,14 @@ $header-height     : 3rem;
 
     &:hover>.edit-buttons {
         visibility: visible;
+    }
+
+    &.step-shifted {
+        animation: step-highlight 1.4s ease-out forwards;
+
+        .edit-buttons {
+            visibility: visible;
+        }
     }
 }
 
