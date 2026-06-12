@@ -6,7 +6,7 @@ class InterventionTable {
     // Constructor
     constructor(interventionsTopTitle, interventionsBottomTitle, tikaEditorInstance) {
         this.selectedStep = null;
-        
+
         this.interventionsTopTitle = interventionsTopTitle;
         this.interventionsBottomTitle = interventionsBottomTitle;
         this.tikaEditorInstance = tikaEditorInstance;
@@ -43,10 +43,10 @@ class InterventionTable {
                 </div>
             </div>
         `);
-        
+
         // Insert after the step's details
         $('#cropDetailView').after(interventionsTableDiv);
-        
+
         const self = this;
 
         $('#newInterventionButton').on('click', function(e) {
@@ -69,8 +69,8 @@ class InterventionTable {
 
         if (this.selectedStep.getStep().interventions) {
             // Sort all interventions by day
-            this.selectedStep.getStep().interventions = this.selectedStep.getStep().interventions.sort((a, b) => a.day - b.day);        
-            
+            this.selectedStep.getStep().interventions = this.selectedStep.getStep().interventions.sort((a, b) => a.day - b.day);
+
             this.selectedStep.getStep().interventions.forEach((intervention) => {
                 const rowDiv = this.createInterventionRow(intervention);
 
@@ -160,7 +160,7 @@ class InterventionTable {
                 day: "numeric",
             });
         }
-        
+
         let nameValueDiv = document.createElement("div");
         nameValueDiv.className = "col";
         nameValueDiv.innerHTML = `<strong>${intervention.name}</strong> (${absoluteDate})</br> ${intervention.description}`;
@@ -180,7 +180,7 @@ class InterventionTable {
         let absoluteDate = "";
         if (day === "")
             day = 0;
-        
+
         if (this.selectedStep && this.selectedStep.getStep().startDate) {
             const stepStartDate = new Date(this.selectedStep.getStep().startDate);
             const interventionDate = new Date(stepStartDate);
@@ -212,9 +212,9 @@ class InterventionTable {
                     </div>
                     <div class="col-12 mb-2">
                         <select id="interventionType" class="form-select" aria-label="Type">
-                            <option value="intervention_top" 
+                            <option value="intervention_top"
                             ${type === "intervention_top" ? "selected" : ""}>${this.interventionsTopTitle}</option>
-                            <option value="intervention_bottom" 
+                            <option value="intervention_bottom"
                             ${type === "intervention_bottom" ? "selected" : ""}>${this.interventionsBottomTitle}</option>
                         </select>
                     </div>
@@ -261,14 +261,14 @@ class InterventionTable {
                 } else {
                     $("#interventionsBottomContainer").append(newRowDiv);
                 }
-                    
+
                 // Remove the form
                 formContainer.remove();
-            }            
+            }
 
             self.tikaEditorInstance.renderChart();
         });
-        
+
         if (row) { //we are editing an intervention
             row.replaceWith(formContainer);
         } else { //we are adding an intervention
@@ -286,7 +286,7 @@ class InterventionTable {
         form.find("#interventionDate").on("change", function() {
             self.updateRelativeDayFromAbsolute();
         });
-        
+
         form.find("#interventionName").focus();
     }
 
@@ -299,7 +299,7 @@ class InterventionTable {
             const stepStartDate = new Date(this.selectedStep.getStep().startDate);
             const interventionDate = new Date(stepStartDate);
             interventionDate.setDate(stepStartDate.getDate() + parseInt(relativeDay));
-            
+
             const absoluteDateStr = interventionDate.toISOString().split('T')[0];
             $("#interventionDate").val(absoluteDateStr);
         }
@@ -310,11 +310,11 @@ class InterventionTable {
         if (absoluteDate !== "" && this.selectedStep && this.selectedStep.getStep().startDate) {
             const stepStartDate = new Date(this.selectedStep.getStep().startDate);
             const interventionDate = new Date(absoluteDate);
-            
+
             // Calculate difference in days
             const timeDiff = interventionDate.getTime() - stepStartDate.getTime();
             const dayDiff = Math.round(timeDiff / (1000 * 60 * 60 * 24));
-            
+
             $("#interventionDay").val(dayDiff);
         }
     }
@@ -326,14 +326,22 @@ class InterventionTable {
         let originalIntervention = this.selectedStep.getStep().interventions.find(interv => interv.id === interventionId);
         if (!originalIntervention) return;
 
-        // Create a copy of the intervention
-        let newIntervention = {
-            id: crypto.randomUUID(),
-            day: Number(originalIntervention.day) + 15, // Offset by 15 days to avoid overlap
-            name: originalIntervention.name,
-            type: originalIntervention.type,
-            description: originalIntervention.description
+        // Clone full JSON to preserve all existing fields.
+        const deepClone = (value) => {
+            if (typeof structuredClone === 'function') {
+                return structuredClone(value);
+            }
+            return JSON.parse(JSON.stringify(value));
         };
+
+        let newIntervention = deepClone(originalIntervention);
+        newIntervention.id = crypto.randomUUID();
+
+        // Keep existing behavior: place duplicate a bit later to avoid overlap.
+        const originalDay = Number(newIntervention.day);
+        if (!Number.isNaN(originalDay)) {
+            newIntervention.day = originalDay + 15;
+        }
 
         // Add the duplicated intervention to the selected step
         this.selectedStep.getStep().interventions.push(newIntervention);

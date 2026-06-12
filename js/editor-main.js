@@ -775,24 +775,30 @@ class TikaEditor {
             newEndDate.setFullYear(originalEnd.getFullYear() + yearsToAdd);
         }
 
-        // Create the new step with all properties cloned
-        let newStep = {
-            name: originalStep.name,
-            color: originalStep.color,
-            startDate: newStartDate,
-            endDate: newEndDate,
-            description: originalStep.description,
-            secondary_crop: originalStep.secondary_crop || false,
-            useDefaultColor: originalStep.useDefaultColor,
-            useDefaultStartDate: originalStep.useDefaultStartDate,
-            useDefaultEndDate: originalStep.useDefaultEndDate,
-            interventions: originalStep.interventions ? originalStep.interventions.map(i => ({
-                day: i.day,
-                name: i.name,
-                type: i.type,
-                description: i.description
-            })) : []
+        // Clone the full JSON so no extra properties are lost.
+        const deepClone = (value) => {
+            if (typeof structuredClone === 'function') {
+                return structuredClone(value);
+            }
+            return JSON.parse(JSON.stringify(value));
         };
+
+        let newStep = deepClone(originalStep);
+
+        // Regenerate IDs for the new step and all copied interventions.
+        newStep.id = crypto.randomUUID();
+        newStep.startDate = newStartDate;
+        newStep.endDate = newEndDate;
+
+        if (Array.isArray(newStep.interventions)) {
+            newStep.interventions = newStep.interventions.map((intervention) => {
+                let clonedIntervention = deepClone(intervention);
+                clonedIntervention.id = crypto.randomUUID();
+                return clonedIntervention;
+            });
+        } else {
+            newStep.interventions = [];
+        }
 
         // Create a StepModel instance to ensure proper initialization
         let stepModel = new StepModel(newStep);
