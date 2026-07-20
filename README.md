@@ -6,11 +6,7 @@ En revanche, la visualisation d'un itinéraire technique (aussi appelé schémas
 
 Ce projet vise à proposer une alternative, pour décrire un itinéraire technique complet, avec un maximum d'interventions et d'informations annexes (par exemple l'écartement du rang, la variété ou la densité de semis).
 
-![Le rendu peut se faire au format frise, avec un zoom temporel, et la possibilité de cliquer sur chaque étape de la rotation ou chaque intervention pour en savoir plus](https://www.osfarm.org/itineraire-technique/images/rendu_frise.png)
-
 Le rendu peut se faire au format frise, avec un zoom temporel, et la possibilité de cliquer sur chaque étape de la rotation ou chaque intervention pour en savoir plus.
-
-![L'utilisateur peut passer au format rotation pour voir l'ensemble de la rotation sur un cercle](https://www.osfarm.org/itineraire-technique/images/rendu_rotation.png)
 
 L'utilisateur peut passer au format rotation pour voir l'ensemble de la rotation sur un cercle
 
