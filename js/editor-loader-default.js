@@ -191,6 +191,14 @@ class DefaultLoader {
                     "title_bottom_interventions": "Autres interventions",
                     "title_steps": "Étapes de la rotation dans la parcelle",
                 },
+                "address": {
+                    "raw": "",
+                    "town": "",
+                    "region": "",
+                    "country": "France",
+                    "department": "",
+                    "gpsLocation": null
+                },
                 "steps": []
             };
 

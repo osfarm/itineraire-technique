@@ -15,7 +15,14 @@ class TikaEditor {
                 "title_top_interventions": "Contrôle adventices",
                 "title_bottom_interventions": "Autres interventions",
                 "title_steps": "Étapes de la rotation dans la parcelle",
-                "region": "France"
+            },
+            "address": {
+                "raw": "",
+                "town": "",
+                "region": "",
+                "country": "France",
+                "department": "",
+                "gpsLocation": null
             },
             "steps": []
         };
@@ -142,10 +149,10 @@ class TikaEditor {
             $("#topInterventionsTitle").val(self.system.options.title_top_interventions);
             $("#bottomInterventionsTitle").val(self.system.options.title_bottom_interventions);
             $("#stepsTitle").val(self.system.options.title_steps);
-            $("#regionInput").val(self.system.options.region ?? "France");
-            $("#addressInput").val(self.system.options.address ?? "");
-            $("#latitudeInput").val(self.system.options.latitude ?? "");
-            $("#longitudeInput").val(self.system.options.longitude ?? "");
+            $("#addressInput").val(self.system.address?.raw ?? "");
+            $("#latitudeInput").val(self.system.address?.gpsLocation?.lat ?? "");
+            $("#longitudeInput").val(self.system.address?.gpsLocation?.lng ?? "");
+            renderAddressDetails();
 
             // Load ombrothermic data from climate_data if present
             let hasClimateData = self.system.options.climate_data &&
@@ -172,6 +179,13 @@ class TikaEditor {
         $("#ombroCheck").on("change", function() {
             $("#ombroData").prop("disabled", !this.checked);
         });
+
+        // Display the geocoded town/department/region/country under the address field
+        function renderAddressDetails() {
+            const addr = self.system.address;
+            const parts = addr ? [addr.town, addr.department, addr.region, addr.country].filter(Boolean) : [];
+            $("#addressDetails").text(parts.join(' · '));
+        }
 
         // Update Google Maps link when coordinates change
         function updateGoogleMapsLink() {
@@ -223,6 +237,19 @@ class TikaEditor {
                         updateGoogleMapsLink();
                     }
 
+                    // Store the structured address (town/region/department/country) from the API
+                    self.system.address = {
+                        raw: data.raw ?? address,
+                        town: data.city ?? "",
+                        region: data.region ?? "",
+                        country: data.country ?? "",
+                        department: data.department ?? "",
+                        gpsLocation: (data.latitude && data.longitude)
+                            ? { lat: parseFloat(data.latitude), lng: parseFloat(data.longitude) }
+                            : null
+                    };
+                    renderAddressDetails();
+
                     // Populate climate data if available
                     if (data.monthly_temperatures && data.monthly_rainfall) {
                         let tempLine = data.monthly_temperatures.join(' ');
@@ -256,10 +283,15 @@ class TikaEditor {
             self.system.options.title_top_interventions = $("#topInterventionsTitle").val();
             self.system.options.title_bottom_interventions = $("#bottomInterventionsTitle").val();
             self.system.options.title_steps = $("#stepsTitle").val();
-            self.system.options.region = $("#regionInput").val();
-            self.system.options.address = $("#addressInput").val().trim();
-            self.system.options.latitude = $("#latitudeInput").val().trim();
-            self.system.options.longitude = $("#longitudeInput").val().trim();
+
+            self.system.address = self.system.address ?? {};
+            self.system.address.raw = $("#addressInput").val().trim();
+
+            let lat = $("#latitudeInput").val().trim();
+            let lng = $("#longitudeInput").val().trim();
+            self.system.address.gpsLocation = (lat && lng && !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lng)))
+                ? { lat: parseFloat(lat), lng: parseFloat(lng) }
+                : null;
 
             // Convert ombrothermic data to climate_data object
             let ombroEnabled = $("#ombroCheck").prop("checked");
@@ -477,10 +509,40 @@ class TikaEditor {
         console.log("Données JSON importées :", cropsFromJson);
 
         this.system = cropsFromJson;
+        this.migrateLegacyAddress();
 
         this.initializeOptions();
         this.refreshAllTables();
         this.hideStepEditor();
+    }
+
+    /**
+     * Migrate the legacy options.region/address/latitude/longitude fields
+     * (pre-1.3 schema) into the top-level `address` struct
+     */
+    migrateLegacyAddress() {
+        const opts = this.system.options || {};
+
+        if (this.system.address || !(opts.region || opts.address || opts.latitude || opts.longitude)) {
+            return;
+        }
+
+        const lat = parseFloat(opts.latitude);
+        const lng = parseFloat(opts.longitude);
+
+        this.system.address = {
+            raw: opts.address ?? "",
+            town: "",
+            region: opts.region ?? "",
+            country: "",
+            department: "",
+            gpsLocation: (!isNaN(lat) && !isNaN(lng)) ? { lat, lng } : null
+        };
+
+        delete opts.region;
+        delete opts.address;
+        delete opts.latitude;
+        delete opts.longitude;
     }
 
     /**
@@ -508,7 +570,7 @@ class TikaEditor {
             contentType: "application/json",
             data: JSON.stringify({
                 culture: newCropName,
-                region: self.system.options.region ?? "France"
+                region: self.system.address?.region || "France"
             }),
             success: function(data) {
                 console.log("Réponse:", data);
