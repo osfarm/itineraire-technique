@@ -3,6 +3,14 @@ div.mainITKContainer {
     container-name: myparent;
     line-height   : 1rem;
 
+    &.view-horizontal {
+        max-height: 455px;
+    }
+
+    &.view-donut {
+        max-height: none;
+    }
+
     .left-transcript {
         display    : none;
         width      : 50%;
