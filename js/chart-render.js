@@ -1120,6 +1120,8 @@ class RotationRenderer {
             },
             className: "rotation-tooltip",
             formatter: function (params) {
+                if (!params.data) return '';
+
                 if (params.data.type == 'rotation_item') {
                     let start = params.data.startDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
                     let end = params.data.endDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' });
