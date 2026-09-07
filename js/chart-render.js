@@ -114,6 +114,17 @@ class RotationRenderer {
                     window.echarts.getInstanceById(id).resize();
                 });
             }, 500));
+
+            // Re-render this chart when it crosses the mobile/desktop boundary so
+            // the toolbox is shown or hidden accordingly.
+            self.wasNarrowViewport = self.isNarrowViewport();
+            $(window).on('resize', _.debounce(function () {
+                let isNarrow = self.isNarrowViewport();
+                if (isNarrow !== self.wasNarrowViewport) {
+                    self.wasNarrowViewport = isNarrow;
+                    self.renderChart();
+                }
+            }, 500));
         }
     }
 
@@ -1195,7 +1206,32 @@ class RotationRenderer {
             }
         };
 
+        // On a narrow (mobile) display, hide the toolbox entirely so the tools
+        // don't crowd the chart.
+        if (self.isNarrowViewport())
+            option.toolbox.show = false;
+
         return option;
+    }
+
+    /**
+     * True when the chart is rendered in a narrow/mobile-sized area. Based on the
+     * actual chart width (the renderer is embedded in third-party pages, so the
+     * window size isn't reliable) with a fallback to the window width.
+     */
+    isNarrowViewport() {
+        let width = 0;
+
+        try {
+            width = this.chart ? this.chart.getWidth() : 0;
+        } catch (e) {
+            width = 0;
+        }
+
+        if (!width)
+            width = this.itk_container.find('.charts').width() || window.innerWidth || 0;
+
+        return width > 0 && width < 600;
     }
 
     getHTMLFormatedDescription(description) {
