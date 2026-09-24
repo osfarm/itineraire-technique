@@ -672,7 +672,10 @@ class RotationRenderer {
                             shape: {
                                 points: points
                             },
-                            style: style,
+                            style: {
+                                fill: color,
+                                opacity: 0.5,
+                            },
                             emphasis: {
                                 style: {
                                     shadowBlur: 4,
