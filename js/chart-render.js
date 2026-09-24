@@ -77,11 +77,27 @@ class RotationRenderer {
         return rotationData;
     }
 
+    dispose() {
+        if (this.resizeNamespace) {
+            $(window).off(this.resizeNamespace);
+        }
+        if (this.chart && !this.chart.isDisposed()) {
+            this.chart.dispose();
+        }
+        this.chart = null;
+    }
+
     render() {
         let self = this;
 
-        // Initialize the echarts instance based on the prepared dom
-        self.chart = echarts.init(self.itk_container.find('.charts')[0]);
+        // Initialize the echarts instance based on the prepared dom, disposing any
+        // instance left over from a previous render on the same element
+        const chartDom = self.itk_container.find('.charts')[0];
+        const existingChart = echarts.getInstanceByDom(chartDom);
+        if (existingChart) {
+            existingChart.dispose();
+        }
+        self.chart = echarts.init(chartDom);
 
         self.renderChart();
 
@@ -106,19 +122,23 @@ class RotationRenderer {
         else
             this.itk_container.find('.transcript').hide();
 
-        // resize all charts when the windows is resized
+        // resize the chart when the windows is resized
+        self.resizeNamespace = self.resizeNamespace || '.rotationRenderer' + Math.random().toString(36).slice(2);
+        $(window).off(self.resizeNamespace);
         if (typeof _ !== 'undefined' && typeof _.debounce === 'function') {
-            $(window).on('resize', _.debounce(function () {
-                $(".charts").each(function () {
-                    var id = $(this).attr('_echarts_instance_');
-                    window.echarts.getInstanceById(id).resize();
-                });
+            $(window).on('resize' + self.resizeNamespace, _.debounce(function () {
+                if (self.chart && !self.chart.isDisposed()) {
+                    self.chart.resize();
+                }
             }, 500));
 
             // Re-render this chart when it crosses the mobile/desktop boundary so
             // the toolbox is shown or hidden accordingly.
             self.wasNarrowViewport = self.isNarrowViewport();
-            $(window).on('resize', _.debounce(function () {
+            $(window).on('resize' + self.resizeNamespace, _.debounce(function () {
+                if (!self.chart || self.chart.isDisposed()) {
+                    return;
+                }
                 let isNarrow = self.isNarrowViewport();
                 if (isNarrow !== self.wasNarrowViewport) {
                     self.wasNarrowViewport = isNarrow;
@@ -173,6 +193,7 @@ class RotationRenderer {
         });
 
         // Add a click event on the chart to scroll to the corresponding item in the transcript
+        self.chart.off('click');
         self.chart.on('click', function (params) {
             if (!params.data.divId)
                 return;
@@ -573,8 +594,7 @@ class RotationRenderer {
                 const x = start[0];
                 let y = start[1];
 
-                const style = api.style();
-                style.opacity = 0.5;
+                const color = api.visual('color');
 
                 if (params.context.rendered == undefined) {
                     // Start of a new rendering round
@@ -588,9 +608,6 @@ class RotationRenderer {
                 }
 
                 params.context.rendered = true;
-
-                // Remove the default emphasis style
-                api.styleEmphasis({});
 
                 if (type == 'rotation_item') {
 
@@ -764,11 +781,10 @@ class RotationRenderer {
                         shape: {
                             points: points
                         },
-                        style: api.style({
-                            fill: style.fill,
-                            stroke: style.fill,
-                            textFill: '#000',
-                        }),
+                        style: {
+                            fill: color,
+                            stroke: color,
+                        },
                         emphasis: {
                             style: {
                                 shadowBlur: 4,
