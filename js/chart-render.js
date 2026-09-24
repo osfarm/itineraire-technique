@@ -202,6 +202,10 @@ class RotationRenderer {
             if (element.length == 0)
                 element = self.getVisibleTranscriptDiv().find('.' + params.data.divId);
 
+            // No visible transcript (e.g. show_transcript = false): nothing to scroll to
+            if (element.length == 0)
+                return;
+
             self.noFocusUpdate = true;
 
             setTimeout(() => {
