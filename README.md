@@ -40,12 +40,10 @@ Puis de copier les fichiers js et css dans votre code :
    }
 }
 ```
-Dans votre HTML, inclure les fichiers d'echarts : 
+Dans votre HTML, inclure les fichiers d'echarts (le rendu n'a plus besoin de jQuery ni d'Underscore ; seul l'éditeur les utilise encore) : 
 ```
 <link  href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"  rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"  crossorigin="anonymous">
 <script  src="https://cdn.jsdelivr.net/npm/echarts@6.0.0/dist/echarts.js"></script>
-<script  src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-<script  src="https://cdn.jsdelivr.net/npm/underscore@1.13.7/underscore-umd-min.js"></script>
 
 <link  href="./css/styles-rendering.css"  rel="stylesheet">
 <script  src="./js/chart-render.js"></script>
@@ -61,8 +59,10 @@ Puis appeler la fonction de rendu sur votre JSON (vous devez avoir deux div dans
             return response.json();
         })
         .then(data => {
+            // Premier paramètre : l'identifiant du conteneur, ou l'élément lui-même
             let renderer = new RotationRenderer('rotation-chart-id', data);
             renderer.render();
+            // Avant de retirer le conteneur ou de redessiner : renderer.dispose()
         })
         .catch(error => {
             console.error("Impossible de charger le JSON :", error);
