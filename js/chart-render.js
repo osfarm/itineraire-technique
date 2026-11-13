@@ -1,6 +1,23 @@
 
+/**
+ * Debounce without dependency (replaces Underscore's _.debounce).
+ */
+function debounce(fn, wait) {
+    let timer = null;
+    const debounced = function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), wait);
+    };
+    debounced.cancel = () => clearTimeout(timer);
+    return debounced;
+}
+
 class RotationRenderer {
-    constructor(divID, rotationData) {
+    /**
+     * @param {string|HTMLElement} target id of the container element, or the element itself
+     * @param {object|object[]} rotationData the itinerary (see test/test.json)
+     */
+    constructor(target, rotationData) {
         this.barHeight = 100;
 
         this.currentFocusIndex = null;
@@ -27,15 +44,23 @@ class RotationRenderer {
 
         this.data = rotationData;
 
-        this.itk_container = $("#" + divID).css({ 'width': '100%' });
+        this.container = typeof target === 'string' ? document.getElementById(target) : target;
+        if (!(this.container instanceof HTMLElement))
+            throw new Error('RotationRenderer: container element not found (' + target + ')');
+        this.container.style.width = '100%';
 
-        if (this.itk_container.find('.mainITKContainer').length == 0) {
-            this.itk_container.append(`<div class="row mainITKContainer view-` + this.initialLayout + (this.data.options.show_transcript ? ' withTranscript' : '') + `">
+        if (!this.container.querySelector('.mainITKContainer')) {
+            this.container.insertAdjacentHTML('beforeend', `<div class="row mainITKContainer view-` + this.initialLayout + (this.data.options.show_transcript ? ' withTranscript' : '') + `">
                 <div class="col-auto left-transcript"><div class="transcript"></div></div>
                 <div class="col col-auto chart-div"><div class="charts"></div></div>
                 <div class="col col-12 bottom-transcript"><div class="transcript"></div></div>
             </div>`);
         }
+    }
+
+    /** All elements matching the selector, inside this renderer's container only. */
+    findAll(selector) {
+        return Array.from(this.container.querySelectorAll(selector));
     }
 
     fixRotationData(rotationData) {
@@ -77,9 +102,19 @@ class RotationRenderer {
         return rotationData;
     }
 
+    /**
+     * Release everything this renderer holds: the ECharts instance and all the
+     * event listeners it added (container and window). Call it before removing
+     * the container, or before creating a new renderer on the same element.
+     */
     dispose() {
-        if (this.resizeNamespace) {
-            $(window).off(this.resizeNamespace);
+        if (this.listeners) {
+            this.listeners.abort();
+            this.listeners = null;
+        }
+        if (this.debouncers) {
+            this.debouncers.forEach((d) => d.cancel());
+            this.debouncers = null;
         }
         if (this.chart && !this.chart.isDisposed()) {
             this.chart.dispose();
@@ -90,9 +125,15 @@ class RotationRenderer {
     render() {
         let self = this;
 
+        // Listeners from a previous render are removed in one go.
+        if (self.listeners)
+            self.listeners.abort();
+        self.listeners = new AbortController();
+        const signal = self.listeners.signal;
+
         // Initialize the echarts instance based on the prepared dom, disposing any
         // instance left over from a previous render on the same element
-        const chartDom = self.itk_container.find('.charts')[0];
+        const chartDom = self.container.querySelector('.charts');
         const existingChart = echarts.getInstanceByDom(chartDom);
         if (existingChart) {
             existingChart.dispose();
@@ -101,59 +142,64 @@ class RotationRenderer {
 
         self.renderChart();
 
+        const transcripts = self.findAll('.transcript');
         if (self.data.options.show_transcript) {
             var html = this.buildHTML();
-            this.itk_container.find('.transcript').html(html);
-            this.itk_container.find('.transcript').show();
-            this.itk_container.find('.transcript .rotation_item').on("click", function () {
-                $(this).toggleClass('show-all');
+            transcripts.forEach((el) => {
+                el.innerHTML = html;
+                el.style.display = '';
             });
 
-            this.itk_container.find('.transcript .rotation_item').on("mouseover", function () {
-                self.highlightItem(self.getElementID(this));
-            });
+            // Event delegation: one listener on the container covers both transcripts.
+            self.container.addEventListener('click', function (e) {
+                const item = e.target.closest('.transcript .rotation_item');
+                if (item && self.container.contains(item))
+                    item.classList.toggle('show-all');
+            }, { signal });
 
-            // Add a click event on the transcript to scroll to the corresponding item in the chart
-            this.itk_container.find('.transcript .intervention').on('mouseover', function (e) {
-                self.highlightItem(self.getElementID(this));
-                e.stopPropagation();
-            });
+            self.container.addEventListener('mouseover', function (e) {
+                // An intervention takes precedence over the step that contains it
+                const target = e.target.closest('.transcript .intervention') ?? e.target.closest('.transcript .rotation_item');
+                if (target && self.container.contains(target))
+                    self.highlightItem(self.getElementID(target));
+            }, { signal });
         }
         else
-            this.itk_container.find('.transcript').hide();
+            transcripts.forEach((el) => { el.style.display = 'none'; });
 
         // resize the chart when the windows is resized
-        self.resizeNamespace = self.resizeNamespace || '.rotationRenderer' + Math.random().toString(36).slice(2);
-        $(window).off(self.resizeNamespace);
-        if (typeof _ !== 'undefined' && typeof _.debounce === 'function') {
-            $(window).on('resize' + self.resizeNamespace, _.debounce(function () {
-                if (self.chart && !self.chart.isDisposed()) {
-                    self.chart.resize();
-                }
-            }, 500));
+        const onResize = debounce(function () {
+            if (self.chart && !self.chart.isDisposed()) {
+                self.chart.resize();
+            }
+        }, 500);
 
-            // Re-render this chart when it crosses the mobile/desktop boundary so
-            // the toolbox is shown or hidden accordingly.
-            self.wasNarrowViewport = self.isNarrowViewport();
-            $(window).on('resize' + self.resizeNamespace, _.debounce(function () {
-                if (!self.chart || self.chart.isDisposed()) {
-                    return;
-                }
-                let isNarrow = self.isNarrowViewport();
-                if (isNarrow !== self.wasNarrowViewport) {
-                    self.wasNarrowViewport = isNarrow;
-                    self.renderChart();
-                }
-            }, 500));
-        }
+        // Re-render this chart when it crosses the mobile/desktop boundary so
+        // the toolbox is shown or hidden accordingly.
+        self.wasNarrowViewport = self.isNarrowViewport();
+        const onBoundary = debounce(function () {
+            if (!self.chart || self.chart.isDisposed()) {
+                return;
+            }
+            let isNarrow = self.isNarrowViewport();
+            if (isNarrow !== self.wasNarrowViewport) {
+                self.wasNarrowViewport = isNarrow;
+                self.renderChart();
+            }
+        }, 500);
+
+        (self.debouncers ?? []).forEach((d) => d.cancel());
+        self.debouncers = [onResize, onBoundary];
+        window.addEventListener('resize', onResize, { signal });
+        window.addEventListener('resize', onBoundary, { signal });
     }
 
     resize() {
         this.chart.resize();
     }
-    
+
     getElementID(element) {
-        return element.classList.values().find(item => item.match(/Intervention_[0-9]+_[0-9]+|Step_[0-9]+/));
+        return Array.from(element.classList).find(item => item.match(/Intervention_[0-9]+_[0-9]+|Step_[0-9]+/));
     }
 
     renderChart() {
@@ -198,12 +244,12 @@ class RotationRenderer {
             if (!params.data.divId)
                 return;
 
-            let element = self.getVisibleTranscriptDiv().find('.' + params.data.divId + " h4");
-            if (element.length == 0)
-                element = self.getVisibleTranscriptDiv().find('.' + params.data.divId);
+            const transcript = self.getVisibleTranscriptDiv();
+            const item = transcript ? transcript.querySelector('.' + params.data.divId) : null;
+            const element = item ? (item.querySelector('h4') ?? item) : null;
 
             // No visible transcript (e.g. show_transcript = false): nothing to scroll to
-            if (element.length == 0)
+            if (!element)
                 return;
 
             self.noFocusUpdate = true;
@@ -212,16 +258,18 @@ class RotationRenderer {
                 self.noFocusUpdate = false;
             }, 1500);
 
-            element[0].scrollIntoView({ block: "start", block: "nearest" });
+            element.scrollIntoView({ block: "nearest" });
 
-            self.getVisibleTranscriptDiv().find('.' + params.data.divId).closest('.rotation_item').addClass("show-all");
+            item.closest('.rotation_item')?.classList.add("show-all");
 
             self.highlightItem(params.data.divId);
         });
     }
 
+    /** The transcript currently displayed (left or bottom, depending on the layout), or null. */
     getVisibleTranscriptDiv() {
-        return this.itk_container.find('.transcript:visible');
+        // Same test as jQuery's :visible
+        return this.findAll('.transcript').find((el) => el.getClientRects().length > 0) ?? null;
     }
 
     highlightItem(divID) {
@@ -238,9 +286,9 @@ class RotationRenderer {
         self.currentFocusIndex = index;
         self.chart.dispatchAction({ type: 'highlight', dataIndex: index });
 
-        $(".rotation_item").removeClass('highlighted');
-        $(".intervention").removeClass('highlighted');
-        self.itk_container.find('.' + divID).addClass('highlighted');
+        // Only inside this renderer: several renderers can share the page
+        self.findAll('.rotation_item.highlighted, .intervention.highlighted').forEach((el) => el.classList.remove('highlighted'));
+        self.findAll('.' + divID).forEach((el) => el.classList.add('highlighted'));
     }
 
     getStepsOption() {
@@ -1252,7 +1300,7 @@ class RotationRenderer {
         }
 
         if (!width)
-            width = this.itk_container.find('.charts').width() || window.innerWidth || 0;
+            width = this.container.querySelector('.charts')?.clientWidth || window.innerWidth || 0;
 
         return width > 0 && width < 600;
     }
@@ -1277,14 +1325,14 @@ class RotationRenderer {
     }
 
     toggleTranscription() {
-        this.itk_container.find('.mainITKContainer').toggleClass('withTranscript');
+        this.container.querySelector('.mainITKContainer').classList.toggle('withTranscript');
         this.chart.resize();
     }
 
     setContainerHeightForLayout() {
-        this.itk_container.find('.mainITKContainer')
-            .removeClass('view-horizontal view-donut')
-            .addClass('view-' + this.initialLayout);
+        const main = this.container.querySelector('.mainITKContainer');
+        main.classList.remove('view-horizontal', 'view-donut');
+        main.classList.add('view-' + this.initialLayout);
         this.chart.resize();
     }
 

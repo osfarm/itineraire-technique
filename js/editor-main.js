@@ -465,7 +465,10 @@ class TikaEditor {
      */
     renderChart() {
         const self = this;
-        let renderer = new RotationRenderer('itk', this.system);
+        // Release the previous renderer (its chart and window listeners) before drawing again
+        if (this.renderer)
+            this.renderer.dispose();
+        let renderer = this.renderer = new RotationRenderer('itk', this.system);
         renderer.render();
 
         $('.step-edit').click(function (event) {
